@@ -1,0 +1,110 @@
+= Shinmun, a small and beautiful blog engine
+
+== Quick start
+
+Following command will render an example page. Just look at the output in example/public
+
+   bin/shinmun.rb example
+
+
+== Directory layout
+
+The layout is as following:
+
+* The blog description, base url and the category list is in a file
+  called `blog.yml`
+
+* Posts should be put into folders by date. `example.md` is in the
+  folder 9 (September) of the year 2008. Posts are distinguished from
+  pages by having a date attribute.
+
+* Pages can be put anywhere, like `about.md`
+
+* The output directory is called public. Static files should be put
+  into the directories `images`, `stylesheets`, `javascripts`.
+
+* Category pages will be rendered into the `categories` folder. A category
+  page will display recent entries for one category.
+
+* An index page will be generated for recent posts.
+
+Following is an example folder tree:
+
+    + posts  
+      + blog.yml
+      + about.md
+      * 2007
+        + 2008
+          + 9
+            + example.md
+    + public
+      + index.html
+      + about.html
+      + categories
+        + emacs.html
+        + ruby.html
+      + 2007   
+      + 2008
+        + 9
+          + example.html
+      + images
+      + stylesheest
+      + javascripts
+
+
+== Meta data
+
+Each document has a header section and a body section, which are
+separated by a newline. The header section is just a YAML document and
+the body section consists of an markdown document. This is also
+extremly simple, but just works. An example is probably the best way
+to understand this:
+
+    --- 
+    category: Ruby
+    guid: 7ad04f10-5dd6-012b-b53c-001a92975b89
+    title: BlueCloth, a Markdown library
+    tags: ruby, bluecloth, markdown
+    date: 2008-09-05
+     
+    This is the summary, which is by definition the first paragraph of the
+    article. The summary shows up in category listings or the index listing.
+     
+The blog engine will assign a GUID to the post, the first time it will
+be rendered. This GUID should never change, as it will be you used for
+identifying posts for comments.
+
+
+== Templates
+
+A set of standard templates are provided in the example/templates directory.
+
+* layout.rhtml
+  This file defines the layout as ERB template.
+  The content will be provided as @content.
+
+* page.rhtml
+  Static pages will use this template.
+
+* post.rhtml
+  If you want to customize the layout of a post, look here.
+
+* posts.rhtml
+  Summary listings for archives and categories will use this template.
+
+* feed.rxml
+  RSS feed template. Will be used for index page and categories.
+
+
+== Comments
+
+I provide a small commenting system based on jQuery and PHP. You don't
+need any database, because comments are stored as JSON files. Each
+post will get his own JSON file. Therefore the comments are rendered
+by my pure javascript templating engine. If you don't need this, just
+remove the javascript links form layout.rhtml and remove the comment
+markup in post.rhtml.
+
+Important: The php script needs write permissions for
+public/controllers/comments
+

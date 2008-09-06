@@ -1,0 +1,10 @@
+blog_title: The title of the blog
+blog_description: Blog description
+blog_language: en
+blog_author: The author
+blog_url: http://www.example.com
+categories:
+  - Ruby
+  - Emacs
+
+

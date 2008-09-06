@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0"> 
+  <channel>
+    <title><%= @category ? @blog_title + ' - ' + @category : @blog_title %></title>
+    <link><%= @blog_url %></link>
+    <description><%= @category ? 'Category ' + @category : @blog_description %></description>
+    <language><%= @blog_language %></language>
+    <copyright><%= @blog_author %></copyright>
+    <pubDate><%= rfc822 Time.now %></pubDate>
+    <% for post in @posts %>
+      <item>
+	<title><%= post.title %></title>
+	<description><%= post.text_summary %></description>
+	<link><%= post.link %></link>
+	<author><%= @blog_author %></author>
+	<guid><%= post.guid %></guid>
+	<pubDate><%= rfc822 post.date %></pubDate>
+      </item>
+    <% end %>
+  </channel> 
+</rss>

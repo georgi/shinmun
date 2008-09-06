@@ -1,0 +1,10 @@
+<div class="articles">
+  <% for post in @posts %>
+    <div class="article">
+      <div class="date"><%= date post.date %></div>
+      <h2><%= post_link post %></h2>
+      <%= post.summary %>
+    </div>
+    <hr/>
+  <% end %>
+</div>

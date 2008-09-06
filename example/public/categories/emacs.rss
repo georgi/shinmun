@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0"> 
+  <channel>
+    <title>The title of the blog - Emacs</title>
+    <link>http://www.example.com</link>
+    <description>Category Emacs</description>
+    <language>en</language>
+    <copyright>The author</copyright>
+    <pubDate>Sat, 06 Sep 2008 13:44:12 +0200</pubDate>
+    
+  </channel> 
+</rss>

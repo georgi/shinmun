@@ -1,0 +1,125 @@
+
+#header { 
+    height: 40px;
+}
+
+#header h1 {
+    font-size: 20px;
+    font-weight: bold;
+    padding: 20px 20px 5px 0;
+    display: inline;
+}
+
+#header h1 a {
+    color: #069;
+    text-decoration: none;
+}
+
+#header h1 a:hover {
+    color: #222;
+    text-decoration: none;
+}
+
+#header h2 {
+    color: #69c;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 0 0 0 0;
+    display: inline;
+}
+
+#navi {
+    height:22px;
+}
+
+#navi-right {
+    height:22px;
+}
+
+#navi a { 
+    background: #369;
+    color: #fff;
+    font-size: 12px;    
+    font-weight: normal;
+    padding: 4px 10px;
+    text-decoration: none;
+}
+
+#navi a.active { 
+    font-weight: bold;
+    background: #69c;
+}
+
+#header-text { 
+    background: #69c;
+}
+
+#header-text h1 { 
+    color: #fff;
+    padding-left: 10px;
+}
+
+.content { 
+}
+
+.right {
+}
+
+.right ul {
+    list-style-type: none;
+    padding: 0px 1em;
+}
+
+.right h4 {
+    color: #369;
+    margin-bottom: 1em;
+}
+
+.right a { 
+    text-decoration: none;
+}
+
+.about { 
+    color: #666;
+}
+
+.article { 
+    padding: 1em;
+}
+
+.article h2 { 
+    margin-top:0px;
+}
+
+.article .date { 
+    color: #666;
+}
+
+.article .tags a {
+    color: #69c;
+    text-decoration: none;
+}
+
+.comments {
+    margin-bottom: 2em;
+}
+
+.comments .comment {
+    margin-top: 2em;
+    border: 1px solid #ccc;
+}
+
+.comments .comment .top {
+    background: #eee;
+    color: #006;
+    padding: 3px 5px;
+}
+
+.comments .comment .top a { 
+    color: #006;
+}
+
+.comments .comment .text {
+    background: #F8F8F8;    
+    padding: 3px 5px;
+}

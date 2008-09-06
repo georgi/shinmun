@@ -1,0 +1,57 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title><%= @blog_title %> - <%= @title %></title>
+    <meta http-equiv="Content-Language" content="English" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="<%= @root + (@category || 'index').downcase %>.rss" />
+    <%= stylesheet_link_tag :reset, :grid, :typography, :style, 'highlight/default' %>
+    <%= javascript_tag 'Core', 'functional', 'to-function', 'jquery', 'jquery-form', 'template', 'prettyDate'  %>
+    <script>var Blog = { root: '<%= @root %>', guid: '<%= @guid %>' };</script>
+  </head>
+  <body>
+    <div class="container">
+
+      <div id="header" class="column span-20 last">
+	<h1><a href="<%= @root %>index.html"><%= @blog_title %></a></h1>
+	<h2><%= @blog_description %></h2>
+      </div>
+
+      <div id="navi"  class="column span-20 last">
+	<%= navi_link 'Home', 'index' %>
+	<% for category in @categories %>
+	  <%= navi_link category, 'categories/' + category.downcase %>
+	<% end %>
+	<%= navi_link 'About', 'about' %>
+      </div>
+
+      <% if @header %>
+	<div id="header-text" class="column span-20 last">
+	  <h1><%= @header %></h1>
+	</div>
+      <% end %>
+
+      <div class="content column span-15"> 
+	<%= @content %>
+      </div>
+
+      <div class="right column span-5 last"> 
+	<h4>Subscribe</h4>
+	<h4>About</h4>
+	<h4>Archives</h4>
+	<ul>
+	  <% for year, month in @months %>
+	    <li><%= month_link year, month %></li> 
+	  <% end %>
+	</ul>
+      </div>
+    </div>
+
+    <%= javascript_tag 'highlight' %>
+
+    <script type="text/javascript">
+      hljs.initHighlightingOnLoad('ruby', 'html', 'css', 'php', 'javascript', 'sql', 'lisp', 'xml', 'java');
+    </script>
+
+  </body>
+</html>
