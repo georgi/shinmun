@@ -114,8 +114,8 @@ I provide a small commenting system based on jQuery and PHP. You don't
 need any database, because comments are stored as JSON files. Each
 post will get his own JSON file. Therefore the comments are rendered
 by my pure javascript templating engine. If you don't need this, just
-remove the javascript links form layout.rhtml and remove the comment
-markup in post.rhtml.
+remove the javascript links in the layout.rhtml templete and remove
+the comment markup in the post.rhtml template.
 
 Important: The php script needs write permissions for
 public/controllers/comments
