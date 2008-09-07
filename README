@@ -120,3 +120,6 @@ markup in post.rhtml.
 Important: The php script needs write permissions for
 public/controllers/comments
 
+Read about the comment system here:
+http://www.matthias-georgi.de/2008/9/commenting-system-with-lightweight-json-store.html
+
