@@ -7,6 +7,13 @@ require 'bluecloth'
 # A small and beautiful blog engine.
 module Shinmun
 
+  # Url encode a string. (taken from cgi.rb)
+  def self.url_encode(string)
+    string.gsub(/([^ a-zA-Z0-9_.-]+)/n) do
+      '%' + $1.unpack('H2' * $1.size).join('%').upcase
+    end.tr(' ', '+')
+  end
+  
   # This class represents an article or page.
   # A post has a header and body text.
   # Example:
@@ -66,7 +73,7 @@ module Shinmun
 
     # Return the first paragraph of source text.
     def text_summary
-      src.split("\n\n")[1]
+      src.split("\n\n")[0]
     end
 
     # Return doc root as relative path.
@@ -83,7 +90,8 @@ module Shinmun
     def variables
       head.merge(:root => root, 
                  :header => category || title,
-                 :body => body)
+                 :body => body,
+                 :link => link)
     end
 
     # Return absolute link to this post.
@@ -133,14 +141,18 @@ module Shinmun
     # Render stylesheet link tags with fixed url.
     def stylesheet_link_tag(*names)
       names.map { |name|
-        tag :link, :href => "#{root}stylesheets/#{name}.css", :rel => 'stylesheet', :media => 'screen'
+        mtime = File.mtime("public/stylesheets/#{name}.css").to_i
+        path = "#{root}stylesheets/#{name}.css?#{mtime}"
+        tag :link, :href => path, :rel => 'stylesheet', :media => 'screen'
       }.join("\n")
     end
 
     # Render javascript tags with fixed url.
     def javascript_tag(*names)
       names.map { |name|
-        tag :script, :src => "#{root}javascripts/#{name}.js", :type => 'text/javascript'
+        mtime = File.mtime("public/javascripts/#{name}.js").to_i
+        path = "#{root}javascripts/#{name}.js?#{mtime}"
+        tag :script, :src => path, :type => 'text/javascript'
       }.join("\n")
     end
 
@@ -178,6 +190,10 @@ module Shinmun
     # Render a date or time in rfc822 format. This will be used for rss rendering.
     def rfc822(time)
       time.strftime("%a, %d %b %Y %H:%M:%S %z")
+    end
+
+    def url_encode(s)
+      Shinmun.url_encode(s)
     end
 
   end
@@ -363,7 +379,7 @@ module Shinmun
                   :root => '')
       
       for category in categories
-        posts = posts_for_tag(category)
+        posts = posts_for_category(category)
         render_file("categories/#{category.downcase}.rss", 
                     "feed.rxml", 
                     :category => category, 
