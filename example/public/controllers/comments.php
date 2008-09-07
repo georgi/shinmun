@@ -5,13 +5,48 @@ $guid = $req['guid'] or die('guid missing');
 $file = 'comments/' . $guid;
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-  $record = array(date('Y-m-d H:i:s'), $req['name'], $req['website'], $req['text']);
-  $json = json_encode($record);
-  file_put_contents($file, $json . "\n", -1);
+
+  // create a comment record
+  $record = array(date('Y-m-d H:i:s'), 
+		  strip_tags(stripslashes($req['name'])),
+		  strip_tags(stripslashes($req['website'])),
+		  strip_tags(stripslashes($req['text'])));
+
+  // encode as json string
+  $json = json_encode($record) . "\n";
+
+  // open the comment file for appending
+  $fp = fopen($file, "a");
+
+  // acquire a write lock
+  flock($fp, LOCK_EX);
+
+  // append the json line
+  fwrite($fp, $json);
+
+  // release lock
+  flock($fp, LOCK_UN);
+
+  // close file and release lock
+  fclose($fp);
 }
 
 if (file_exists($file)) {
-  readfile($file);
+
+  // open the comment file for reading
+  $fp = fopen($file, "r");
+
+  // acquire a read lock
+  flock($fp, LOCK_SH);
+
+  // read whole file and print it out
+  echo fread($fp, filesize($file));
+
+  // release lock
+  flock($fp, LOCK_UN);
+
+  // close file
+  fclose($fp);
 }
 
 ?>
