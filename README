@@ -32,29 +32,37 @@ The layout is as following:
 
 * An index page will be generated for recent posts.
 
-Following is an example folder tree:
+Example folder tree:
 
     + posts  
-      + blog.yml
-      + about.md
-      * 2007
+      * blog.yml
+      * about.md
+      + 2007
         + 2008
           + 9
-            + example.md
+            * example.md
     + public
-      + index.html
-      + about.html
+      * index.html
+      * about.html
       + categories
-        + emacs.html
-        + ruby.html
+        * emacs.html
+        * ruby.html
+      + controllers
+        * comments.php
       + 2007   
       + 2008
         + 9
-          + example.html
+          * example.html
       + images
       + stylesheest
       + javascripts
-
+    + templates
+      * feed.rxml
+      * layout.rhtml
+      * page.rhtml
+      * post.rhtml
+      * posts.rhtml
+      
 
 == Meta data
 
