@@ -6,7 +6,6 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <link rel="alternate" type="application/rss+xml" title="RSS" href="<%= @root + (@category || 'index').downcase %>.rss" />
     <%= stylesheet_link_tag :reset, :grid, :typography, :style, 'highlight/default' %>
-    <%= javascript_tag 'Core', 'functional', 'to-function', 'jquery', 'jquery-form', 'template', 'prettyDate'  %>
     <script>var Blog = { root: '<%= @root %>', guid: '<%= @guid %>' };</script>
   </head>
   <body>
@@ -47,7 +46,7 @@
       </div>
     </div>
 
-    <%= javascript_tag 'highlight' %>
+    <%= javascript_tag 'jquery', 'jquery-form', 'template', 'prettyDate', 'highlight', 'comments', 'wmd' %>
 
     <script type="text/javascript">
       hljs.initHighlightingOnLoad('ruby', 'html', 'css', 'php', 'javascript', 'sql', 'lisp', 'xml', 'java');

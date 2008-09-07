@@ -1,8 +1,10 @@
+require 'rubygems'
 require 'fileutils'
 require 'erb'
 require 'yaml'
 require 'uuid'
 require 'bluecloth'
+require 'rubypants'
 
 # A small and beautiful blog engine.
 module Shinmun
@@ -43,7 +45,7 @@ module Shinmun
 
     # Generates the body from source text.
     def body
-      @body ||= BlueCloth.new(@src).to_html
+      @body ||= RubyPants.new(BlueCloth.new(@src).to_html).to_html
     end
 
     # Write the source data back to given io.
@@ -55,7 +57,7 @@ module Shinmun
 
     # Generate an unique id.
     def generate_guid
-      @head['guid'] = UUID.new
+      @head['guid'] = UUID.new.generate
     end
 
     def title   ; @head['title']     end
@@ -212,13 +214,11 @@ module Shinmun
   #      - Emacs
   class Blog  
 
-    attr_reader :root, :meta, :posts, :pages
+    attr_reader :meta, :posts, :pages
 
     # Read all posts from disk. Assign guid for posts with missing guid.
-    def initialize(root)
-      @root = File.expand_path(root)
-
-      Dir.chdir(@root + '/posts') do
+    def initialize
+      Dir.chdir('posts') do
         @meta = YAML.load(File.read('blog.yml'))
 
         @posts = []
@@ -258,7 +258,7 @@ module Shinmun
 
     # Read and cache template file.
     def template(name)
-      @templates[name] ||= ERB.new(File.read("#{root}/templates/#{name}"))
+      @templates[name] ||= ERB.new(File.read("templates/#{name}"))
     end
 
     # Render template with given variables.
@@ -281,8 +281,8 @@ module Shinmun
 
     # Write a file to output directory.
     def write_file(path, data)
-      FileUtils.mkdir_p(root + '/public/' + File.dirname(path))
-      open(root + '/public/' + path, 'wb') do |file|
+      FileUtils.mkdir_p('public/' + File.dirname(path))
+      open('public/' + path, 'wb') do |file|
         file << data
       end    
     end

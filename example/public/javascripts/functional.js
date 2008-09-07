@@ -34,7 +34,7 @@ Functional.install = function(except) {
         || except && name in except
         || {}[name] // work around Prototype
         || (target[name] = source[name]);
-}
+};
 
 /// ^ Higher-order functions
 
@@ -53,8 +53,8 @@ Functional.compose = function(/*fn...*/) {
         for (var i = arglen; --i >= 0; )
             arguments = [fns[i].apply(this, arguments)];
         return arguments[0];
-    }
-}
+    };
+};
 
 /**
  * Same as `compose`, except applies the functions in argument-list order.
@@ -69,8 +69,8 @@ Functional.sequence = function(/*fn...*/) {
         for (var i = 0; i < arglen; i++)
             arguments = [fns[i].apply(this, arguments)];
         return arguments[0];
-    }
-}
+    };
+};
 
 /**
  * Applies `fn` to each element of `sequence`.
@@ -91,7 +91,7 @@ Functional.map = function(fn, sequence, object) {
     for (var i = 0; i < len; i++)
         result[i] = fn.apply(object, [sequence[i], i]);
     return result;
-}
+};
 
 /**
  * Applies `fn` to `init` and the first element of `sequence`,
@@ -107,7 +107,7 @@ Functional.reduce = function(fn, init, sequence, object) {
     for (var i = 0; i < len; i++)
         result = fn.apply(object, [result, sequence[i]]);
     return result;
-}
+};
 
 /**
  * Returns a list of those elements $x$ of `sequence` such that
@@ -124,7 +124,7 @@ Functional.select = function(fn, sequence, object) {
         fn.apply(object, [x, i]) && result.push(x);
     }
     return result;
-}
+};
 
 /// A synonym for `select`.
 Functional.filter = Functional.select;
@@ -145,7 +145,7 @@ Functional.foldr = function(fn, init, sequence, object) {
     for (var i = len; --i >= 0; )
         result = fn.apply(object, [sequence[i], result]);
     return result;
-}
+};
 
 /// ^^ Predicates
 
@@ -167,8 +167,8 @@ Functional.and = function(/*functions...*/) {
             if (!(value = args[i].apply(this, arguments)))
                 break;
         return value;
-    }
-}
+    };
+};
 
 /**
  * Returns a function that returns `true` when any argument, applied
@@ -188,8 +188,8 @@ Functional.or = function(/*functions...*/) {
             if ((value = args[i].apply(this, arguments)))
                 break;
         return value;
-    }
-}
+    };
+};
 
 /**
  * Returns true when $fn(x)$ returns true for some element $x$ of
@@ -207,7 +207,7 @@ Functional.some = function(fn, sequence, object) {
         if ((value = fn.call(object, sequence[i])))
             break;
     return value;
-}
+};
 
 /**
  * Returns true when $fn(x)$ returns true for every element $x$ of
@@ -225,7 +225,7 @@ Functional.every = function(fn, sequence, object) {
         if (!(value = fn.call(object, sequence[i])))
             break;
     return value;
-}
+};
 
 /**
  * Returns a function that returns `true` when $fn()$ returns false.
@@ -238,8 +238,8 @@ Functional.not = function(fn) {
     fn = Function.toFunction(fn);
     return function() {
         return !fn.apply(null, arguments);
-    }
-}
+    };
+};
 
 /**
  * Returns a function that returns true when this function's arguments
@@ -266,8 +266,8 @@ Functional.equal = function(/*fn...*/) {
             if (value != args[i].apply(this, args))
                 return false;
         return true;
-    }
-}
+    };
+};
 
 
 /// ^^ Utilities
@@ -279,7 +279,7 @@ Functional.equal = function(/*fn...*/) {
   */
 Functional.lambda = function(object) {
     return object.toFunction();
-}
+};
 
 
 /**
@@ -293,8 +293,8 @@ Functional.invoke = function(methodName/*, arguments*/) {
     var args = Array.slice(arguments, 1);
     return function(object) {
         return object[methodName].apply(object, Array.slice(arguments, 1).concat(args));
-    }
-}
+    };
+};
 
 /**
  * Returns a function that takes an object, and returns the value of its
@@ -306,8 +306,8 @@ Functional.invoke = function(methodName/*, arguments*/) {
 Functional.pluck = function(name) {
     return function(object) {
         return object[name];
-    }
-}
+    };
+};
 
 /**
  * Returns a function that, while $pred(value)$ is true, applies `fn` to
@@ -324,8 +324,8 @@ Functional.until = function(pred, fn) {
         while (!pred.call(null, value))
             value = fn.call(null, value);
         return value;
-    }
-}
+    };
+};
 
 /**
  * :: [a] [b]... -> [[a b]...]
@@ -341,7 +341,7 @@ Functional.zip = function(/*args...*/) {
         results[key] = Functional.map(pluck(key), arguments);
     };
     return results;
-}
+};
 
 Functional._startRecordingMethodChanges = function(object) {
     var initialMethods = {};
@@ -354,7 +354,7 @@ Functional._startRecordingMethodChanges = function(object) {
             changedMethods[name] = object[name];
         return changedMethods;
     }};
-}
+};
 
 // For each method that this file defined on `Function.prototype`,
 // define a function on `Functional` that delegates to it.
@@ -364,9 +364,9 @@ Functional._attachMethodDelegates = function(methods) {
             var fn = methods[name];
             return function(object) {
                 return fn.apply(Function.toFunction(object), Array.slice(arguments, 1));
-            }
+            };
         })(name);
-}
+};
 
 // Record the current contents of `Function.prototype`, so that we
 // can see what we've added later.
@@ -385,8 +385,8 @@ Function.prototype.bind = function(object/*, args...*/) {
     var args = Array.slice(arguments, 1);
     return function() {
         return fn.apply(object, args.concat(Array.slice(arguments, 0)));
-    }
-}
+    };
+};
 
 /**
  * Returns a function that applies the underlying function to `args`, and
@@ -402,8 +402,8 @@ Function.prototype.saturate = function(/*args*/) {
     var args = Array.slice(arguments, 0);
     return function() {
         return fn.apply(this, args);
-    }
-}
+    };
+};
 
 /**
  * Invoking the function returned by this function only passes `n`
@@ -432,8 +432,8 @@ Function.prototype.aritize = function(n) {
     var fn = this;
     return function() {
         return fn.apply(this, Array.slice(arguments, 0, n));
-    }
-}
+    };
+};
 
 /**
  * Returns a function that, applied to an argument list $arg2$,
@@ -457,7 +457,7 @@ Function.prototype.curry = function(/*args...*/) {
     return function() {
         return fn.apply(this, args.concat(Array.slice(arguments, 0)));
     };
-}
+};
 
 /*
  * Right curry.  Returns a function that, applied to an argument list $args2$,
@@ -471,7 +471,7 @@ Function.prototype.rcurry = function(/*args...*/) {
     return function() {
         return fn.apply(this, Array.slice(arguments, 0).concat(args));
     };
-}
+};
 
 /**
  * Same as `curry`, except only applies the function when all
@@ -488,7 +488,7 @@ Function.prototype.ncurry = function(n/*, args...*/) {
         }
         return fn.apply(this, args);
     };
-}
+};
 
 /**
  * Same as `rcurry`, except only applies the function when all
@@ -505,7 +505,7 @@ Function.prototype.rncurry = function(n/*, args...*/) {
         }
         return fn.apply(this, args);
     };
-}
+};
 
 /**
  * `_` (underscore) is bound to a unique value for use in `partial`, below.
@@ -548,8 +548,8 @@ Function.prototype.partial = function(/*args*/) {
             if (specialized[i] == _)
                 return fn.partial.apply(fn, specialized);
         return fn.apply(this, specialized);
-    }
-}
+    };
+};
 
 /// ^^ Combinators
 
@@ -562,7 +562,7 @@ Function.prototype.partial = function(/*args*/) {
  * :: a -> a
  * >> Functional.I(1) -> 1
  */
-Functional.I = function(x) {return x};
+Functional.I = function(x) {return x;};
 
 /**
  * Returns a constant function that returns `x`.
@@ -570,7 +570,7 @@ Functional.I = function(x) {return x};
  * :: a -> b -> a
  * >> Functional.K(1)(2) -> 1
  */
-Functional.K = function(x) {return function() {return x}};
+Functional.K = function(x) {return function() {return x;};};
 
 /// A synonym for `Functional.I`
 Functional.id = Functional.I;
@@ -599,8 +599,8 @@ Function.S = function(f, g) {
     g = Function.toFunction(g);
     return function() {
         return f.apply(this, [g.apply(this, arguments)].concat(Array.slice(arguments, 0)));
-    }
-}
+    };
+};
 
 /// ^^^ Combinator methods
 
@@ -621,8 +621,8 @@ Function.prototype.flip = function() {
         var args = Array.slice(arguments, 0);
         args = args.slice(1,2).concat(args.slice(0,1)).concat(args.slice(2));
         return fn.apply(this, args);
-    }
-}
+    };
+};
 
 /**
  * Returns a function that applies the underlying function to its
@@ -639,8 +639,8 @@ Function.prototype.uncurry = function() {
     return function() {
         var f1 = fn.apply(this, Array.slice(arguments, 0, 1));
         return f1.apply(this, Array.slice(arguments, 1));
-    }
-}
+    };
+};
 
 /**
  * ^^ Filtering
@@ -662,8 +662,8 @@ Function.prototype.prefilterObject = function(filter) {
     var fn = this;
     return function() {
         return fn.apply(filter(this), arguments);
-    }
-}
+    };
+};
 
 /**
  * `prefilterAt` returns a function that applies the underlying function
@@ -679,8 +679,8 @@ Function.prototype.prefilterAt = function(index, filter) {
         var args = Array.slice(arguments, 0);
         args[index] = filter.call(this, args[index]);
         return fn.apply(this, args);
-    }
-}
+    };
+};
 
 /**
  * `prefilterSlice` returns a function that applies the underlying function
@@ -701,8 +701,8 @@ Function.prototype.prefilterSlice = function(filter, start, end) {
         var e = end < 0 ? args.length + end : end || args.length;
         args.splice.apply(args, [start, (e||args.length)-start].concat(filter.apply(this, args.slice(start, e))));
         return fn.apply(this, args);
-    }
-}
+    };
+};
 
 /// ^^ Method Composition
 
@@ -722,8 +722,8 @@ Function.prototype.compose = function(fn) {
     fn = Function.toFunction(fn);
     return function() {
         return self.apply(this, [fn.apply(this, arguments)]);
-    }
-}
+    };
+};
 
 /**
  * `sequence` returns a function that applies the underlying function
@@ -742,8 +742,8 @@ Function.prototype.sequence = function(fn) {
     fn = Function.toFunction(fn);
     return function() {
         return fn.apply(this, [self.apply(this, arguments)]);
-    }
-}
+    };
+};
 
 /**
  * Returns a function that is equivalent to the underlying function when
@@ -771,8 +771,8 @@ Function.prototype.guard = function(guard, otherwise) {
     otherwise = Function.toFunction(otherwise || Functional.I);
     return function() {
         return (guard.apply(this, arguments) ? fn : otherwise).apply(this, arguments);
-    }
-}
+    };
+};
 
 /// ^^ Utilities
 
@@ -789,8 +789,8 @@ Function.prototype.traced = function(name) {
         var result = self.apply(this, arguments);
         window.console && console.info(']', name, ' -> ', result);
         return result;
-    }
-}
+    };
+};
 
 
 /**

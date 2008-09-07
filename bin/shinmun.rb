@@ -4,4 +4,4 @@ $:.unshift File.dirname(__FILE__) + '/../lib'
 
 require 'shinmun'
 
-Shinmun::Blog.new(ARGV[0] || Dir.pwd).write_all
+Shinmun::Blog.new.write_all

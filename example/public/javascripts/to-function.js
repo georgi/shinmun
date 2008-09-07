@@ -104,7 +104,7 @@ String.prototype.lambda = function() {
         }
     }
     return new Function(params, 'return (' + expr + ')');
-}
+};
 
 /// Turn on caching for `string` -> `Function` conversion.
 String.prototype.lambda.cache = function() {
@@ -116,9 +116,9 @@ String.prototype.lambda.cache = function() {
 	        return cache[key] || (cache[key] = uncached.call(this));
         };
     cached.cached = function(){};
-    cached.uncache = function(){proto.lambda = uncached};
+    cached.uncache = function(){proto.lambda = uncached;};
     proto.lambda = cached;
-}
+};
 
 /**
  * ^^ Duck-Typing
@@ -134,7 +134,7 @@ String.prototype.lambda.cache = function() {
  */
 String.prototype.apply = function(thisArg, args) {
     return this.toFunction().apply(thisArg, args);
-}
+};
 
 /**
  * Coerce the string to a function and then call it.
@@ -144,7 +144,7 @@ String.prototype.apply = function(thisArg, args) {
 String.prototype.call = function() {
     return this.toFunction().apply(arguments[0],
                                    Array.prototype.slice.call(arguments, 1));
-}
+};
 
 /// ^^ Coercion
 
@@ -161,7 +161,7 @@ String.prototype.toFunction = function() {
     if (body.match(/\breturn\b/))
         return new Function(this);
     return this.lambda();
-}
+};
 
 /**
  * Returns this function.  `Function.toFunction` calls this.
@@ -169,7 +169,7 @@ String.prototype.toFunction = function() {
  */
 Function.prototype.toFunction = function() {
     return this;
-}
+};
 
 /**
  * Coerces `fn` into a function if it is not already one,
@@ -194,7 +194,7 @@ Function.prototype.toFunction = function() {
  */
 Function.toFunction = function(value) {
     return value.toFunction();
-}
+};
 
 // Utilities
 

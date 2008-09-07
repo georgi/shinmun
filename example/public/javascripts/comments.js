@@ -1,7 +1,7 @@
 $('.comment-form form').ajaxForm({
     url: Blog.root + 'controllers/comments.php',
     type: 'POST',
-    target: '.comments',
+    resetForm: true,
     beforeSubmit: function(values) {
 	if (values[1].value && values[3].value) {
             $('.comment-form-loading').show();
@@ -18,29 +18,33 @@ $('.comment-form form').ajaxForm({
     }
 });
 
-Template.comments = new Template('comments-template');
-
 function renderComments(data) {
-    var comments = data.split("\n").map(eval).map(function(row) {
-	return row ? {
-	    time: row[0],
-	    name: row[1],
-	    website: row[2],
-	    text: row[3]
-	} : null;
-    }).compact();
+    var converter = new Showdown.converter();
+    var lines = data.split("\n");
+    var comments = [];
+    for (var i = 0; i < lines.length; i++) {
+	var row = eval(lines[i]);
+	if (row) {
+	    comments.push({
+		time: row[0],
+		name: row[1],
+		website: row[2],
+		text: converter.makeHtml(row[3])
+	    });
+	}
+    }
     $('.comments-loading').hide();
     $('.comments').expand(Template.comments, { comment: comments });
     $('.comments a').prettyDate();
 }
 
-function loadComments(guid) {
+function loadComments() {
     $('.comments-loading').show();
     $.ajax({
 	type: "GET",
 	url: Blog.root + 'controllers/comments.php',
 	data: {
-	    guid: guid
+	    guid: Blog.guid
 	},
 	complete: function(response) {
 	    renderComments(response.responseText);
@@ -49,5 +53,8 @@ function loadComments(guid) {
 }
 
 $(function() {
-    loadComments(Blog.guid);
+    if ($('.comments').length > 0) {
+	Template.comments = new Template('comments-template');
+	loadComments();
+    }
 });

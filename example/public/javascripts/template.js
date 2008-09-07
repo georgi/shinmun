@@ -8,8 +8,6 @@ function Template(id) {
     }
 };
 
-Template.genid = 0;
-
 Template.prototype = {
 
     expand: function(data) {
@@ -64,8 +62,6 @@ Template.prototype = {
 	    }
 
 	    switch (c) {
-	    case "\n":
-		break;
 	    case '{':
 		expr = true;
 		if (lit.length > 0) {

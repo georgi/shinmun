@@ -333,10 +333,6 @@ override(String, {
 
     clone : function() {
 	return new String(this);
-    },
-
-    toArray : function() {
-	return this.split("\n");
     }
 
 });

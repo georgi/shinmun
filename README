@@ -2,9 +2,13 @@
 
 == Quick start
 
-Following command will render an example page. Just look at the output in example/public
+* gem install BlueCloth rubypants uuid
 
-   bin/shinmun.rb example
+* cd example
+
+* ../bin/shinmun.rb
+
+* Look at output in example/public
 
 
 == Directory layout
