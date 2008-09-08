@@ -1,7 +1,11 @@
 <?php
 
+$guid_pattern = "/^(\{{0,1}([0-9a-fA-F]){8}-([0-9a-fA-F]){4}-([0-9a-fA-F]){4}-([0-9a-fA-F]){4}-([0-9a-fA-F]){12}\}{0,1})$/";
 $req = $_REQUEST;
-$guid = $req['guid'] or die('guid missing');
+$guid = $req['guid'];
+
+preg_match($guid_pattern, $guid) or die("invalid guid");
+
 $file = 'comments/' . $guid;
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
