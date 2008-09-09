@@ -12,12 +12,11 @@ folder:
 
 ### Intro
 
-Shinmun is a **minimalist blog engine**. You just write posts as *text
-files*, render them to *static files* and push your blog to your
-*server*.
+Shinmun is a **minimalist blog engine**. You just write posts as text files,
+render them to static files and push your blog to your server.
 
-This allows you to write posts in your favorite editor like *Emacs* or
-*vi* and use a *Version Control System* like *git*.
+This allows you to write posts in your favorite editor like Emacs or
+VI and use a VCS like git.
 
 Your layout can be customized by set of *ERB templates*. These
 templates have access to `Post` objects and *helper methods* so that
@@ -32,13 +31,16 @@ Shinmun has some common features of blog engines like:
 * AJAX comment system with PHP JSON file storage
 * Integration of the WMD-Markdown Editor for comments
 
-
 ### Blog Posts
 
 Each blog post is just a text file with an optional header section and
-a markup body, which are separated by a newline. The **first line** of
-the body becomes the title of the post. So this is important not to
-mess up.
+a markup body, which are separated by a newline. 
+
+The **first line** of the header should start with 3 dashes as usual
+for a YAML document.
+
+The **first and the second line** of the body becomes the title of the
+post.
 
 The header may have following attributes:
 
@@ -50,12 +52,15 @@ Posts without a date are by definition static pages.
 
 Example post:
 
+
     --- 
     category: Ruby
     date: 2008-09-05
     guid: 7ad04f10-5dd6-012b-b53c-001a92975b89
      
     BlueCloth, a Markdown library
+    =============================
+
     This is the summary, which is by definition the first paragraph of the
     article. The summary shows up in category listings or the index listing.
 
@@ -66,30 +71,23 @@ posts for comments.
 
 ### Directory layout
 
-All your posts will be in the `posts` folder.
+* All your **posts** reside in the `posts` folder sorted by year/month.
 
-All the output will go to the `public` folder.
+* All the **output** will be rendered to the `public` folder.
 
-Template files wille be searched in the `templates` folder.
+* **Template** files are the `templates` folder.
 
+* The **blog description**, **base url** and the **category list** are
+  defined in `posts/blog.yml`
 
-* The blog description, base url and the category list is in a file
-  called `posts/blog.yml`
+* **Static files** should be put into the directories `public/images`,
+  `public/stylesheets`, `public/javascripts`.
 
-* Posts **must** be put into folders by date. `my-article.md` is in the
-  folder 9 (September) of the year 2008. Posts are distinguished from
-  pages by having a date attribute.
+* Archive pages will be rendered to files like `public/2008/9/index.html`.
 
-* Pages can be put anywhere, like `about.md`
+* Category pages will be rendered to files like `public/categories/ruby.html`.
 
-* Static files *should* be put into the directories `public/images`,
-  `public/stylesheets`, `public/javascripts`. This is because the link
-  helper methods work like the Rails helpers. Links will get a
-  timestamp, so that caching will work correctly.
-
-* Category pages will be rendered into the `public/categories` folder.
-
-* The *home page* of your blog will go to `public/index`.
+* The *home page* of your blog will go to `public/index.html`.
 
 An example tree:
 
@@ -145,10 +143,10 @@ provided in the variable `@content`. A minimal example would be:
 There are also helper methods, which work the same way like the *Rails*
 helpers. The most important ones are these:
     
-    * stylesheet_link_tag(*names):      
-    * javascript_tag(*names)
-    * image_tag(src, options = {})
-    * link_to(text, path, options = {})
+* stylesheet_link_tag(*names):      
+* javascript_tag(*names)
+* image_tag(src, options = {})
+* link_to(text, path, options = {})
 
 Stylesheets, javascripts and images should be included by using theses
 helpers. The helper methods will include a timestamp of the
@@ -160,8 +158,8 @@ new resource if it has been changed.
 
 The attributes of a post are accessible as instance variables in a template:
 
-    <div class="article">
-     
+    <div class="article">    
+
       <div class="date">
         <%= date @date %>
       </div>
@@ -206,7 +204,7 @@ have been determined by the blog like `@posts` and `@category`.
     </rss>
 
 
-### JSON store in PHP
+### Commenting System
 
 As I am not willing to build up a whole Rails stack for a single blog,
 I was looking for a simple storage for comments. I really like the
