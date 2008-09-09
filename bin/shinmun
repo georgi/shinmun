@@ -1,6 +1,8 @@
 #! /usr/bin/env ruby
 
-require 'rubygems'
-require 'shinmun'
+# require 'rubygems'
+# require 'shinmun'
+
+load File.dirname(__FILE__) + '/../lib/shinmun.rb'
 
 Shinmun::Blog.new.write_all

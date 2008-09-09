@@ -1,9 +1,10 @@
 --- 
 category: Ruby
 guid: 72ece880-5e32-012b-362f-001a92975b89
-title: Example post
-tags: ruby, example
 date: 2008-09-01
+
+Example post
+============
 
 This is the first paragraph. Below is a code example:
 

@@ -28,46 +28,53 @@
     display: inline;
 }
 
-#navi {
-    height:22px;
+#footer {
+    border-top: 1px solid #ccc;
+    padding: 1em;
+    text-align: center;
 }
 
-#navi-right {
-    height:22px;
+#navi ul {
+    clear: both;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+#navi ul li {
+    float: left;
+    border-right: 1px solid #fff;
 }
 
 #navi a { 
-    background: #369;
+    background: #69c;
     color: #fff;
-    font-size: 12px;    
+    font-size: 12px;
     font-weight: normal;
-    padding: 4px 10px;
-    text-decoration: none;
+    padding: 4px 15px;
+    text-decoration: none;    
 }
 
 #navi a.active { 
     font-weight: bold;
-    background: #69c;
+    background: #369;
 }
 
 #header-text { 
-    background: #69c;
+    background: #369;
+    margin-bottom: 10px;
 }
 
 #header-text h1 { 
     color: #fff;
-    padding-left: 10px;
-}
-
-.content { 
-}
-
-.right {
+    padding: 5px 0px 0px 60px;
+    border-bottom: 1px solid #69c;
 }
 
 .right ul {
-    list-style-type: none;
-    padding: 0px 1em;
+    color:#336699;
+    list-style-type:square;
+    padding:0pt 2em;
 }
 
 .right h4 {
@@ -110,16 +117,25 @@
 }
 
 .comments .comment .top {
-    background: #eee;
-    color: #006;
+    background: #F0F0F0;
+    color: #333;
     padding: 3px 5px;
 }
 
 .comments .comment .top a { 
-    color: #006;
+    text-decoration: none;
 }
 
 .comments .comment .text {
     background: #F8F8F8;    
     padding: 3px 5px;
+}
+
+blockquote{
+    border-top: 3px double #69c;
+    border-bottom: 3px double #69c;
+    padding: 5px;
+    font-style: oblique;
+    margin-left: 5%;
+    margin-right: 5%;
 }

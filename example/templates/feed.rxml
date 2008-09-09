@@ -10,7 +10,7 @@
     <% for post in @posts %>
       <item>
 	<title><%= post.title %></title>
-	<description><%= post.text_summary %></description>
+	<description><%= post.summary %></description>
 	<link><%= post.link %></link>
 	<author><%= @blog_author %></author>
 	<guid><%= post.guid %></guid>

@@ -30,28 +30,38 @@ module Shinmun
   #     article. The summary shows up in category listings or the index listing.  
   class Post
 
-    attr_reader :blog, :path, :head, :src
+    attr_reader :blog, :title, :path, :head, :src
 
     # Split up the source text into header and body.
     # Load the header as yaml document.
     def initialize(blog, path, src)
-      match = src.match(/(.*?)\n\n(.*)/m)
-
       @blog = blog
       @path = path
-      @head = YAML.load(match[1])
-      @src = match[2]
+
+      case src
+      when /---.*?\n(.*?)\n\n(.*?)\n.*?\n(.*)/m
+        @head = YAML.load($1)
+        @title = $2
+        @body = $3
+
+      when /(.*?)\n(.*)/m
+        @head = {}
+        @title = $1
+        @body = $2
+      else
+        raise "This file is empty!"
+      end
     end
 
     # Generates the body from source text.
     def body
-      @body ||= RubyPants.new(BlueCloth.new(@src).to_html).to_html
+      @__body__ ||= RubyPants.new(BlueCloth.new(@body).to_html).to_html
     end
 
     # Write the source data back to given io.
     def write(io)
-      io << @head.to_yaml
-      io << "\n"
+      io.puts(@head.to_yaml)
+      io.puts(@title)
       io << @src
     end
 
@@ -60,7 +70,6 @@ module Shinmun
       @head['guid'] = UUID.new.generate
     end
 
-    def title   ; @head['title']     end
     def date    ; @head['date']      end
     def tags    ; @head['tags']      end
     def category; @head['category']; end
@@ -71,11 +80,6 @@ module Shinmun
     # Return the first paragraph of rendered html.
     def summary
       body.split("\n\n")[0]
-    end
-
-    # Return the first paragraph of source text.
-    def text_summary
-      src.split("\n\n")[0]
     end
 
     # Return doc root as relative path.
@@ -90,8 +94,9 @@ module Shinmun
     
     # Return a hash of post attributes.
     def variables
-      head.merge(:root => root, 
+      head.merge(:root => root,
                  :header => category || title,
+                 :title => title,
                  :body => body,
                  :link => link)
     end
