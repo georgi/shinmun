@@ -44,7 +44,7 @@ module Shinmun
         @title = $2
         @body = $3
 
-      when /(.*?)\n(.*)/m
+      when /(.*?)\n.*?\n(.*)/m
         @head = {}
         @title = $1
         @body = $2
