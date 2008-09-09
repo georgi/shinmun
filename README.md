@@ -129,18 +129,16 @@ Layout and templates are rendered by good old *ERB*.  The layout will
 be defined by the `layout.rhtml` template. The content will be
 provided in the variable `@content`. A minimal example would be:
 
-    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-    <html xmlns="http://www.w3.org/1999/xhtml">
+    <html>
       <head>
-        <title><%= @blog_title %> - <%= @title %></title>
-        <meta http-equiv="Content-Language" content=<%= @blog_language $>" />
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title><%= @blog_title %></title>
         <%= stylesheet_link_tag 'style' %>
       </head>
       <body>
          <%= @content %>
       </body>
      </html>
+
 
 ### Helpers
 
