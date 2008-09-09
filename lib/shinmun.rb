@@ -5,15 +5,14 @@ require 'yaml'
 require 'uuid'
 require 'bluecloth'
 require 'rubypants'
+require 'rexml/document'
 
 # A small and beautiful blog engine.
 module Shinmun
 
-  # Url encode a string. (taken from cgi.rb)
-  def self.url_encode(string)
-    string.gsub(/([^ a-zA-Z0-9_.-]+)/n) do
-      '%' + $1.unpack('H2' * $1.size).join('%').upcase
-    end.tr(' ', '+')
+  # strip html tags from string
+  def self.strip_tags(html)
+    REXML::Document.new(html).each_element( './/text()' ).join
   end
   
   # This class represents an article or page.
@@ -199,8 +198,8 @@ module Shinmun
       time.strftime("%a, %d %b %Y %H:%M:%S %z")
     end
 
-    def url_encode(s)
-      Shinmun.url_encode(s)
+    def strip_tags(html)
+      Shinmun.strip_tags(html)
     end
 
   end
