@@ -1,8 +1,12 @@
 #! /usr/bin/env ruby
 
-# require 'rubygems'
-# require 'shinmun'
+require 'shinmun'
 
-load File.dirname(__FILE__) + '/../lib/shinmun.rb'
+blog = Shinmun::Blog.new
 
-Shinmun::Blog.new.write_all
+case ARGV[0]
+when 'new'
+  blog.create_post(ARGV[1])
+else
+  blog.write_all
+end

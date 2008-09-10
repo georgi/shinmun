@@ -14,30 +14,37 @@ module Shinmun
   def self.strip_tags(html)
     REXML::Document.new(html).each_element( './/text()' ).join
   end
+
+  def self.urlify(string)
+    string.downcase.gsub(/[ -]+/, '-').gsub(/[^-a-z0-9_]+/, '')
+  end
+
   
   # This class represents an article or page.
   # A post has a header and body text.
   # Example:
   #     --- 
   #     category: Ruby
-  #     guid: 7ad04f10-5dd6-012b-b53c-001a92975b89
-  #     title: BlueCloth, a Markdown library
-  #     tags: ruby, bluecloth, markdown
   #     date: 2008-09-05
+  #     guid: 7ad04f10-5dd6-012b-b53c-001a92975b89
   #      
+  #     BlueCloth, a Markdown library
+  #     =============================
+  #
   #     This is the summary, which is by definition the first paragraph of the
-  #     article. The summary shows up in category listings or the index listing.  
+  #     article. The summary shows up in list views and rss feeds.  
   class Post
 
     attr_reader :blog, :title, :path, :head, :src
 
     # Split up the source text into header and body.
     # Load the header as yaml document.
-    def initialize(blog, path, src)
+    def initialize(blog, path)
+      @src  = File.read(path)
       @blog = blog
-      @path = path
+      @path = path.chomp('.md')
 
-      case src
+      case @src
       when /---.*?\n(.*?)\n\n(.*?)\n.*?\n(.*)/m
         @head = YAML.load($1)
         @title = $2
@@ -57,24 +64,18 @@ module Shinmun
       @__body__ ||= RubyPants.new(BlueCloth.new(@body).to_html).to_html
     end
 
-    # Write the source data back to given io.
-    def write(io)
-      io.puts(@head.to_yaml)
-      io.puts(@title)
-      io << @src
-    end
-
     # Generate an unique id.
     def generate_guid
       @head['guid'] = UUID.new.generate
     end
 
-    def date    ; @head['date']      end
-    def tags    ; @head['tags']      end
-    def category; @head['category']; end
-    def guid    ; @head['guid']      end
-    def year    ; date.year          end
-    def month   ; date.month         end
+    def date     ; @head['date']      end
+    def tags     ; @head['tags']      end
+    def languages; @head['languages'] end
+    def category ; @head['category']  end
+    def guid     ; @head['guid']      end
+    def year     ; date.year          end
+    def month    ; date.month         end
 
     # Return the first paragraph of rendered html.
     def summary
@@ -220,28 +221,16 @@ module Shinmun
 
     attr_reader :meta, :posts, :pages
 
-    # Read all posts from disk. Assign guid for posts with missing guid.
+    # Read all posts from disk.
     def initialize
+      @uuid = UUID.new
+
       Dir.chdir('posts') do
         @meta = YAML.load(File.read('blog.yml'))
 
-        @posts = []
-        @pages = []
-
-        for path in Dir['**/*.md']
-          post = Post.new(self, path.chomp('.md'), File.read(path))
-          if post.date
-            if post.guid.nil?
-              post.generate_guid
-              File.open(post.path + '.md', 'w') do |io|
-                post.write(io)
-              end
-            end
-            @posts << post
-          else
-            @pages << post
-          end
-        end
+        @posts, @pages = Dir['**/*.md'].
+          map { |path| Post.new(self, path) }.
+          partition {|p| p.date }
 
         @posts = @posts.sort_by { |post| post.date }.reverse
       end
@@ -251,6 +240,28 @@ module Shinmun
     
     def categories
       meta['categories']
+    end
+
+    def create_post(title)
+      date = Date.today
+      name = Shinmun.urlify(title)
+      file = "posts/#{date.year}/#{date.month}/#{name}.md"
+
+      if File.exist?(file)
+        raise "#{file} exists"
+      else
+        puts "creating #{file}"
+        FileUtils.mkdir_p(File.dirname(file))
+        File.open(file, "w") do |io|
+          io.puts '---'
+          io.puts "date: #{date.year}-#{date.month}-#{date.day}"
+          io.puts "guid: #{@uuid.generate}"
+          io.puts
+          io.puts title
+          io.puts "=" * title.size
+          io.puts
+        end
+      end
     end
 
     # Return template variables as hash.

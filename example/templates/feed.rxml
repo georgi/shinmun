@@ -13,7 +13,7 @@
 	<description><%= strip_tags post.summary %></description>
 	<link><%= post.link %></link>
 	<author><%= @blog_author %></author>
-	<guid><%= post.guid %></guid>
+	<guid><%= post.link %></guid>
 	<pubDate><%= rfc822 post.date %></pubDate>
       </item>
     <% end %>

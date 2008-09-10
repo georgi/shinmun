@@ -28,7 +28,7 @@ EOF
   s.add_dependency 'BlueCloth', '>=1.0.0'
   s.add_dependency 'rubypants', '>=0.2.0'
   s.has_rdoc = true
-  s.extra_rdoc_files = ['README']
+  s.extra_rdoc_files = ['README.md']
   
   s.author = 'Matthias Georgi'
   s.email = 'matti.georgi@gmail.com'
@@ -45,12 +45,16 @@ end
  
 desc "Generate RDoc documentation"
 Rake::RDocTask.new(:rdoc) do |rdoc|
-
   rdoc.options << '--line-numbers' << '--inline-source' <<
     '--main' << 'README' <<
     '--title' << 'Shinmun Documentation' <<
     '--charset' << 'utf-8'
   rdoc.rdoc_dir = "doc"
-  rdoc.rdoc_files.include 'README'
+  rdoc.rdoc_files.include 'README.md'
   rdoc.rdoc_files.include('lib/shinmun.rb')
+end
+
+
+task :push => [:rdoc] do
+  sh "rsync -avz doc/ mgeorgi@rack.rubyforge.org:/var/www/gforge-projects/shinmun"
 end

@@ -31,7 +31,23 @@ Shinmun has some common features of blog engines like:
 * AJAX comment system with PHP JSON file storage
 * Integration of the WMD-Markdown Editor for comments
 
-### Blog Posts
+
+### Writing Posts
+
+Posts can be created by using the `shinmun` command inside your blog folder:
+
+    shinmun new 'The title of the post'
+
+Shinmun will then create a post file in the right place, for example
+in `posts/2008/9/the-title-of-the-post.md`. After creating you will
+probably open the file, set the category and start writing your new
+article.
+
+After finishing your post, you may just run `shinmun` without arguments
+and the output will be rendered to the *public* folder.
+
+
+### Post Format
 
 Each blog post is just a text file with an optional header section and
 a markup body, which are separated by a newline. 
