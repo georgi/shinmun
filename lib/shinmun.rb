@@ -251,11 +251,14 @@ module Shinmun
         raise "#{file} exists"
       else
         puts "creating #{file}"
+        head = {
+          'date' => date,
+          'guid' => @uuid.generate,
+          'category' => ''
+        }
         FileUtils.mkdir_p(File.dirname(file))
         File.open(file, "w") do |io|
-          io.puts '---'
-          io.puts "date: #{date.year}-#{date.month}-#{date.day}"
-          io.puts "guid: #{@uuid.generate}"
+          io.puts head.to_yaml
           io.puts
           io.puts title
           io.puts "=" * title.size
