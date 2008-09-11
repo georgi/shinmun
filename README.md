@@ -1,15 +1,6 @@
 Shinmun, a small and beautiful blog engine
 ==========================================
 
-### Quickstart
-
-Issue the following commands and the output will go to the public
-folder:
-
-    cd example
-    ../bin/shinmun
-
-
 ### Intro
 
 Shinmun is a **minimalist blog engine**. You just write posts as text files,
@@ -31,6 +22,16 @@ Shinmun has some common features of blog engines like:
 * AJAX comment system with PHP JSON file storage
 * Integration of the WMD-Markdown Editor for comments
 
+### Quickstart
+
+Install the gem by typing:
+    gem install shinmun
+
+Issue the following commands and the output will go to the public
+folder:
+
+    cd example
+    ../bin/shinmun
 
 ### Writing Posts
 
@@ -68,6 +69,7 @@ Posts without a date are by definition static pages.
 
 Example post:
 
+<pre>
 
     --- 
     category: Ruby
@@ -80,6 +82,7 @@ Example post:
     This is the summary, which is by definition the first paragraph of the
     article. The summary shows up in category listings or the index listing.
 
+</pre>
 
 The guid should never change, as it will be you used for identifying
 posts for comments.
@@ -91,10 +94,9 @@ posts for comments.
 
 * All the **output** will be rendered to the `public` folder.
 
-* **Template** files are the `templates` folder.
+* **Template** files are in the `templates` folder.
 
-* The **blog description**, **base url** and the **category list** are
-  defined in `posts/blog.yml`
+* The **properties of your blog** defined in `posts/blog.yml`
 
 * **Static files** should be put into the directories `public/images`,
   `public/stylesheets`, `public/javascripts`.
@@ -110,10 +112,10 @@ An example tree:
     + posts
       + blog.yml
       + about.md
-      * 2007
-        + 2008
-          + 9
-            + my-article.md
+      + 2007
+      + 2008
+        + 9
+          + my-article.md
 
     + public
       + index.html
@@ -139,9 +141,9 @@ An example tree:
 
 ### Layout
 
-Layout and templates are rendered by good old *ERB*.  The layout will
-be defined by the `layout.rhtml` template. The content will be
-provided in the variable `@content`. A minimal example would be:
+Layout and templates are rendered by *ERB*.  The layout is defined in
+`layout.rhtml`. The content will be provided in the variable
+`@content`. A minimal example:
 
     <html>
       <head>
@@ -159,10 +161,13 @@ provided in the variable `@content`. A minimal example would be:
 There are also helper methods, which work the same way like the *Rails*
 helpers. The most important ones are these:
     
-* stylesheet_link_tag(*names):      
-* javascript_tag(*names)
-* image_tag(src, options = {})
-* link_to(text, path, options = {})
+* `stylesheet_link_tag(*names)` links a stylesheet with a timestamp
+
+* `javascript_tag(*names)` includes a javascript with a timestamp
+
+* `image_tag(src, options = {})` renders an image tag
+
+* `link_to(text, path, options = {})` renders a link
 
 Stylesheets, javascripts and images should be included by using theses
 helpers. The helper methods will include a timestamp of the
@@ -195,7 +200,7 @@ The attributes of a post are accessible as instance variables in a template:
 
 Feeds will be rendered by one *ERB template*. Some of the variables
 have been read from the `blog.yml`, like `@blog_title`, other variables
-have been determined by the blog like `@posts` and `@category`.
+have been determined by the engine like `@posts` and `@category`.
 
     <?xml version="1.0" encoding="utf-8"?>
     <rss version="2.0"> 
@@ -219,7 +224,6 @@ have been determined by the blog like `@posts` and `@category`.
       </channel> 
     </rss>
 
-
 ### Commenting System
 
 As I am not willing to build up a whole Rails stack for a single blog,
@@ -232,7 +236,14 @@ Read about my [lightweight commenting system][2].
 
 ### Download
 
-Download the package at my [github repository][1]
+Simply install the gem:
+
+    gem install shinmun
+
+
+Download or fork the package at my [github repository][1]
+
+
 
 [1]: http://github.com/georgi/shinmun/tree/master
-[2]: http://www.matthias-georgi.de/2008/9/commenting-system-with-lightweight-json-store.html
+[2]: commenting-system-with-lightweight-json-store.html
