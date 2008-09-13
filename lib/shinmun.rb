@@ -4,6 +4,7 @@ require 'erb'
 require 'yaml'
 require 'uuid'
 require 'bluecloth'
+require 'redcloth'
 require 'rubypants'
 require 'rexml/document'
 
@@ -35,22 +36,22 @@ module Shinmun
   #     article. The summary shows up in list views and rss feeds.  
   class Post
 
-    attr_reader :blog, :title, :path, :head, :src
+    attr_reader :blog, :title, :path, :head
 
     # Split up the source text into header and body.
     # Load the header as yaml document.
     def initialize(blog, path)
-      @src  = File.read(path)
       @blog = blog
-      @path = path.chomp('.md')
+      @path = path.chomp(File.extname(path))
 
-      case @src
+      src = File.read(path)
+
+      case src
       when /---.*?\n(.*?)\n\n(.*?)\n.*?\n(.*)/m
         @head = YAML.load($1)
-        @title = $2
+        @title = @head['title'] || $2
         @body = $3
-
-      when /(.*?)\n.*?\n(.*)/m
+       when /(.*?)\n.*?\n(.*)/m
         @head = {}
         @title = $1
         @body = $2
@@ -61,7 +62,12 @@ module Shinmun
 
     # Generates the body from source text.
     def body
-      @__body__ ||= RubyPants.new(BlueCloth.new(@body).to_html).to_html
+      case type
+      when 'textile'
+        @__body__ ||= RubyPants.new(RedCloth.new(@body).to_html).to_html
+      else
+        @__body__ ||= RubyPants.new(BlueCloth.new(@body).to_html).to_html
+      end
     end
 
     # Generate an unique id.
@@ -74,6 +80,7 @@ module Shinmun
     def languages; @head['languages'] end
     def category ; @head['category']  end
     def guid     ; @head['guid']      end
+    def type     ; @head['type']      end
     def year     ; date.year          end
     def month    ; date.month         end
 
@@ -228,9 +235,10 @@ module Shinmun
       Dir.chdir('posts') do
         @meta = YAML.load(File.read('blog.yml'))
 
-        @posts, @pages = Dir['**/*.md'].
-          map { |path| Post.new(self, path) }.
-          partition {|p| p.date }
+        posts = Dir['**/*.{md,tt}']
+        posts = posts.map{ |path| Post.new(self, path) }
+
+        @posts, @pages = posts.partition { |p| p.date }
 
         @posts = @posts.sort_by { |post| post.date }.reverse
       end
