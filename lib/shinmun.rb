@@ -36,12 +36,13 @@ module Shinmun
   #     article. The summary shows up in list views and rss feeds.  
   class Post
 
-    attr_reader :blog, :title, :path, :head
+    attr_reader :blog, :title, :path, :head, :type
 
     # Split up the source text into header and body.
     # Load the header as yaml document.
     def initialize(blog, path)
       @blog = blog
+      @type = File.extname(path)[1..-1]
       @path = path.chomp(File.extname(path))
 
       src = File.read(path)
@@ -63,7 +64,7 @@ module Shinmun
     # Generates the body from source text.
     def body
       case type
-      when 'textile'
+      when 'tt'
         @__body__ ||= RubyPants.new(RedCloth.new(@body).to_html).to_html
       else
         @__body__ ||= RubyPants.new(BlueCloth.new(@body).to_html).to_html
@@ -80,7 +81,6 @@ module Shinmun
     def languages; @head['languages'] end
     def category ; @head['category']  end
     def guid     ; @head['guid']      end
-    def type     ; @head['type']      end
     def year     ; date.year          end
     def month    ; date.month         end
 
