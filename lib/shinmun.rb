@@ -121,10 +121,12 @@ module Shinmun
   class Template
 
     attr_reader :root
+    attr_reader :directory
 
     # Initialize this template with an ERB instance.
-    def initialize(erb)
+    def initialize(erb, directory)
       @erb = erb
+      @directory = directory
     end    
 
     # Set instance variable for this template.
@@ -155,7 +157,7 @@ module Shinmun
     # Render stylesheet link tags with fixed url.
     def stylesheet_link_tag(*names)
       names.map { |name|
-        mtime = File.mtime("public/stylesheets/#{name}.css").to_i
+        mtime = File.mtime(File.join(directory,"stylesheets/#{name}.css")).to_i
         path = "#{root}stylesheets/#{name}.css?#{mtime}"
         tag :link, :href => path, :rel => 'stylesheet', :media => 'screen'
       }.join("\n")
@@ -164,7 +166,7 @@ module Shinmun
     # Render javascript tags with fixed url.
     def javascript_tag(*names)
       names.map { |name|
-        mtime = File.mtime("public/javascripts/#{name}.js").to_i
+        mtime = File.mtime(File.join(directory,"javascripts/#{name}.js")).to_i
         path = "#{root}javascripts/#{name}.js?#{mtime}"
         tag :script, :src => path, :type => 'text/javascript'
       }.join("\n")
@@ -212,7 +214,6 @@ module Shinmun
 
   end
 
-
   # This class represents a blog. You need to provide a source
   # directory and the meta file `blog.yml` which defines some variables.
   # Example for `blog.yml`:
@@ -224,7 +225,7 @@ module Shinmun
   #    categories:
   #      - Ruby
   #      - Emacs
-  class Blog  
+  class Blog
 
     attr_reader :meta, :posts, :pages
 
@@ -234,6 +235,12 @@ module Shinmun
 
       Dir.chdir('posts') do
         @meta = YAML.load(File.read('blog.yml'))
+
+        if meta['blog_directory']
+          @directory = File.join('public', meta['blog_directory'])
+        else
+          @directory = 'public'
+        end
 
         posts = Dir['**/*.{md,tt}']
         posts = posts.map{ |path| Post.new(self, path) }
@@ -245,7 +252,11 @@ module Shinmun
 
       @templates = {}
     end
-    
+
+    def directory
+      @directory
+    end
+
     def categories
       meta['categories']
     end
@@ -289,7 +300,7 @@ module Shinmun
 
     # Render template with given variables.
     def render_template(name, vars)
-      template = Template.new(template(name))
+      template = Template.new(template(name), directory)
       template.set_variables(vars)
       template.render
     end
@@ -307,8 +318,9 @@ module Shinmun
 
     # Write a file to output directory.
     def write_file(path, data)
-      FileUtils.mkdir_p('public/' + File.dirname(path))
-      open('public/' + path, 'wb') do |file|
+      FileUtils.mkdir_p(File.join(directory, File.dirname(path)))
+      filepath = File.join(directory, path)
+      open(filepath, 'wb') do |file|
         file << data
       end    
     end
