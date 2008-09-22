@@ -9,7 +9,7 @@ render them to static files and push your blog to your server.
 This allows you to write posts in your favorite editor like Emacs or
 VI and use a VCS like git.
 
-Your layout can be customized by set of *ERB templates*. These
+Your layout can be customized by a set of *ERB templates*. These
 templates have access to `Post` objects and *helper methods* so that
 anybody who knows *Rails* should feel comfortable with it.
 
