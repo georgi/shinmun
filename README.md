@@ -19,6 +19,7 @@ Shinmun has some common features of blog engines like:
 * Category summary page
 * Archive pages for each month
 * RSS feeds for index and category pages
+* Builtin webserver for realtime rendering
 * AJAX comment system with PHP JSON file storage
 * Integration of the WMD-Markdown Editor for comments
 
@@ -44,8 +45,13 @@ in `posts/2008/9/the-title-of-the-post.md`. After creating you will
 probably open the file, set the category and start writing your new
 article.
 
-After finishing your post, you may just run `shinmun` without arguments
-and the output will be rendered to the *public* folder.
+After finishing your post, you may run `shinmun render` and the output
+will be rendered to the *public* folder.
+
+It is more convenient to use the builtin webserver. Just run `shinmun
+server` and go to `http://localhost:3000` and you will see your blog
+served in realtime. Just change and save any of your posts and you
+will see the new output in your browser.
 
 
 ### Post Format
@@ -56,8 +62,9 @@ a markup body, which are separated by a newline.
 The **first line** of the header should start with 3 dashes as usual
 for a YAML document.
 
-The **first and the second line** of the body becomes the title of the
-post.
+The title of your post will be parsed from your first heading
+according to the document type. Shinmun will try to figure out the
+title for Markdown, Textile and HTML files.
 
 The header may have following attributes:
 
@@ -96,10 +103,10 @@ posts for comments.
 
 * **Template** files are in the `templates` folder.
 
-* The **properties of your blog** defined in `posts/blog.yml`
+* The **properties of your blog** defined in `config/blog.yml`
 
 * **Static files** should be put into the directories `public/images`,
-  `public/stylesheets`, `public/javascripts`.
+  `public/stylesheets`, `public/javascripts`. But this is configurable (see below).
 
 * Archive pages will be rendered to files like `public/2008/9/index.html`.
 
@@ -109,8 +116,9 @@ posts for comments.
 
 An example tree:
 
-    + posts
+    + config
       + blog.yml
+    + posts
       + about.md
       + 2007
       + 2008
@@ -137,7 +145,34 @@ An example tree:
       + page.rhtml  
       + post.rhtml  
       + posts.rhtml
- 
+
+### Config file
+
+The configuration of the blog system consists of some variables
+encoded as yaml file:
+
+    * blog_title: the title of your blog, used for rss
+
+    * blog_description: used for rss
+
+    * blog_language: used for rss
+
+    * blog_author: used for rss, acts also as fallback for the blog.author variable
+
+    * blog_url: used for rss
+
+    * blog_repository: path for rsync, used for `shinmun push` command
+
+    * base_path: if your blog should not be rendered to your site
+      root, you can define a sub path here (like `blog`)
+
+    * images_path: used for templates helper
+
+    * javascripts_path: used for templates helper
+
+    * stylesheets_path: used for templates helper
+
+
 
 ### Layout
 
@@ -173,6 +208,10 @@ Stylesheets, javascripts and images should be included by using theses
 helpers. The helper methods will include a timestamp of the
 modification time as `querystring`, so that the browser will fetch the
 new resource if it has been changed.
+
+If you want to define your own helpers, just define a file named
+`templates/helpers.rb` with a module named `Shinmun::Helpers. This
+module will be included into the `Shinmun::Template` class.
 
 
 ### Post Template
