@@ -75,7 +75,7 @@ module Shinmun
 
     # Render a link to a post
     def post_link(post)
-      link_to post.title, "#{blog.base_path}/post.path"
+      link_to post.title, "#{blog.base_path}/#{post.path}"
     end
 
     # Render a link to an archive page.

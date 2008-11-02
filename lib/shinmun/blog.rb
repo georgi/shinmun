@@ -25,7 +25,7 @@ module Shinmun
     # Read config and all posts from disk.
     def reload
       @meta = YAML.load(File.read('config/blog.yml'))
-      @base_path = meta['base_path']
+      @base_path = meta['base_path'] || ''
       @images_path = meta['images_path'] || 'images'
       @javascripts_path = meta['javascripts_path'] || 'javascripts'
       @stylesheets_path = meta['stylesheets_path'] || 'stylesheets'
@@ -40,6 +40,10 @@ module Shinmun
       end
 
       load 'templates/helpers.rb' if File.exist?('templates/helpers.rb')
+    end
+
+    def public_paths
+      ['admin', images_path, stylesheets_path, javascripts_path]
     end
 
     def push

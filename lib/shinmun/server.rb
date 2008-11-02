@@ -10,7 +10,7 @@ module Shinmun
       use Rack::ShowExceptions
       use Rack::Reloader
       
-      map "/" do
+      map "/#{blog.base_path}" do
         run Shinmun::RackAdapter.new(blog)
       end      
 
@@ -19,7 +19,7 @@ module Shinmun
         run Shinmun::AdminController.new(blog)
       end
 
-      for dir in %w{admin stylesheets images javascripts}
+      for dir in blog.public_paths
         map "/#{dir}" do
           run Rack::File.new("public/#{dir}")
         end
