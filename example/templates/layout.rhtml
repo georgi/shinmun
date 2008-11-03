@@ -4,24 +4,24 @@
     <title><%= @blog_title %> - <%= @title %></title>
     <meta http-equiv="Content-Language" content="English" />
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <link rel="alternate" type="application/rss+xml" title="RSS" href="<%= @root + (@category || 'index').downcase %>.rss" />
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="/index.rss" />
     <%= stylesheet_link_tag :reset, :grid, :typography, :style, 'highlight/default' %>
-    <script>var Blog = { root: '<%= @root %>', guid: '<%= @guid %>' };</script>
+    <script>var guid = '<%= @guid %>';</script>
   </head>
   <body>
     <div class="container">
 
       <div id="header" class="column span-20 last">
-	<h1><a href="<%= @root %>index.html"><%= @blog_title %></a></h1>
+	<h1><a href="/"><%= @blog_title %></a></h1>
 	<h2><%= @blog_description %></h2>
       </div>
 
       <div id="navi"  class="column span-20 last">
-	<%= navi_link 'Home', 'index' %>
+	<%= navi_link 'Home', '/' %>
 	<% for category in @categories %>
-	  <%= navi_link category, 'categories/' + category.downcase %>
+	  <%= navi_link category, "/categories/#{category.downcase}.html" %>
 	<% end %>
-	<%= navi_link 'About', 'about' %>
+	<%= navi_link 'About', '/about.html' %>
       </div>
 
       <div id="header-text" class="column span-20 last">
@@ -32,13 +32,17 @@
 	<%= @content %>
       </div>
 
-      <div class="right column span-5 last"> 
+      <div class="right column span-5 last"> 	
 	<h4>Subscribe</h4>
+	<p>
+	  <%= link_to 'Subscribe RSS', '/index.rss' %>
+	</p>
+
 	<h4>About</h4>
 	<h4>Archives</h4>
 	<ul>
 	  <% for year, month in @months %>
-	    <li><%= month_link year, month %></li> 
+	    <li><%= archive_link year, month %></li> 
 	  <% end %>
 	</ul>
       </div>

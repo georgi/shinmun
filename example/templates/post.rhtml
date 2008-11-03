@@ -1,25 +1,61 @@
 <div class="article">
+
   <div class="date">
     <%= date @date %>
   </div>
+
   <h2><%= @title %></h2>  
+
   <%= @body %>
 
-  <h3>Comments</h3>
+  <hr/>
+
+  <div style="margin:1em 0em 1em 0em">
+    Posted in category <%= link_to @category, "categories/#{@category}.html" %> by <%= @author %>.
+    Tagged with <%= @tags %>.
+  </div>
+
+  <hr/>
+
+  <div style="padding:1em 0em 1em 0em">
+    <script type="text/javascript">
+      if (typeof window.Delicious == "undefined") window.Delicious = {};
+      Delicious.BLOGBADGE_DEFAULT_CLASS = 'delicious-blogbadge-line';
+    </script>
+    <script src="http://static.delicious.com/js/blogbadge.js"></script>
+  </div>
+
+  <h2>Similar Posts</h2>
+  
+  <ul>
+
+  <% for post in @blog.posts_with_tags(@tags) %>
+     <% if post.path != @path %>
+       <li><%= post_link post %></li>
+     <% end %>
+  <% end %>
+
+  </ul>
+
+  <hr/>
+
+  <h2>Comments</h2>
 
   <div class="comments-loading" style="display:none">
     <%= image_tag 'loading.gif' %>
     Loading Comments...
   </div>
 
-  <div class="comments">  
+  <div class="comments">
     <div id="comments-template">
       <div class="comment">
-	<div class="_ top">
-	  <a class="_" href="{website}">{name}</a> said
-	  <a class="_" title="{time}"></a>:
+	<div class="top">
+	  {website.length > 0 ? linkTo(name, website) : name} said
+	  <a title="{time}"></a>:
 	</div>
-	<div class="text"></div>
+	<div class="body">
+	  {text}
+	</div>
       </div>
     </div>
   </div>
@@ -44,7 +80,7 @@
 	<input type="text" name="website"  size="40"/>
       </p>
       <p>
-	<label>Comment</label><br/>
+	<label>Comment (Use markdown for formatting)</label><br/>
 	<textarea name="text" cols="60" rows="10"></textarea>
       </p>
       <p>

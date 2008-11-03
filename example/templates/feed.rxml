@@ -7,13 +7,13 @@
     <language><%= @blog_language %></language>
     <copyright><%= @blog_author %></copyright>
     <pubDate><%= rfc822 Time.now %></pubDate>
-    <% for post in @posts %>
+    <% for post in @posts[0, 10] %>
       <item>
 	<title><%= post.title %></title>
+	<category><%= post.category %></category>
 	<description><%= strip_tags post.summary %></description>
-	<link><%= post.link %></link>
-	<author><%= @blog_author %></author>
-	<guid><%= post.link %></guid>
+	<author><%= @author %></author>
+	<link><%= @blog_url %>/<%= post.path %>.html</link>
 	<pubDate><%= rfc822 post.date %></pubDate>
       </item>
     <% end %>
