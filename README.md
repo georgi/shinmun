@@ -178,30 +178,30 @@ The output will look like this:
 The configuration of the blog system consists of some variables
 encoded as yaml file:
 
-    * blog_title: the title of your blog, used for rss
+* blog_title: the title of your blog, used for rss
 
-    * blog_description: used for rss
+* blog_description: used for rss
 
-    * blog_language: used for rss
+* blog_language: used for rss
 
-    * blog_author: used for rss, acts also as fallback for the blog.author variable
+* blog_author: used for rss, acts also as fallback for the blog.author variable
 
-    * blog_url: used for rss
+* blog_url: used for rss
 
-    * blog_repository: path for rsync, used for `shinmun push` command
+* blog_repository: path for rsync, used for `shinmun push` command
 
-    * base_path: if your blog should not be rendered to your site
-      root, you can define a sub path here (like `blog`)
+* base_path: if your blog should not be rendered to your site
+  root, you can define a sub path here (like `blog`)
 
-    * images_path: used for templates helper, defaults to `images`
+* images_path: used for templates helper, defaults to `images`
 
-    * javascripts_path: used for templates helper, defaults to `javascripts`
+* javascripts_path: used for templates helper, defaults to `javascripts`
 
-    * stylesheets_path: used for templates helper, defaults to `stylesheets`
+* stylesheets_path: used for templates helper, defaults to `stylesheets`
 
-    * pack_javascripts: a list of scripts to be compressed
+* pack_javascripts: a list of scripts to be compressed
 
-    * pack_stylesheets: a list of stylesheets to be concatenated
+* pack_stylesheets: a list of stylesheets to be concatenated
 
 
 ### Layout
