@@ -1,0 +1,141 @@
+
+#header { 
+    height: 40px;
+}
+
+#header h1 {
+    font-size: 20px;
+    font-weight: bold;
+    padding: 20px 20px 5px 0;
+    display: inline;
+}
+
+#header h1 a {
+    color: #069;
+    text-decoration: none;
+}
+
+#header h1 a:hover {
+    color: #222;
+    text-decoration: none;
+}
+
+#header h2 {
+    color: #69c;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 0 0 0 0;
+    display: inline;
+}
+
+#footer {
+    border-top: 1px solid #ccc;
+    padding: 1em;
+    text-align: center;
+}
+
+#navi ul {
+    clear: both;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+#navi ul li {
+    float: left;
+    border-right: 1px solid #fff;
+}
+
+#navi a { 
+    background: #69c;
+    color: #fff;
+    font-size: 12px;
+    font-weight: normal;
+    padding: 4px 15px;
+    text-decoration: none;    
+}
+
+#navi a.active { 
+    font-weight: bold;
+    background: #369;
+}
+
+#header-text { 
+    background: #369;
+    margin-bottom: 10px;
+}
+
+#header-text h1 { 
+    color: #fff;
+    padding: 5px 0px 0px 60px;
+    border-bottom: 1px solid #69c;
+}
+
+.right ul {
+    color:#336699;
+    list-style-type:square;
+    padding:0pt 2em;
+}
+
+.right h4 {
+    color: #369;
+    margin-bottom: 1em;
+}
+
+.right a { 
+    text-decoration: none;
+}
+
+.about { 
+    color: #666;
+}
+
+.article { 
+    padding: 1em;
+}
+
+.article h2 { 
+    margin-top:0px;
+}
+
+.article .date { 
+    color: #666;
+}
+
+.article .tags a {
+    color: #69c;
+    text-decoration: none;
+}
+
+.comments {
+    margin-bottom: 2em;
+}
+
+.comments .comment {
+    margin-top: 2em;
+    border: 1px solid #ccc;
+}
+
+.comments .comment .top {
+    background: #F0F0F0;
+    color: #333;
+    padding: 3px 5px;
+}
+
+.comments .comment .top a { 
+    text-decoration: none;
+}
+
+.comments .comment .text {
+    background: #F8F8F8;    
+    padding: 3px 5px;
+}
+
+blockquote{
+    border-top: 3px double #69c;
+    border-bottom: 3px double #69c;
+    padding: 5px;
+    font-style: oblique;
+    margin-left: 5%;
+    margin-right: 5%;
+}
