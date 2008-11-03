@@ -194,13 +194,9 @@ encoded as yaml file:
 
     * stylesheets_path: used for templates helper, defaults to `stylesheets`
 
-    * pack_javascripts: a list of scripts to be compressed to a file
-      named `all.js` Note that you define a yaml array here without
-      file extensions, so it should like `[jquery, jquery-form]`
+    * pack_javascripts: a list of scripts to be compressed
 
-    * pack_stylesheets: a list of files to be concatenated to a file
-      named `all.css` Note that you define a yaml array here without
-      file extensions , so it should like `[reset, grid]`
+    * pack_stylesheets: a list of stylesheets to be concatenated
 
 
 ### Layout
@@ -303,6 +299,9 @@ reasons, minified versions for each of your javascripts will be
 created automatically in `assets/javascripts`.
 
 The stylesheets will be just concatenated to one file named `all.css`.
+
+Note that you define a yaml array of filenames without file
+extensions, so it should like `[jquery, jquery-form]` or 
 
 
 ### Commenting System
