@@ -1,8 +1,6 @@
 Shinmun, a small and beautiful blog engine
 ==========================================
 
-### Intro
-
 Shinmun is a **minimalist blog engine**. You just write posts as text files,
 render them to static files and push your blog to your server.
 
@@ -13,7 +11,8 @@ Your layout can be customized by a set of *ERB templates*. These
 templates have access to `Post` objects and *helper methods* so that
 anybody who knows *Rails* should feel comfortable with it.
 
-Shinmun has some common features of blog engines like:
+
+### Shinmun Features
 
 * Index listing
 * Category listing
@@ -25,17 +24,21 @@ Shinmun has some common features of blog engines like:
 * AJAX comment system with PHP JSON file storage
 * Integration of WMD-Markdown Editor for commenting
 
+
 ### Quickstart
 
-Install the gem by typing:
+Install the gem:
 
     gem install shinmun
 
-Issue the following commands and you will see an example blog on
+Download and extract the example blog from my [github repository][3].
+
+Issue the following commands and you will see the blog on
 `http://localhost:3000`:
 
-    cd example
+    cd shinmun-example
     shinmun server
+
 
 ### Writing Posts
 
@@ -111,25 +114,22 @@ posts for comments.
 ### Directory layout
 
 * Your **assets** are in the `assets` folder, which gets copied to the
-  public folder in the render step. You will probably have folders like
-  `assets/images`, `assets/stylesheets`, `asstes/javascripts`.
+  public folder in the render step.
+
+* The **settings of your blog** are defined in `config/blog.yml`
 
 * Your **posts** reside in the `posts` folder sorted by year/month.
 
 * Your **pages** are located in the `pages` folder.
 
-* The *home page* of your blog is defined in `pages/index.rhtml` and
-  may be customized.
-
-* The **output** will be rendered to the `public` folder.
-
 * **Template** files are in the `templates` folder.
 
-* The **properties of your blog** are defined in `config/blog.yml`
+* The **index page** of your blog is defined in `pages/index.rhtml` and
+  may be customized.
 
-* Archive pages will be rendered to files like `public/2008/9/index.html`.
+* **Archive pages** will be rendered to files like `public/2008/9/index.html`.
 
-* Category pages will be rendered to files like `public/categories/ruby.html`.
+* **Category pages** will be rendered to files like `public/categories/ruby.html`.
 
 
 An example tree:
@@ -264,34 +264,13 @@ The attributes of a post are accessible as instance variables in a template:
     </div>
 
 
-
 ### RSS Feeds
 
-Feeds will be rendered by one *ERB template*. Some of the variables
-have been read from the `blog.yml`, like `@blog_title`, other variables
-have been determined by the engine like `@posts` and `@category`.
+Feeds will be rendered by the *ERB template*
+`templates/feed.rxml`. Some of the variables have been read from the
+`blog.yml`, like `@blog_title`, other variables have been determined
+by the engine like `@posts` or `@category`.
 
-    <?xml version="1.0" encoding="utf-8"?>
-    <rss version="2.0"> 
-      <channel>
-        <title><%= @category ? @blog_title + ' - ' + @category : @blog_title %></title>
-        <link><%= @blog_url %></link>
-        <description><%= @category ? 'Category ' + @category : @blog_description %></description>
-        <language><%= @blog_language %></language>
-        <copyright><%= @blog_author %></copyright>
-        <pubDate><%= rfc822 Time.now %></pubDate>
-        <% for post in @posts %>
-          <item>
-            <title><%= post.title %></title>
-            <description><%= post.text_summary %></description>
-            <link><%= post.link %></link>
-            <author><%= @blog_author %></author>
-            <guid><%= post.guid %></guid>
-            <pubDate><%= rfc822 post.date %></pubDate>
-          </item>
-        <% end %>
-      </channel> 
-    </rss>
 
 ### Packr Support
 
@@ -332,3 +311,4 @@ Download or fork the package at my [github repository][1]
 
 [1]: http://github.com/georgi/shinmun/tree/master
 [2]: commenting-system-with-lightweight-json-store.html
+[3]: http://github.com/georgi/shinmun-example/tree/master
