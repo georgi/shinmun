@@ -20,6 +20,7 @@ Shinmun has some common features of blog engines like:
 * Archive pages for each month
 * RSS feeds for index and category pages
 * Builtin webserver for realtime rendering
+* Compression of javascript files with Packr
 * AJAX comment system with PHP JSON file storage
 * Integration of the WMD-Markdown Editor for comments
 
@@ -53,11 +54,18 @@ server` and go to `http://localhost:3000` and you will see your blog
 served in realtime. Just change and save any of your posts and you
 will see the new output in your browser.
 
+By issuing the `shinmun push` command your blog will be pushed to your
+server using rsync. This works only, if you define the blog_repository
+variable inside blog.yml. It should contain something like
+`user@myhost.com:/var/www/my-site/`.
+
 
 ### Post Format
 
 Each blog post is just a text file with an optional header section and
-a markup body, which are separated by a newline. 
+a markup body, which are separated by a newline. Normally you don't
+have to worry about the post format, if you create posts with the
+`shinmun new` command.
 
 The **first line** of the header should start with 3 dashes as usual
 for a YAML document.
@@ -66,7 +74,7 @@ The title of your post will be parsed from your first heading
 according to the document type. Shinmun will try to figure out the
 title for Markdown, Textile and HTML files.
 
-The header may have following attributes:
+The yaml header may have following attributes:
 
 * `date`: post will show up in blog page and archive pages
 * `category`: post will show up in the defined category page
@@ -97,33 +105,53 @@ posts for comments.
 
 ### Directory layout
 
-* All your **posts** reside in the `posts` folder sorted by year/month.
+* Your **assets** are in the `assets` folder, which gets copied to the
+  public folder in the render step. You will probably have folders like
+  `assets/images`, `assets/stylesheets`, `asstes/javascripts`.
 
-* All the **output** will be rendered to the `public` folder.
+* Your **posts** reside in the `posts` folder sorted by year/month.
+
+* Your **pages** are located in the `pages` folder.
+
+* The *home page* of your blog is defined in `pages/index.rhtml` and
+  may be customized.
+
+* The **output** will be rendered to the `public` folder.
 
 * **Template** files are in the `templates` folder.
 
-* The **properties of your blog** defined in `config/blog.yml`
-
-* **Static files** should be put into the directories `public/images`,
-  `public/stylesheets`, `public/javascripts`. But this is configurable (see below).
+* The **properties of your blog** are defined in `config/blog.yml`
 
 * Archive pages will be rendered to files like `public/2008/9/index.html`.
 
 * Category pages will be rendered to files like `public/categories/ruby.html`.
 
-* The *home page* of your blog will go to `public/index.html`.
 
 An example tree:
 
+    + assets
+      + images
+      + stylesheets
+      + javascripts      
     + config
       + blog.yml
-    + posts
+    + pages
       + about.md
+      + index.rhtml
+    + posts
       + 2007
       + 2008
         + 9
           + my-article.md
+    + templates
+      + feed.rxml
+      + layout.rhtml
+      + page.rhtml  
+      + post.rhtml  
+      + posts.rhtml
+
+
+The output will look like this:
 
     + public
       + index.html
@@ -139,12 +167,6 @@ An example tree:
       + stylesheets
       + javascripts
 
-    + templates
-      + feed.rxml
-      + layout.rhtml
-      + page.rhtml  
-      + post.rhtml  
-      + posts.rhtml
 
 ### Config file
 
@@ -166,12 +188,19 @@ encoded as yaml file:
     * base_path: if your blog should not be rendered to your site
       root, you can define a sub path here (like `blog`)
 
-    * images_path: used for templates helper
+    * images_path: used for templates helper, defaults to `images`
 
-    * javascripts_path: used for templates helper
+    * javascripts_path: used for templates helper, defaults to `javascripts`
 
-    * stylesheets_path: used for templates helper
+    * stylesheets_path: used for templates helper, defaults to `stylesheets`
 
+    * pack_javascripts: a list of scripts to be compressed to a file
+      named `all.js` Note that you define a yaml array here without
+      file extensions, so it should like `[jquery, jquery-form]`
+
+    * pack_stylesheets: a list of files to be concatenated to a file
+      named `all.css` Note that you define a yaml array here without
+      file extensions , so it should like `[reset, grid]`
 
 
 ### Layout
@@ -262,6 +291,19 @@ have been determined by the engine like `@posts` and `@category`.
         <% end %>
       </channel> 
     </rss>
+
+### Packr Support
+
+If you set the variables `pack_javascripts` or `pack_stylesheets`,
+Shinmun will create the files `all.js` or `all.css` automatically
+on rendering (even on each request of the webserver).
+
+The Javascript will be compressed with Packr and for performance
+reasons, minified versions for each of your javascripts will be
+created automatically in `assets/javascripts`.
+
+The stylesheets will be just concatenated to one file named `all.css`.
+
 
 ### Commenting System
 

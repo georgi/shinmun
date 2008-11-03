@@ -13,6 +13,8 @@ module Shinmun
   #      - Emacs
   class Blog
 
+    FILE_PATTERN = '**/*.{md,tt,html,rhtml}'
+
     attr_reader :meta, :posts, :pages
     attr_reader :base_path, :images_path, :javascripts_path, :stylesheets_path, :repository
 
@@ -32,11 +34,12 @@ module Shinmun
       @repository = meta['blog_repository']
 
       Dir.chdir('posts') do
-        files = Dir['**/*.{md,tt,html,rhtml}']
-        @pages = files.map{ |path| Post.new(self, path) }
-        @pages.each { |p| p.load }
-        @posts = @pages.select { |p| p.date }
+        @posts = Dir[FILE_PATTERN].map { |path| Post.new(self, path).load }
         @posts = @posts.sort_by { |post| post.date }.reverse
+      end
+
+      Dir.chdir('pages') do
+        @pages = Dir[FILE_PATTERN].map { |path| Post.new(self, path).load }
       end
 
       load 'templates/helpers.rb' if File.exist?('templates/helpers.rb')
@@ -47,7 +50,6 @@ module Shinmun
     end
 
     def push
-      write_all
       system "rsync -avz public/ #{repository}"
     end
 
@@ -57,6 +59,44 @@ module Shinmun
 
     def categories
       meta['categories']
+    end
+
+    def compress(filename)
+      require 'packr'
+      src = File.read(filename)
+      name, ext = filename.split('.')
+      min = name + '.min.' + ext
+      if !File.exist?(min) or File.mtime(filename) > File.mtime(min)
+        open(min, "wb") do |file|
+          file << Packr.pack(src)
+        end
+      end
+      File.read(min)
+    end
+
+    def pack_javascripts
+      File.open("assets/#{javascripts_path}/all.js", "wb") do |io|
+        for file in meta['pack_javascripts']
+          io << compress("assets/#{javascripts_path}/#{file.strip}.js") << "\n\n"
+        end
+      end
+    end
+
+    def pack_stylesheets
+      File.open("assets/#{stylesheets_path}/all.css", "wb") do |io|
+        for file in meta['pack_stylesheets']
+          io << File.read("assets/#{stylesheets_path}/#{file.strip}.css") << "\n\n"
+        end
+      end
+    end
+
+    def copy_assets
+      FileUtils.cp_r 'assets/.', 'public'
+    end
+    
+    def pack_assets
+      pack_javascripts if meta['pack_javascripts']
+      pack_stylesheets if meta['pack_stylesheets']
     end
 
     # Write a file to output directory.
@@ -115,6 +155,10 @@ module Shinmun
 
     def find_page(path)
       pages.find { |p| p.path == path }
+    end
+
+    def find_post(path)
+      posts.find { |p| p.path == path }
     end
 
     def find_category(category)
@@ -196,6 +240,13 @@ module Shinmun
       end
     end
 
+    # Write all posts.
+    def write_posts
+      for post in posts
+        write_file("#{post.path}.html", render_post(post))
+      end
+    end
+
     # Write archive summaries.
     def write_archives
       for year, month in months
@@ -219,7 +270,11 @@ module Shinmun
     end
 
     def write_all
+      pack_assets
+      copy_assets
+
       write_pages
+      write_posts
       write_archives
       write_categories
       write_feeds      

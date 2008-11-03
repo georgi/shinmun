@@ -46,7 +46,7 @@ module Shinmun
     # Render stylesheet link tag
     def stylesheet_link_tag(*names)
       names.map { |name|
-        mtime = File.mtime("public/#{blog.stylesheets_path}/#{name}.css").to_i
+        mtime = File.mtime("assets/#{blog.stylesheets_path}/#{name}.css").to_i
         path = "/#{blog.stylesheets_path}/#{name}.css?#{mtime}"
         tag :link, :href => path, :rel => 'stylesheet', :media => 'screen'
       }.join("\n")
@@ -55,7 +55,7 @@ module Shinmun
     # Render javascript tag
     def javascript_tag(*names)
       names.map { |name|
-        mtime = File.mtime("public/#{blog.javascripts_path}/#{name}.js").to_i
+        mtime = File.mtime("assets/#{blog.javascripts_path}/#{name}.js").to_i
         path = "/#{blog.javascripts_path}/#{name}.js?#{mtime}"
         tag :script, :src => path, :type => 'text/javascript'
       }.join("\n")
@@ -63,24 +63,24 @@ module Shinmun
 
     # Render an image tag
     def image_tag(file, options = {})
-      mtime = File.mtime("public/#{blog.images_path}/#{file}").to_i
+      mtime = File.mtime("assets/#{blog.images_path}/#{file}").to_i
       path = "/#{blog.images_path}/#{file}?#{mtime}"
       tag :img, options.merge(:src => path)
     end
 
     # Render a link
     def link_to(text, path, options = {})
-      tag :a, text, options.merge(:href => "/#{path}.html")
+      tag :a, text, options.merge(:href => path)
     end
 
     # Render a link to a post
     def post_link(post)
-      link_to post.title, "#{blog.base_path}/#{post.path}"
+      link_to post.title, "#{blog.base_path}/#{post.path}.html"
     end
 
     # Render a link to an archive page.
     def archive_link(year, month)
-      link_to "#{Date::MONTHNAMES[month]} #{year}", "#{blog.base_path}/#{year}/#{month}/index"
+      link_to "#{Date::MONTHNAMES[month]} #{year}", "#{blog.base_path}/#{year}/#{month}/index.html"
     end
 
     # Render a date or time in a nice human readable format.

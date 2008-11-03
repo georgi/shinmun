@@ -61,6 +61,7 @@ module Shinmun
       end
 
       @title = head['title'] or parse_title
+      self
     end
 
     # Parse title from different formats

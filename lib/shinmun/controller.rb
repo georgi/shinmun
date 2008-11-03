@@ -17,6 +17,7 @@ module Shinmun
       response = Rack::Response.new
 
       @blog.reload
+      @blog.pack_assets
 
       klass = find_controller(request.path_info)
       controller = klass.new(@blog, request, response)
@@ -73,8 +74,8 @@ module Shinmun
       if file == '' or file == 'index'
         blog.render_month(year.to_i, month.to_i)
       else
-        @post = blog.find_page(path) or raise "#{path} not found"
-        blog.render_post(@post)
+        post = blog.find_post(path) or raise "#{path} not found"
+        blog.render_post(post)
       end      
     end
   end

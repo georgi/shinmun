@@ -14,14 +14,20 @@ module Shinmun
         run Shinmun::RackAdapter.new(blog)
       end      
 
+      map '/admin' do
+        run Rack::File.new('admin')
+      end
+
       map "/admin_controller" do
         use Rack::CommonLogger
         run Shinmun::AdminController.new(blog)
       end
 
-      for dir in blog.public_paths
-        map "/#{dir}" do
-          run Rack::File.new("public/#{dir}")
+      Dir.chdir('assets') do
+        Dir['*'].each do |file|
+          map "/#{file}" do
+            run Rack::File.new("assets/#{file}")
+          end
         end
       end
 
