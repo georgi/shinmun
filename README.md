@@ -15,25 +15,27 @@ anybody who knows *Rails* should feel comfortable with it.
 
 Shinmun has some common features of blog engines like:
 
-* Index summary page
-* Category summary page
-* Archive pages for each month
+* Index listing
+* Category listing
+* Archive listings for each month
 * RSS feeds for index and category pages
 * Builtin webserver for realtime rendering
-* Compression of javascript files with Packr
+* Compression of javascript files with PackR
+* Included syntax highlighting through `highlight.js`
 * AJAX comment system with PHP JSON file storage
-* Integration of the WMD-Markdown Editor for comments
+* Integration of WMD-Markdown Editor for commenting
 
 ### Quickstart
 
 Install the gem by typing:
+
     gem install shinmun
 
-Issue the following commands and the output will go to the public
-folder:
+Issue the following commands and you will see an example blog on
+`http://localhost:3000`:
 
     cd example
-    ../bin/shinmun
+    shinmun server
 
 ### Writing Posts
 
@@ -46,13 +48,16 @@ in `posts/2008/9/the-title-of-the-post.md`. After creating you will
 probably open the file, set the category and start writing your new
 article.
 
+Now you want to look at your rendered post. Just run:
+
+    shinmun server
+
+Go to `http://localhost:3000` and you will see your blog served in
+realtime. Just change and save any of your posts and you will see the
+new output in your browser.
+
 After finishing your post, you may run `shinmun render` and the output
 will be rendered to the *public* folder.
-
-It is more convenient to use the builtin webserver. Just run `shinmun
-server` and go to `http://localhost:3000` and you will see your blog
-served in realtime. Just change and save any of your posts and you
-will see the new output in your browser.
 
 By issuing the `shinmun push` command your blog will be pushed to your
 server using rsync. This works only, if you define the blog_repository
@@ -235,7 +240,7 @@ modification time as `querystring`, so that the browser will fetch the
 new resource if it has been changed.
 
 If you want to define your own helpers, just define a file named
-`templates/helpers.rb` with a module named `Shinmun::Helpers. This
+`templates/helpers.rb` with a module named `Shinmun::Helpers`. This
 module will be included into the `Shinmun::Template` class.
 
 
@@ -301,7 +306,7 @@ created automatically in `assets/javascripts`.
 The stylesheets will be just concatenated to one file named `all.css`.
 
 Note that you define a yaml array of filenames without file
-extensions, so it should like `[jquery, jquery-form]` or 
+extensions, so it should like `[jquery, jquery-form]`.
 
 
 ### Commenting System
