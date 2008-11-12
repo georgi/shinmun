@@ -2,27 +2,23 @@ require 'rubygems'
 require 'fileutils'
 require 'erb'
 require 'yaml'
+require 'json'
 require 'uuid'
 require 'bluecloth'
-require 'redcloth'
+require 'redcloth' rescue nil
 require 'rubypants'
 require 'rexml/document'
+require 'time'
+require 'packr' rescue nil
 
+require 'shinmun/cache'
 require 'shinmun/post'
+require 'shinmun/comment'
 require 'shinmun/template'
+require 'shinmun/helpers'
 require 'shinmun/blog'
-require 'shinmun/server'
 
-# A small and beautiful blog engine.
-module Shinmun
-
-  # strip html tags from string
-  def self.strip_tags(html)
-    REXML::Document.new(html).each_element('.//text()').join
-  end
-
-  def self.urlify(string)
-    string.downcase.gsub(/[ -]+/, '-').gsub(/[^-a-z0-9_]+/, '')
-  end
-
-end
+require 'shinmun/aggregations/audioscrobbler'
+require 'shinmun/aggregations/delicious'
+require 'shinmun/aggregations/flickr'
+require 'shinmun/aggregations/fortythree'
