@@ -1,7 +1,8 @@
 module Shinmun
   
-  # This class represents an article or page.
-  # A post has a header and body text.
+  # This class represents a post or page.
+  # Each post has a header, encoded as YAML and a body.
+  #
   # Example:
   #     --- 
   #     category: Ruby
@@ -13,8 +14,10 @@ module Shinmun
   #
   #     This is the summary, which is by definition the first paragraph of the
   #     article. The summary shows up in list views and rss feeds.  
+  #
   class Post
 
+    # Define accessor methods for head variable.
     def self.head_accessor(*names)
       names.each do |name|
         name = name.to_s
@@ -23,35 +26,47 @@ module Shinmun
       end
     end
 
-    attr_reader :blog, :path, :type
-    attr_accessor :title, :head, :body
-    head_accessor :date, :category, :tags, :languages, :guid
+    attr_accessor :prefix, :path, :type, :title, :head, :body, :summary, :body_html
+    head_accessor :author, :date, :category, :tags, :languages, :guid, :header
 
-    def initialize(blog, path)
-      @blog = blog
-      @type = File.extname(path)[1..-1]
-      @path = path.chomp(File.extname(path))
+    # Initialize empty post and set specified attributes.
+    def initialize(attributes={})
       @head = {}
       @body = ''
+      
+      for k, v in attributes
+        send "#{k}=", v
+      end
     end
 
-    def author
-      @head['author'] || blog.meta['blog_author']
+    # Shortcut for year of date
+    def year
+      date.year
     end
 
-    def year ; date.year  end
-    def month; date.month end
+    # Shortcut for month of date
+    def month
+      date.month
+    end    
 
-    # Return the first paragraph
-    def summary
-      body_html.split("\n\n")[0]
+    def filename
+      "#{prefix}/#{path}.#{type}"
     end
 
-    # Split up the source text into header and body.
-    # Load the header as yaml document.
-    def load
-      src = File.read("#{path}.#{type}")
+    # Strips off extension and prefix.
+    def filename=(file)
+      if match = file.match(/^(.*?)\/(.*)\.(.*)/)
+        @prefix = match[1]
+        @path = match[2]
+        @type = match[3]
+      else
+        raise "incorrect filename: #{file}"
+      end
+    end
 
+    # Split up the source into header and body. Load the header as
+    # yaml document. Render body and parse the summary from rendered html.
+    def parse(src)
       # Parse YAML header if present
       if src =~ /---.*?\n(.*?)\n\n(.*)/m
         @head = YAML.load($1)
@@ -61,6 +76,9 @@ module Shinmun
       end
 
       @title = head['title'] or parse_title
+      @body_html = transform(body, type)
+      @summary = body_html.split("\n\n")[0]
+
       self
     end
 
@@ -83,15 +101,17 @@ module Shinmun
       @body = lines.join("\n")
     end
 
-    def filename
-      "posts/#{path}.#{type}"
+    # Convert to yaml for caching.
+    def to_yaml
+      head.merge('author' => author,
+                 'path' => path,
+                 'type' => type,
+                 'title' => title,
+                 'summary' => summary,
+                 'body_html' => body_html).to_yaml
     end
 
-    def save
-      FileUtils.mkdir_p(File.dirname(filename))
-      File.open(filename, "w") { |io| io << dump }
-    end
-
+    # Convert to string representation, used to create new posts.
     def dump
       head = self.head.dup
       body = self.body.dup
@@ -111,27 +131,31 @@ module Shinmun
       end
     end
 
+    def load
+      parse(File.read(filename))
+    end
+
+    def save
+      FileUtils.mkdir_p(File.dirname(filename))
+      File.open(filename, "w") { |io| io << dump }
+      self
+    end
+
+    # Variables used for templates.
     def variables
-      head.merge(:blog => blog,
-                 :author => author,
+      head.merge(:author => author,
                  :path => path,
                  :title => title,
+                 :guid => guid,
                  :body => body_html)
     end
 
-    # Generates the body from source text.
-    def body_html
-      @body_html ||= transform(body, type)
-    end
-
+    # Transform the body of this post according to given type.
+    # Defaults to Markdown.
     def transform(src, type)
       case type
       when 'html'
         RubyPants.new(src).to_html
-      when 'rhtml'
-        template = Template.new(ERB.new(src), blog)
-        template.set_variables(head.merge(:blog => blog, :path => path, :title => title))
-        template.render
       when 'tt'
         RubyPants.new(RedCloth.new(src).to_html).to_html
       else
