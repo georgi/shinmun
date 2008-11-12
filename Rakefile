@@ -16,8 +16,8 @@ spec = Gem::Specification.new do |s|
   s.description = <<-EOF
 Shinmun is a blog engine, which renders text files using a markup
 language like Markdown and a set of templates into static web
-pages. It supports Categories, Archives and RSS Feeds. Commenting can
-be done with some Javascript, PHP and a flat file JSON store.
+pages. Shinmun supports categories, archives and RSS feeds. Commenting
+is supported through a PHP script and flat file storage.
 EOF
   
   s.files = `git ls-files`.split("\n")
