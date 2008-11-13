@@ -12,7 +12,6 @@ module Shinmun
 
     attr_reader :root, :posts, :pages, :aggregations
     
-    config_reader 'config/aggregations.yml', :audioscrobbler_feed, :delicious_feed, :flickr_feed, :fortythree_feed
     config_reader 'config/assets.yml', :javascript_files, :stylesheet_files, :base_path, :images_path, :javascripts_path, :stylesheets_path
     config_reader 'config/blog.yml', :title, :description, :language, :author, :url, :repository
     config_reader 'config/categories.yml', :categories
@@ -56,6 +55,8 @@ module Shinmun
       @config.load('config/blog.yml')
       @config.load('config/categories.yml')
 
+      @aggregations = {}
+
       load_aggregations
 
       Thread.start do
@@ -65,12 +66,9 @@ module Shinmun
     end
 
     def load_aggregations
-      @aggregations = {
-        :audioscrobbler => audioscrobbler_feed && Audioscrobbler.new(audioscrobbler_feed),
-        :delicious      => delicious_feed && Delicious.new(delicious_feed),
-        :flickr         => flickr_feed && FlickrAggregation.new(flickr_feed),
-        :fortythree     => fortythree_feed && Fortythree.new(fortythree_feed)
-      }
+      @config['config/aggregations.yml'].each do |c|
+        @aggregations[c['name']] = Object.const_get(c['class']).new(c['url'])
+      end
     end
 
     # Reload config, assets and posts.
@@ -92,7 +90,6 @@ module Shinmun
 
       pack_javascripts if @javascripts.dirty? or @javascripts.empty?
       pack_stylesheets if @stylesheets.dirty? or @stylesheets.empty? 
-      link_assets
 
       load 'templates/helpers.rb'
     end
@@ -121,13 +118,6 @@ module Shinmun
         for file in stylesheet_files
           io << @stylesheets["assets/#{stylesheets_path}/#{file.strip}.css"] << "\n\n"
         end
-      end
-    end
-
-    # Link assets into public folder.
-    def link_assets
-      Dir['assets/*'].each do |file|
-        FileUtils.ln_sf(file, file.sub(/^assets/, 'public'))
       end
     end
 
