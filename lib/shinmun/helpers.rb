@@ -67,6 +67,8 @@ module Shinmun
 
     def markdown(text)
       BlueCloth.new(text).to_html
+    rescue => e      
+      "#{text}<br/><br/><small>markdown failed: #{e.message}</small>"
     end
 
     # strip html tags from string
