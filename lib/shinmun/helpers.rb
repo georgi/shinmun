@@ -71,11 +71,6 @@ module Shinmun
       "#{text}<br/><br/><small>markdown failed: #{e.message}</small>"
     end
 
-    # strip html tags from string
-    def strip_tags(html)
-      REXML::Document.new(html).each_element('.//text()').join
-    end
-
     def urlify(string)
       string.downcase.gsub(/[ -]+/, '-').gsub(/[^-a-z0-9_]+/, '')
     end

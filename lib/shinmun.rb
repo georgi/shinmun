@@ -2,7 +2,6 @@ require 'rubygems'
 require 'fileutils'
 require 'erb'
 require 'yaml'
-require 'rexml/document'
 require 'time'
 
 require 'bluecloth'
