@@ -25,9 +25,7 @@ EOF
   s.executables << 'shinmun'
   s.require_path = 'lib'
   s.add_dependency 'BlueCloth'
-  s.add_dependency 'RedCloth'
   s.add_dependency 'rubypants'
-  s.add_dependency 'packr'
   s.has_rdoc = true
   s.extra_rdoc_files = ['README.md']
   
