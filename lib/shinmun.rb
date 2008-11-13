@@ -6,9 +6,10 @@ require 'rexml/document'
 require 'time'
 
 require 'bluecloth'
-require 'redcloth'
 require 'rubypants'
-require 'packr'
+
+begin; require 'redcloth'; rescue LoadError; end
+begin; require 'packr'; rescue LoadError; end
 
 require 'shinmun/cache'
 require 'shinmun/post'
