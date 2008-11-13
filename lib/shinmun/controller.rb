@@ -116,7 +116,13 @@ module Shinmun
     def post
       params['path'].include?('..') and raise 'invalid path'
 
-      Comment.write(params['path'], Comment.new(Time.now, params['name'], params['website'], params['text']))
+      comment = Comment.new(:time => Time.now,
+                            :name => params['name'],
+                            :email => params['email'],
+                            :website => params['website'],
+                            :text => params['text'])
+
+      Comment.write(params['path'], comment)
 
       blog.render_comments(Comment.read(params['path']))
     end
