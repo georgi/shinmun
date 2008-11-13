@@ -2,14 +2,14 @@ require 'rubygems'
 require 'fileutils'
 require 'erb'
 require 'yaml'
-require 'json'
-require 'uuid'
 require 'bluecloth'
-require 'redcloth' rescue nil
 require 'rubypants'
 require 'rexml/document'
 require 'time'
-require 'packr' rescue nil
+
+begin; require 'packr'; rescue LoadError; end
+begin; require 'json'; rescue LoadError; end
+begin; require 'redcloth'; rescue LoadError; end
 
 require 'shinmun/cache'
 require 'shinmun/post'

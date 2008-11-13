@@ -10,7 +10,7 @@ module Shinmun
       end
     end
 
-    attr_reader :posts, :pages, :aggregations
+    attr_reader :root, :posts, :pages, :aggregations
     
     config_reader 'config/aggregations.yml', :audioscrobbler_feed, :delicious_feed, :flickr_feed, :fortythree_feed
     config_reader 'config/assets.yml', :javascript_files, :stylesheet_files, :base_path, :images_path, :javascripts_path, :stylesheets_path
@@ -19,8 +19,6 @@ module Shinmun
 
     # Initialize the blog, load the config file and write the index files.
     def initialize
-      @uuid = UUID.new
-
       @config = Cache.new do |file|
         YAML.load(File.read(file))
       end
@@ -169,8 +167,7 @@ module Shinmun
       posts.map { |p| [p.year, p.month] }.uniq.sort
     end
 
-    # Create a new post with given title. Date and guid will be set
-    # automatically.
+    # Create a new post with given title.
     def create_post(title)
       date = Date.today
       name = urlify(title)
@@ -179,14 +176,9 @@ module Shinmun
       if File.exist?(file)
         raise "#{file} exists"
       else
-        post = Post.new(:path => path)
-        post.title = title
-        post.head = {
-          'date' => date,
-          'guid' => @uuid.generate,
-          'category' => ''
-        }
-        post.save
+        Post.new(:path => path,
+                 :title => title,
+                 :date => date).save
       end
     end
 

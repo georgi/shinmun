@@ -15,12 +15,14 @@ module Shinmun
       [ time.strftime('%Y-%m-%d %H:%M:%S'), name, website, text ].to_json
     end
 
-    def self.read(guid)
-      comment_file = "comments/#{guid}"
+    def self.read(path)
+      file = "comments/#{path}"
       body = ''
 
-      if File.exist?(comment_file)
-        File.open(comment_file, "r") do |io|
+      FileUtils.mkdir_p(File.dirname(file))
+
+      if File.exist?(file)
+        File.open(file, "r") do |io|
           io.flock(File::LOCK_SH)
           body = io.read
           io.flock(File::LOCK_UN)
@@ -32,10 +34,12 @@ module Shinmun
       end
     end
 
-    def self.write(guid, comment)
-      comment_file = "comments/#{guid}"
+    def self.write(path, comment)
+      file = "comments/#{path}"
 
-      File.open(comment_file, "a") do |io|
+      FileUtils.mkdir_p(File.dirname(file))
+
+      File.open(file, "a") do |io|
         io.flock(File::LOCK_EX)
         io.puts(comment.to_json)
         io.flock(File::LOCK_UN)

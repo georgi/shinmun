@@ -112,18 +112,13 @@ module Shinmun
   end
 
   class CommentsController < Controller
-    GUID_PATTERN = /^(\{{0,1}([0-9a-fA-F]){8}-([0-9a-fA-F]){4}-([0-9a-fA-F]){4}-([0-9a-fA-F]){4}-([0-9a-fA-F]){12}\}{0,1})$/ 
 
     def post
-      params['guid'].match(GUID_PATTERN) or raise 'invalid guid'
+      params['path'].include?('..') and raise 'invalid path'
 
-      comment = Comment.new(Time.now, params['name'], params['website'], params['text'])
+      Comment.write(params['path'], Comment.new(Time.now, params['name'], params['website'], params['text']))
 
-      Comment.write(params['guid'], comment)
-
-      comments = Comment.read(params['guid'])
-
-      blog.render_comments(comments)
+      blog.render_comments(Comment.read(params['path']))
     end
 
   end

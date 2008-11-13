@@ -7,7 +7,6 @@ module Shinmun
   #     --- 
   #     category: Ruby
   #     date: 2008-09-05
-  #     guid: 7ad04f10-5dd6-012b-b53c-001a92975b89
   #      
   #     BlueCloth, a Markdown library
   #     =============================
@@ -27,7 +26,7 @@ module Shinmun
     end
 
     attr_accessor :prefix, :path, :type, :title, :head, :body, :summary, :body_html
-    head_accessor :author, :date, :category, :tags, :languages, :guid, :header
+    head_accessor :author, :date, :category, :tags, :languages, :header
 
     # Initialize empty post and set specified attributes.
     def initialize(attributes={})
@@ -146,7 +145,6 @@ module Shinmun
       head.merge(:author => author,
                  :path => path,
                  :title => title,
-                 :guid => guid,
                  :body => body_html)
     end
 
