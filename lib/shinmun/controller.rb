@@ -9,7 +9,7 @@ module Shinmun
       @routing = []
 
       map /\.rss$/, FeedController
-      map /^\/\d\d\d\d\/\d+\//, PostController
+      map /^\/\d\d\d\d\/\d+/, PostController
       map /^\/categories/, CategoryController
       map /^\/comments/, CommentsController
       map //, PageController
@@ -82,7 +82,7 @@ module Shinmun
   class PostController < PageController
     def get
       year, month, file = path.split('/')
-      if file.empty?
+      if file == 'index.html'
         blog.render_month(year.to_i, month.to_i)
       else
         post = blog.find_post(path) or raise "#{path} not found"
