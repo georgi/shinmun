@@ -82,7 +82,7 @@ module Shinmun
   class PostController < PageController
     def get
       year, month, file = path.split('/')
-      if file == 'index.html'
+      if file == 'index'
         blog.render_month(year.to_i, month.to_i)
       else
         post = blog.find_post(path) or raise "#{path} not found"
