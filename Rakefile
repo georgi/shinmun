@@ -20,13 +20,14 @@ pages. Shinmun supports categories, archives and RSS feeds. Commenting
 is supported through a PHP script and flat file storage.
 EOF
   
-  s.files = `git ls-files`.split("\n")
+  s.files = `git ls-files`.split("\n").reject { |f| f.match /^pkg/ }
   s.bindir = 'bin'
   s.executables << 'shinmun'
   s.require_path = 'lib'
-  s.add_dependency 'uuid', '>=2.0.0'
-  s.add_dependency 'BlueCloth', '>=1.0.0'
-  s.add_dependency 'rubypants', '>=0.2.0'
+  s.add_dependency 'BlueCloth'
+  s.add_dependency 'RedCloth'
+  s.add_dependency 'rubypants'
+  s.add_dependency 'packr'
   s.has_rdoc = true
   s.extra_rdoc_files = ['README.md']
   
