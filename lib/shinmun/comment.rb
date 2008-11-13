@@ -1,37 +1,30 @@
 module Shinmun
 
-  unless defined?(Comment)
-    class Comment < Struct.new(:time, :name, :website, :text)
-    end
-  end
-
   class Comment
+
+    attr_accessor :time, :name, :email, :website, :text
+
+    def initialize(attributes)
+      for k, v in attributes
+        send "#{k}=", v
+      end
+    end
                
-    def self.from_json(s)
-      new(*JSON.parse(s))
-    end
-
-    def to_json
-      [ time.strftime('%Y-%m-%d %H:%M:%S'), name, website, text ].to_json
-    end
-
     def self.read(path)
       file = "comments/#{path}"
-      body = ''
-
-      FileUtils.mkdir_p(File.dirname(file))
+      comments = []
 
       if File.exist?(file)
         File.open(file, "r") do |io|
           io.flock(File::LOCK_SH)
-          body = io.read
+          YAML.each_document(io) do |comment|
+            comments << comment
+          end
           io.flock(File::LOCK_UN)
         end
       end
 
-      body.split("\n").map do |line|
-        from_json(line)
-      end
+      comments
     end
 
     def self.write(path, comment)
@@ -41,7 +34,7 @@ module Shinmun
 
       File.open(file, "a") do |io|
         io.flock(File::LOCK_EX)
-        io.puts(comment.to_json)
+        io.puts(comment.to_yaml)
         io.flock(File::LOCK_UN)
       end
     end
