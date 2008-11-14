@@ -121,9 +121,12 @@ module Shinmun
                             :website => params['website'],
                             :text => params['text'])
 
-      Comment.write(params['path'], comment)
-
-      blog.render_comments(Comment.read(params['path']))
+      if params['preview'] == 'true'
+        blog.render_comments([comment])
+      else
+        Comment.write(params['path'], comment)
+        blog.render_comments(Comment.read(params['path']))
+      end
     end
 
   end

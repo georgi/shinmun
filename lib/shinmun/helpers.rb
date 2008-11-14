@@ -65,10 +65,10 @@ module Shinmun
       time.strftime("%a, %d %b %Y %H:%M:%S %z")
     end
 
-    def markdown(text)
-      BlueCloth.new(text).to_html
+    def markdown(text, *args)
+      BlueCloth.new(text, *args).to_html
     rescue => e      
-      "#{text}<br/><br/><small>markdown failed: #{e.message}</small>"
+      "#{text}<br/><br/><strong style='color:red'>#{e.message}</strong>"
     end
 
     def urlify(string)

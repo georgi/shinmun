@@ -105,6 +105,7 @@ module Shinmun
 
     # Compress the javascripts using PackR and write them to one file called 'all.js'.
     def pack_javascripts
+      @javascripts.reload_dirty!
       File.open("assets/#{javascripts_path}/all.js", "wb") do |io|
         for file in javascript_files
           io << @javascripts["assets/#{javascripts_path}/#{file.strip}.js"] << "\n\n"
@@ -114,6 +115,7 @@ module Shinmun
 
     # Pack the stylesheets and write them to one file called 'all.css'.
     def pack_stylesheets
+      @stylesheets.reload_dirty!
       File.open("assets/#{stylesheets_path}/all.css", "wb") do |io|
         for file in stylesheet_files
           io << @stylesheets["assets/#{stylesheets_path}/#{file.strip}.css"] << "\n\n"
