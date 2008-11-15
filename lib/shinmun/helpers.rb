@@ -71,6 +71,10 @@ module Shinmun
       "#{text}<br/><br/><strong style='color:red'>#{e.message}</strong>"
     end
 
+    def strip_tags(str)
+      str.gsub(/<\/?[^>]*>/, "")
+    end
+
     def urlify(string)
       string.downcase.gsub(/[ -]+/, '-').gsub(/[^-a-z0-9_]+/, '')
     end
