@@ -9,15 +9,15 @@ require 'fileutils'
 
 spec = Gem::Specification.new do |s|
   s.name = "shinmun"
-  s.version = `git describe`.strip.sub(/-.*/, '')
+  s.version = `git describe`
   s.platform = Gem::Platform::RUBY
   s.summary = "a small blog engine"
   
   s.description = <<-EOF
 Shinmun is a blog engine, which renders text files using a markup
-language like Markdown and a set of templates into static web
-pages. Shinmun supports categories, archives and RSS feeds. Commenting
-is supported through a PHP script and flat file storage.
+language like Markdown and a set of templates into either static web
+pages or serving them over a rack adapter. Shinmun supports
+categories, archives, rss feeds and commenting.
 EOF
   
   s.files = `git ls-files`.split("\n").reject { |f| f.match /^pkg/ }
@@ -50,10 +50,23 @@ Rake::RDocTask.new(:rdoc) do |rdoc|
     '--charset' << 'utf-8'
   rdoc.rdoc_dir = "doc"
   rdoc.rdoc_files.include 'README.md'
-  rdoc.rdoc_files.include('lib/shinmun.rb')
+  Dir['lib/**/*.rb'].each do |file|
+    rdoc.rdoc_files.include file
+  end
 end
 
 
-task :push => [:rdoc] do
-  sh "rsync -avz doc/ mgeorgi@rack.rubyforge.org:/var/www/gforge-projects/shinmun"
+task :pdoc => [:rdoc] do
+  sh "rsync -avz doc/ mgeorgi@rubyforge.org:/var/www/gforge-projects/shinmun"
+end
+
+desc "Publish the release files to RubyForge."
+task :release => [ :gem ] do
+  require 'rubyforge'
+  require 'rake/contrib/rubyforgepublisher'
+ 
+  rubyforge = RubyForge.new
+  rubyforge.configure
+  rubyforge.login
+  rubyforge.add_release('shinmun', 'shinmun', spec.version, "pkg/shinmun-#{spec.version}.gem")
 end

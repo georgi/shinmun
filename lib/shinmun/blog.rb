@@ -66,7 +66,7 @@ module Shinmun
     end
 
     def load_aggregations
-      @config['config/aggregations.yml'].each do |c|
+      @config['config/aggregations.yml'].to_a.each do |c|
         @aggregations[c['name']] = Object.const_get(c['class']).new(c['url'])
       end
     end

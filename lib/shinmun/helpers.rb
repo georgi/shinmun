@@ -17,10 +17,12 @@ module Shinmun
 
     # Render stylesheet link tag
     def stylesheet_link_tag(*names)
+      options = names.last.is_a?(Hash) ? names.pop : {}
+      options[:media] ||= 'screen'
       names.map { |name|
         mtime = File.mtime("assets/#{blog.stylesheets_path}/#{name}.css").to_i
         path = "/#{blog.stylesheets_path}/#{name}.css?#{mtime}"
-        tag :link, :href => path, :rel => 'stylesheet', :media => 'screen'
+        tag :link, :href => path, :rel => 'stylesheet', :media => options[:media]
       }.join("\n")
     end
 
