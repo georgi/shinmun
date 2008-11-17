@@ -85,6 +85,8 @@ module Shinmun
     def parse_title
       lines = body.split("\n")
 
+      return if lines.empty?
+
       case type
       when 'md'
         @title = lines.shift.sub(/(^#+|#+$)/,'').strip
@@ -120,13 +122,13 @@ module Shinmun
       end
 
       head.each do |k, v|        
-        head.delete(k) if v.nil? || v.empty?
+        head.delete(k) if v.nil? || (v.respond_to?(:empty?) && v.empty?)
       end
       
       if head.empty?
         body
       else
-        head.to_yaml + "\n\n" + body
+        head.to_yaml + "\n" + body
       end
     end
 

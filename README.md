@@ -1,8 +1,8 @@
 Shinmun, a small and beautiful blog engine
 ==========================================
 
-Shinmun is a **minimalist blog engine**. You just write posts as text files,
-render them to static files and push your blog to your server.
+Shinmun is a **minimalist blog engine**. You just write posts as text
+files and serve your blog via rack handler or static files.
 
 This allows you to write posts in your favorite editor like Emacs or
 VI and use a VCS like git.
@@ -12,71 +12,57 @@ templates have access to `Post` objects and *helper methods* so that
 anybody who knows *Rails* should feel comfortable with it.
 
 
-### Shinmun Features
+### Features
 
 * Index listing
 * Category listing
 * Archive listings for each month
 * RSS feeds for index and category pages
-* Builtin webserver for realtime rendering
+* Rack handler for realtime rendering
 * Compression of javascript files with PackR
 * Included syntax highlighting through `highlight.js`
-* AJAX comment system with PHP JSON file storage
-* Integration of WMD-Markdown Editor for commenting
+* AJAX comment system with Markdown preview
 
 
 ### Quickstart
 
-Install the gem:
+Install the necessary gems:
 
-    gem install shinmun
+    gem install shinmun rack packr
 
 Download and extract the example blog from my [github repository][3].
 
-Issue the following commands and you will see the blog on
-`http://localhost:3000`:
+Issue the following commands:
 
     cd shinmun-example
-    shinmun server
+    rackup
+
+Now browse to the following url and you will see a minimal example
+blog: 
+
+    http://localhost:9292
 
 
 ### Writing Posts
 
-Posts can be created by using the `shinmun` command inside your blog folder:
+Posts can be created by using the `shinmun` command inside your blog
+folder:
 
     shinmun new 'The title of the post'
 
 Shinmun will then create a post file in the right place, for example
 in `posts/2008/9/the-title-of-the-post.md`. After creating you will
-probably open the file, set the category and start writing your new
-article.
-
-Now you want to look at your rendered post. Just run:
-
-    shinmun server
-
-Go to `http://localhost:3000` and you will see your blog served in
-realtime. Just change and save any of your posts and you will see the
-new output in your browser.
-
-After finishing your post, you may run `shinmun render` and the output
-will be rendered to the *public* folder.
-
-By issuing the `shinmun push` command your blog will be pushed to your
-server using rsync. This works only, if you define the blog_repository
-variable inside blog.yml. It should contain something like
-`user@myhost.com:/var/www/my-site/`.
+probably open the file, set the category and tags and start writing
+your new article.
 
 
 ### Post Format
 
-Each blog post is just a text file with an optional header section and
-a markup body, which are separated by a newline. Normally you don't
-have to worry about the post format, if you create posts with the
-`shinmun new` command.
+Each blog post is just a text file with an header section and a markup
+body, which are separated by a newline.
 
-The **first line** of the header should start with 3 dashes as usual
-for a YAML document.
+The **first line** of a post should consist of 3 dashes to mark the
+YAML header.
 
 The title of your post will be parsed from your first heading
 according to the document type. Shinmun will try to figure out the
@@ -84,20 +70,19 @@ title for Markdown, Textile and HTML files.
 
 The yaml header may have following attributes:
 
-* `date`: post will show up in blog page and archive pages
-* `category`: post will show up in the defined category page
-* `guid`: will be set automatically by Shinmun
-
-Posts without a date are by definition static pages.
+* `title`: if you have no title inside the markup, you have to define it here
+* `date`: needed for chronological order and for archive pages
+* `category`: needed for category pages
+* `tags`: used to determine similar posts
 
 Example post:
 
 <pre>
 
     --- 
-    category: Ruby
     date: 2008-09-05
-    guid: 7ad04f10-5dd6-012b-b53c-001a92975b89
+    category: Ruby
+    tags: bluecloth, markdown, ruby
      
     BlueCloth, a Markdown library
     =============================
@@ -107,29 +92,21 @@ Example post:
 
 </pre>
 
-The guid should never change, as it will be you used for identifying
-posts for comments.
 
 
 ### Directory layout
 
-* Your **assets** are in the `assets` folder, which gets copied to the
-  public folder in the render step.
+* `assets`: like images, stylesheets and javascripts
 
-* The **settings of your blog** are defined in `config/blog.yml`
+* `comments`: comments stored as yaml files
 
-* Your **posts** reside in the `posts` folder sorted by year/month.
+* `config`: configuration of blog, aggregations, assets and categories
 
-* Your **pages** are located in the `pages` folder.
+* `posts`: post files sorted by year/month.
 
-* **Template** files are in the `templates` folder.
+* `pages`: contains static pages
 
-* The **index page** of your blog is defined in `pages/index.rhtml` and
-  may be customized.
-
-* **Archive pages** will be rendered to files like `public/2008/9/index.html`.
-
-* **Category pages** will be rendered to files like `public/categories/ruby.html`.
+* `templates`: ERB templates for layout, posts and others
 
 
 An example tree:
@@ -139,80 +116,90 @@ An example tree:
       + stylesheets
       + javascripts      
     + config
+      + aggregations.yml
+      + assets.yml
       + blog.yml
+      + categories.yml
     + pages
       + about.md
-      + index.rhtml
     + posts
       + 2007
       + 2008
         + 9
           + my-article.md
     + templates
+      + category.rhtml
+      + category.rxml
+      + comments.rhtml
       + feed.rxml
+      + helpers.rb
+      + index.rhtml
+      + index.rxml
       + layout.rhtml
-      + page.rhtml  
       + post.rhtml  
-      + posts.rhtml
 
 
-The output will look like this:
+### Blog configuation
 
-    + public
-      + index.html
-      + about.html
-      + categories
-        + emacs.html
-        + ruby.html
-      + 2007   
-      + 2008
-        + 9
-          + my-article.html
-      + images
-      + stylesheets
-      + javascripts
+Inside `config/blog.yml` you will set the properties of your blog:
 
+* title: the title of your blog, used inside templates
 
-### Config file
+* description: used for RSS
 
-The configuration of the blog system consists of some variables
-encoded as yaml file:
+* language: used for RSS
 
-* blog_title: the title of your blog, used for rss
+* author: used for RSS
 
-* blog_description: used for rss
-
-* blog_language: used for rss
-
-* blog_author: used for rss, acts also as fallback for the blog.author variable
-
-* blog_url: used for rss
+* url: used for RSS
 
 * blog_repository: path for rsync, used for `shinmun push` command
 
 * base_path: if your blog should not be rendered to your site
   root, you can define a sub path here (like `blog`)
 
-* images_path: used for templates helper, defaults to `images`
 
-* javascripts_path: used for templates helper, defaults to `javascripts`
+### Asset configuation
 
-* stylesheets_path: used for templates helper, defaults to `stylesheets`
+If you set the variables `javascripts_files` or `stylesheets_files`,
+Shinmun will compress the javascripts to `all.js` and concatenate all
+stylesheets to `all.css` automatically.
 
-* pack_javascripts: a list of scripts to be compressed
+* images_path: used for templates helper
 
-* pack_stylesheets: a list of stylesheets to be concatenated
+* javascripts_path: used for templates helper
+
+* stylesheets_path: used for templates helper
+
+* javascripts_files: a list of scripts to be compressed to `all.js`
+
+* stylesheets_files: a list of stylesheets to be concatenated to `all.css`
+
+
+### Categories
+
+You have to list your categories in `config/categories.yml`. This will
+look like:
+
+    ---
+    categories:
+      - { name: Ruby }
+      - { name: Javascript }
+
+You may define arbitrary properties for each category, which then can
+be accessed inside the templates. For example you could add a
+description and use it inside the `templates/category.rhtml`.
 
 
 ### Layout
 
 Layout and templates are rendered by *ERB*.  The layout is defined in
-`layout.rhtml`. The content will be provided in the variable
-`@content`. A minimal example:
+`templates/layout.rhtml`. The content will be provided in the variable
+`@content`. A minimal but functional example:
 
     <html>
       <head>
-        <title><%= @blog_title %></title>
+        <title><%= @blog.title %></title>
         <%= stylesheet_link_tag 'style' %>
       </head>
       <body>
@@ -260,55 +247,86 @@ The attributes of a post are accessible as instance variables in a template:
      
       <h3>Comments</h3>
 
-      <!-- Here you may put my commenting system -->
+      <!-- comment form -->
     </div>
-
-
-### RSS Feeds
-
-Feeds will be rendered by the *ERB template*
-`templates/feed.rxml`. Some of the variables have been read from the
-`blog.yml`, like `@blog_title`, other variables have been determined
-by the engine like `@posts` or `@category`.
-
-
-### Packr Support
-
-If you set the variables `pack_javascripts` or `pack_stylesheets`,
-Shinmun will create the files `all.js` or `all.css` automatically
-on rendering (even on each request of the webserver).
-
-The Javascript will be compressed with Packr and for performance
-reasons, minified versions for each of your javascripts will be
-created automatically in `assets/javascripts`.
-
-The stylesheets will be just concatenated to one file named `all.css`.
-
-Note that you define a yaml array of filenames without file
-extensions, so it should like `[jquery, jquery-form]`.
 
 
 ### Commenting System
 
-As I am not willing to build up a whole Rails stack for a single blog,
-I was looking for a simple storage for comments. I really like the
-JSON format. It works seamlessly with Javascript libraries and can be
-serialized and deserialized from almost any language.
+Commenting is only available in the rack handler. Comments are stored
+as flat files and encoded as YAML objects. Each post has a
+corresponding comment file located at `comments/<path to post>`. So
+administration of comments is possible by editing the YAML file, you
+can even version control your comments if you want.
 
-Read about my [lightweight commenting system][2].
+
+### Static Output
+
+To render your complete blog you may run `shinmun render` and the
+output will be rendered to the `public` folder. Note that in this case
+you will miss some dynamic features like the commenting system.
+
+By issuing the `shinmun push` command your blog will be pushed to your
+server using rsync. This works only, if you define the `repository`
+variable inside `config/blog.yml`. It should contain something like
+`user@myhost.com:/var/www/my-site/`.
+
+
+### Realtime Rendering
+
+Shinmun features a lightweight rack handler, which lets you run your
+blog in almost any environment. In `shinmun-example` you will find a
+rackup file called `config.ru`. To start the standalone server just
+run:
+
+    $ rackup
+
+Browse to `http://localhost:9292` and you will see your blog served in
+realtime. Just change any of your posts, templates or settings and you
+will see the new output in your browser. Even the javascripts and
+stylesheets will be packed at runtime if you configured it. Shinmun
+caches all files, so that everything get served from memory.
+
+
+### Phusion Passenger
+
+Shinmun is already compatible with Phusion Passenger. Install Phusion
+Passenger as described in my [blog post][2].
+
+Now copy your blog folder to some folder like `/var/www/blog` and
+create a sub directory `public`. Inside this directory you should link
+your assets folders:
+
+    # cd public
+    # ln -s ../assets/images
+    # ln -s ../assets/javascripts
+    # ln -s ../assets/stylesheets
+
+This is just to ensure that static files will be served by Apache.
+
+Assuming that you are on a Debian or Ubuntu system, you can now create
+a file named `/etc/apache2/sites-available/blog`:
+
+    <VirtualHost *:80>
+        ServerName myblog.com
+        DocumentRoot /var/www/blog/public
+    </VirtualHost>
+
+Enable the new virtual host:
+
+    $ a2ensite myapp
+
+After restarting Apache your blog should run on Apache on your desired
+domain:
+
+    $ /etc/init.d/apache2 restart
 
 
 ### Download
 
-Simply install the gem:
-
-    gem install shinmun
-
-
 Download or fork the package at my [github repository][1]
 
 
-
 [1]: http://github.com/georgi/shinmun/tree/master
-[2]: commenting-system-with-lightweight-json-store.html
+[2]: http://www.matthias-georgi.de/2008/9/quick-guide-for-passenger-on-ubuntu-hardy.html
 [3]: http://github.com/georgi/shinmun-example/tree/master

@@ -60,13 +60,22 @@ task :pdoc => [:rdoc] do
   sh "rsync -avz doc/ mgeorgi@rubyforge.org:/var/www/gforge-projects/shinmun"
 end
 
-desc "Publish the release files to RubyForge."
-task :release => [ :gem ] do
+def rubyforge
   require 'rubyforge'
   require 'rake/contrib/rubyforgepublisher'
  
   rubyforge = RubyForge.new
   rubyforge.configure
   rubyforge.login
+  rubyforge
+end
+
+desc "Publish the release files to RubyForge."
+task :release => [ :gem ] do
   rubyforge.add_release('shinmun', 'shinmun', spec.version, "pkg/shinmun-#{spec.version}.gem")
+end
+
+desc "Update the release files on RubyForge."
+task :update => [ :gem ] do
+  rubyforge.add_file('shinmun', 'shinmun', spec.version, "pkg/shinmun-#{spec.version}.gem")
 end

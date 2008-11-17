@@ -12,8 +12,8 @@ module Shinmun
 
     attr_reader :root, :posts, :pages, :aggregations
     
-    config_reader 'config/assets.yml', :javascript_files, :stylesheet_files, :base_path, :images_path, :javascripts_path, :stylesheets_path
-    config_reader 'config/blog.yml', :title, :description, :language, :author, :url, :repository
+    config_reader 'config/assets.yml', :javascript_files, :stylesheet_files, :images_path, :javascripts_path, :stylesheets_path
+    config_reader 'config/blog.yml', :title, :description, :language, :author, :url, :repository, :base_path
     config_reader 'config/categories.yml', :categories
 
     # Initialize the blog, load the config file and write the index files.
@@ -163,14 +163,12 @@ module Shinmun
     def create_post(title)
       date = Date.today
       name = urlify(title)
-      path = "#{date.year}/#{date.month}/#{name}.md"
+      filename = "posts/#{date.year}/#{date.month}/#{name}.md"
 
-      if File.exist?(file)
-        raise "#{file} exists"
+      if File.exist?(filename)
+        raise "#{filename} already exists"
       else
-        Post.new(:path => path,
-                 :title => title,
-                 :date => date).save
+        Post.new(:filename => filename, :title => title, :date => date).save
       end
     end
 
@@ -305,6 +303,7 @@ module Shinmun
     def write_all
       load_aggregations
       reload
+      FileUtils.cp_r 'assets/.', 'public'
 
       write_index_page
       write_pages
