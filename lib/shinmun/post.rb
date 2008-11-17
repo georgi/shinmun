@@ -67,7 +67,7 @@ module Shinmun
     # yaml document. Render body and parse the summary from rendered html.
     def parse(src)
       # Parse YAML header if present
-      if src =~ /---.*?\n(.*?)\n\n(.*)/m
+      if src =~ /\A---.*?\n(.*?)\n\n(.*)/m
         @head = YAML.load($1)
         @body = $2
       else
@@ -99,7 +99,7 @@ module Shinmun
         @title = lines.shift.sub(/(^h1.)/,'').strip
       end
 
-      @body = lines.join("\n")
+      @body = lines.join("\n") if post?
     end
 
     # Convert to yaml for caching.
@@ -132,8 +132,14 @@ module Shinmun
       end
     end
 
+    def post?
+      filename.match(/^posts/)
+    end
+
     def load
       parse(File.read(filename))
+      raise "no date defined in post #{filename}" if post? and date.nil?
+      self
     end
 
     def save
