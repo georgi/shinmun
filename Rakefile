@@ -26,6 +26,9 @@ EOF
   s.require_path = 'lib'
   s.add_dependency 'BlueCloth'
   s.add_dependency 'rubypants'
+  s.add_dependency 'rack'
+  s.add_dependency 'packr'
+  s.add_dependency 'coderay'
   s.has_rdoc = true
   s.extra_rdoc_files = ['README.md']
   

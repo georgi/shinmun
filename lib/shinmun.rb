@@ -6,6 +6,8 @@ require 'time'
 
 require 'bluecloth'
 require 'rubypants'
+require 'coderay'
+require 'shinmun/bluecloth_coderay'
 
 begin; require 'redcloth'; rescue LoadError; end
 begin; require 'packr'; rescue LoadError; end

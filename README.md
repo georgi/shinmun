@@ -19,28 +19,29 @@ anybody who knows *Rails* should feel comfortable with it.
 * Archive listings for each month
 * RSS feeds for index and category pages
 * Rack handler for realtime rendering
+* Phusion Passenger compatible
 * Compression of javascript files with PackR
-* Included syntax highlighting through `highlight.js`
+* Syntax highlighting for many languages provided by CodeRay
 * AJAX comment system with Markdown preview
 
 
 ### Quickstart
 
-Install the necessary gems:
+Install the gem:
 
-    gem install shinmun rack packr
+    gem install shinmun
 
-Download and extract the example blog from my [github repository][3].
+Download shinmun-example from my [github repository][3] and type:
 
-Issue the following commands:
-
+    tar xvzf shinmun-example.tar.gz
     cd shinmun-example
     rackup
 
-Now browse to the following url and you will see a minimal example
-blog: 
+Now browse to the following url:
 
     http://localhost:9292
+
+Voilà, your first blog is up and running!
 
 
 ### Writing Posts
@@ -77,8 +78,6 @@ The yaml header may have following attributes:
 
 Example post:
 
-<pre>
-
     --- 
     date: 2008-09-05
     category: Ruby
@@ -90,8 +89,36 @@ Example post:
     This is the summary, which is by definition the first paragraph of the
     article. The summary shows up in category listings or the index listing.
 
-</pre>
 
+### Syntax highlighting
+
+Thanks to the fantastic highlighting library [CodeRay][4], highlighted code
+blocks can be embedded easily in Markdown. For Textile support you
+have to require `coderay/for_redcloth`. These languages are supported:
+
+* C
+* Diff
+* Javascript
+* Scheme
+* CSS
+* HTML
+* XML
+* Java
+* JSON
+* RHTML
+* YAML
+* Delphi
+
+To activate CodeRay for a code block, you have to declare the language
+in lower case:
+
+        @@ruby
+        
+        def method_missing(id, *args, &block)
+          puts "#{id} was called with #{args.inspect}"
+        end             
+
+**Note that the declaration MUST be followed by a blank line!**
 
 
 ### Directory layout
@@ -290,7 +317,7 @@ caches all files, so that everything get served from memory.
 
 ### Phusion Passenger
 
-Shinmun is already compatible with Phusion Passenger. Install Phusion
+Shinmun is already compatible with [Phusion Passenger][5]. Install Phusion
 Passenger as described in my [blog post][2].
 
 Now copy your blog folder to some folder like `/var/www/blog` and
@@ -330,3 +357,5 @@ Download or fork the package at my [github repository][1]
 [1]: http://github.com/georgi/shinmun/tree/master
 [2]: http://www.matthias-georgi.de/2008/9/quick-guide-for-passenger-on-ubuntu-hardy.html
 [3]: http://github.com/georgi/shinmun-example/tree/master
+[4]: http://coderay.rubychan.de/
+[5]: http://www.modrails.com/
