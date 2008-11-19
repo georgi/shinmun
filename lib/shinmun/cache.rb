@@ -9,13 +9,12 @@ module Shinmun
       @map = {}
       @callback = block || proc { |file| File.read(file) }
     end
-    
+
     # Load a file into the cache, transform it according to callback
     # and remember the modification time.
-    def load(file)
-      data = @callback.call(file)
-      @map[file] = [data, File.mtime(file)]
-      data
+    def real_load(file)
+      Shinmun.log.debug("loading #{file}")
+      @map[file] = [@callback.call(file), File.mtime(file)]
     end
 
     def remove(file)
@@ -27,18 +26,19 @@ module Shinmun
     end
 
     def reload!
-      @map.keys.each { |file| load file }
+      @map.keys.each { |file| real_load file }
     end
     
     def reload_dirty!
-      dirty_files.each { |file| load file }
+      dirty_files.each { |file| real_load file }
     end    
 
     # Access the cache by filename.
-    def [](file)
-      data, mtime = @map[file]
-      data or load(file)
+    def load(file)
+      (@map[file] || real_load(file)).first
     end
+
+    alias [] load
 
     def values
       @map.values.map { |data, | data }

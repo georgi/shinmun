@@ -1,5 +1,9 @@
 module Shinmun
 
+  def self.log
+    @log ||= Logger.new(STDERR)
+  end
+
   class Blog
 
     # Define reader methods for configuration.
@@ -42,14 +46,6 @@ module Shinmun
         Post.new(:filename => file).load
       end
 
-      Dir['pages/**/*'].each do |file|
-        @pages_cache.load(file) if File.file?(file) and file[-1, 1] != '~'
-      end
-
-      Dir['posts/**/*'].each do |file|
-        @posts_cache.load(file) if File.file?(file) and file[-1, 1] != '~'
-      end
-
       @config.load('config/aggregations.yml')
       @config.load('config/assets.yml')
       @config.load('config/blog.yml')
@@ -57,16 +53,43 @@ module Shinmun
 
       @aggregations = {}
 
-      load_aggregations
+      # load_aggregations
+      load_pages
+      load_posts
 
       Thread.start do
-        sleep 300
-        load_aggregations
+        loop do
+          sleep 300
+          load_aggregations
+        end
+      end
+
+      Thread.start do
+        loop do
+          sleep 1
+          load_pages
+          load_posts
+        end
+      end
+
+    end
+
+    def load_pages
+      Dir['pages/**/*'].each do |file|
+        @pages_cache.load(file) if File.file?(file) and file[-1, 1] != '~'
+      end
+    end
+
+    def load_posts
+      Dir['posts/**/*'].each do |file|
+        @posts_cache.load(file) if File.file?(file) and file[-1, 1] != '~'
       end
     end
 
     def load_aggregations
+      Shinmun.log.debug "loading aggregations ..."
       @config['config/aggregations.yml'].to_a.each do |c|
+        Shinmun.log.debug "loading #{c['name']} ..."
         @aggregations[c['name']] = Object.const_get(c['class']).new(c['url'])
       end
     end
@@ -74,6 +97,7 @@ module Shinmun
     # Reload config, assets and posts.
     def reload
       if @config.dirty? || @templates.dirty?
+        Shinmun.log.debug "config or templates changed -> reloading all ..."
         @config.reload!
         @templates.reload!
         @posts_cache.reload!
@@ -96,6 +120,7 @@ module Shinmun
 
     # Use rsync to synchronize the rendered blog to web server.
     def push
+      Shinmun.log.debug "pushing public folder to #{repository} ..."
       system "rsync -avz public/ #{repository}"
     end
 
@@ -105,8 +130,10 @@ module Shinmun
 
     # Compress the javascripts using PackR and write them to one file called 'all.js'.
     def pack_javascripts
+      packed_file = "assets/#{javascripts_path}/all.js"
+      Shinmun.log.debug "pack javascripts to #{packed_file} ..."
       @javascripts.reload_dirty!
-      File.open("assets/#{javascripts_path}/all.js", "wb") do |io|
+      File.open(packed_file, "wb") do |io|
         for file in javascript_files
           io << @javascripts["assets/#{javascripts_path}/#{file.strip}.js"] << "\n\n"
         end
@@ -115,8 +142,10 @@ module Shinmun
 
     # Pack the stylesheets and write them to one file called 'all.css'.
     def pack_stylesheets
+      packed_file = "assets/#{stylesheets_path}/all.css"
       @stylesheets.reload_dirty!
-      File.open("assets/#{stylesheets_path}/all.css", "wb") do |io|
+      Shinmun.log.debug "pack stylesheets to #{packed_file} ..."
+      File.open(packed_file, "wb") do |io|
         for file in stylesheet_files
           io << @stylesheets["assets/#{stylesheets_path}/#{file.strip}.css"] << "\n\n"
         end
@@ -125,10 +154,11 @@ module Shinmun
 
     # Write a file to output directory.
     def write_file(path, data)
-      FileUtils.mkdir_p("public/#{base_path}/#{File.dirname path}")
-
-      open("public/#{base_path}/#{path}", 'wb') do |file|
-        file << data
+      file = "public/#{base_path}/#{path}"
+      Shinmun.log.debug "writing #{file} ..."
+      FileUtils.mkdir_p(File.dirname file)
+      open(file, 'wb') do |io|
+        io << data
       end    
     end
 
@@ -165,6 +195,8 @@ module Shinmun
       name = urlify(title)
       filename = "posts/#{date.year}/#{date.month}/#{name}.md"
 
+      Shinmun.log.debug "creating post #{filename} ..."
+
       if File.exist?(filename)
         raise "#{filename} already exists"
       else
@@ -172,11 +204,22 @@ module Shinmun
       end
     end
 
+    def normalize_path(path)
+      if path[0, 1] == '/'
+        path[1..-1] 
+      else
+        path
+      end
+    end
+
     def find_page(path)
+      path = normalize_path(path)
       pages.find { |p| p.path == path }
     end
 
     def find_post(path)
+      path = normalize_path(path)
+      path = path[1..-1] if path[0, 1] == '/'
       posts.find { |p| p.path == path }
     end
 
@@ -203,11 +246,13 @@ module Shinmun
 
     # Render given post using the post template and the layout template.
     def render_post(post)
+      post = find_page(post) if post.is_a?(String)
       render('post.rhtml', post.variables.merge(:header => post.category))
     end
 
     # Render given page using only the layout template.
     def render_page(page)
+      page = find_page(category) if page.is_a?(String)
       render_layout(page.variables.merge(:content => page.body_html))
     end
 
@@ -225,6 +270,7 @@ module Shinmun
 
     # Render the category summary for given category.
     def render_category(category)
+      category = find_category(category) if category.is_a?(String)
       posts = posts_for_category(category)
       render("category.rhtml",  
              :header => category['name'],
@@ -253,6 +299,7 @@ module Shinmun
 
     # Render category feed for given category using the feed template .
     def render_category_feed(category)
+      category = find_category(category) if category.is_a?(String)
       render_template("category.rxml", 
                       :blog => self,
                       :category => category, 
@@ -311,6 +358,14 @@ module Shinmun
       write_archives
       write_categories
       write_feeds      
+    end
+
+    def route(rack, &block)
+      builder = Shinmun::Builder.new(self, &block)
+
+      rack.map "/#{base_path}" do
+        run builder
+      end
     end
 
   end

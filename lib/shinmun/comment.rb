@@ -8,6 +8,8 @@ module Shinmun
       for k, v in attributes
         send "#{k}=", v
       end
+
+      self.time ||= Time.now
     end
                
     def self.read(path)
