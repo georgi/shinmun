@@ -53,14 +53,13 @@ module Shinmun
 
       @aggregations = {}
 
-      # load_aggregations
       load_pages
       load_posts
 
       Thread.start do
         loop do
-          sleep 300
           load_aggregations
+          sleep 300
         end
       end
 
@@ -87,9 +86,7 @@ module Shinmun
     end
 
     def load_aggregations
-      Shinmun.log.debug "loading aggregations ..."
       @config['config/aggregations.yml'].to_a.each do |c|
-        Shinmun.log.debug "loading #{c['name']} ..."
         @aggregations[c['name']] = Object.const_get(c['class']).new(c['url'])
       end
     end
