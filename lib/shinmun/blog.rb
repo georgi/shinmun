@@ -243,14 +243,29 @@ module Shinmun
 
     # Render given post using the post template and the layout template.
     def render_post(post)
-      post = find_page(post) if post.is_a?(String)
+      post = find_post(post) if post.is_a?(String)
+      post or raise "not found" 
       render('post.rhtml', post.variables.merge(:header => post.category))
     end
 
     # Render given page using only the layout template.
     def render_page(page)
-      page = find_page(category) if page.is_a?(String)
+      page = find_page(page) if page.is_a?(String)
+      page or raise "not found"
       render_layout(page.variables.merge(:content => page.body_html))
+    end
+
+    def post_comment(params)
+      path = params.delete('path')
+      preview = params.delete('preview')
+      comment = Comment.new(params)
+
+      if preview == 'true'
+        render_comments([comment])
+      else
+        Comment.write(path, comment)
+        render_comments(Comment.read(path))
+      end
     end
 
     # Render comments.

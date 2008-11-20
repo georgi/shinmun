@@ -15,17 +15,24 @@ module Shinmun
         when '*' : '(.*)'
         end
       end
-      @routing << [/#{pattern}/, app, params, options]
+      @routing << [/^#{pattern}$/, app, params, options]
     end
 
+    OPTION_MAPPING = {
+      :method => 'REQUEST_METHOD',
+      :format => 'shinmun.format'
+    }
+
     def options_match(env, options)
-      return options[:method].match(env['REQUEST_METHOD']) if options[:method]
-      return true
+      options.all? { |name, pattern| pattern.match(env[OPTION_MAPPING[name]]) }
     end
 
     def match(env, pattern, app, params, options)
-      path = env["PATH_INFO"].to_s.squeeze("/")
-      match = pattern.match(path)
+      if !env['shinmun.path']
+        env['shinmun.path'], env['shinmun.format'] = env['REQUEST_URI'].split('.')
+      end
+      
+      match = pattern.match(env['shinmun.path'])
 
       if match and options_match(env, options)
         env['shinmun.params'] = {}
@@ -41,7 +48,7 @@ module Shinmun
         app = match(env, *route) and return app.call(env)
       end
 
-      [404, {"Content-Type" => "text/plain"}, ["Not Found: #{path}"]]
+      [404, {"Content-Type" => "text/plain"}, ["Not Found: #{env['REQUEST_URI']}"]]
     end
 
   end

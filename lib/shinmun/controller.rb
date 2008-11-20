@@ -1,7 +1,7 @@
 module Shinmun
 
   class Controller
-    attr_reader :blog, :request, :response, :path_info, :format, :params, :action
+    attr_reader :blog, :request, :response, :path, :format, :params, :action
 
     def initialize(blog)
       @blog = blog
@@ -15,12 +15,13 @@ module Shinmun
       blog.reload
 
       @request = Rack::Request.new(env)
-      @response = Rack::Response.new(env)
-      @path_info, @format = request.path_info.split('.')
+      @response = Rack::Response.new(env)      
+      @format = env['shinmun.format']
+      @path   = env['shinmun.path']
       @params = request.params.merge(env['shinmun.params'])
       @action = params['action'] || request.request_method.downcase
 
-      Shinmun.log.debug "#{request.request_method} #{path_info} #{params.inspect}"
+      Shinmun.log.debug "#{request.request_method} #{path} #{params.inspect}"
       
       if action_allowed?(action)
         result = send(action) 
