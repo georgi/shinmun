@@ -8,11 +8,11 @@ module Shinmun
 
     def map(pattern, app, options = {})
       params = []
-      pattern = pattern.gsub(/[:*][_a-zA-Z0-9]+/) do |name|
+      pattern = pattern.gsub(/[:,][_a-zA-Z0-9]+/) do |name|
         params << name[1..-1]
         case name[0, 1]
         when ':' : '([-_.a-zA-Z0-9]*)'
-        when '*' : '(.*)'
+        when ',' : '(.*)'
         end
       end
       @routing << [/^#{pattern}$/, app, params, options]
@@ -20,24 +20,24 @@ module Shinmun
 
     OPTION_MAPPING = {
       :method => 'REQUEST_METHOD',
-      :format => 'shinmun.format'
+      :format => 'kontrol.format'
     }
 
     def options_match(env, options)
       options.all? { |name, pattern| pattern.match(env[OPTION_MAPPING[name]]) }
     end
 
-    def match(env, pattern, app, params, options)
-      if !env['shinmun.path']
-        env['shinmun.path'], env['shinmun.format'] = env['REQUEST_URI'].split('.')
+    def match(env, pattern, app, params, options)            
+      unless env['kontrol.path']
+        env['kontrol.path'], env['kontrol.format'] = env['PATH_INFO'].split('.') 
+        env['kontrol.params'] = {}
       end
       
-      match = pattern.match(env['shinmun.path'])
+      match = pattern.match(env['kontrol.path'])
 
       if match and options_match(env, options)
-        env['shinmun.params'] = {}
         params.each_with_index do |name, index|
-          env['shinmun.params'][name] = match[index + 1].split('.').first
+          env['kontrol.params'][name] = match[index + 1]
         end
         return app
       end

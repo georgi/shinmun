@@ -18,7 +18,14 @@ module Shinmun
       end
     end
 
-    def controller(method, &block)
+    def controller(&block)
+      controller = Controller.new(blog)
+      singleton = class << controller; self; end
+      singleton.send(:class_eval, &block)
+      controller
+    end
+
+    def controller_method(method, &block)
       controller = Controller.new(blog)
       singleton = class << controller; self; end
       singleton.send(:define_method, method, &block)
@@ -33,20 +40,20 @@ module Shinmun
       end
     end
 
-    def get(pattern, options = {}, &block)
-      map(pattern, controller(:get, &block), options.merge(:method => 'GET'))
+    def get(pattern = '.*', options = {}, &block)
+      map(pattern, controller_method(:get, &block), options.merge(:method => 'GET'))
     end
 
-    def put(pattern, options = {}, &block)
-      map(pattern, controller(:put, &block), options.merge(:method => 'PUT'))
+    def put(pattern = '.*', options = {}, &block)
+      map(pattern, controller_method(:put, &block), options.merge(:method => 'PUT'))
     end
 
-    def post(pattern, options = {}, &block)
-      map(pattern, controller(:post, &block), options.merge(:method => 'POST'))
+    def post(pattern = '.*', options = {}, &block)
+      map(pattern, controller_method(:post, &block), options.merge(:method => 'POST'))
     end
 
-    def delete(pattern, options = {}, &block)
-      map(pattern, controller(:delete, &block), options.merge(:method => 'DELETE'))
+    def delete(pattern = '.*', options = {}, &block)
+      map(pattern, controller_method(:delete, &block), options.merge(:method => 'DELETE'))
     end
 
     def url_map

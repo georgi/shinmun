@@ -153,7 +153,7 @@ module Shinmun
     def write_file(path, data)
       file = "public/#{base_path}/#{path}"
       Shinmun.log.debug "writing #{file} ..."
-      FileUtils.mkdir_p(File.dirname file)
+      FileUtils.mkdir_p(File.dirname(file))
       open(file, 'wb') do |io|
         io << data
       end    

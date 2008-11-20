@@ -1,3 +1,5 @@
+require 'markaby'
+
 module Shinmun
 
   class Controller
@@ -11,14 +13,18 @@ module Shinmun
       (self.class.public_instance_methods + singleton_methods).include?(action)
     end
 
+    def render(&block)
+      Markaby::Builder.new({}, self, &block).to_s
+    end
+
     def call(env)
       blog.reload
 
       @request = Rack::Request.new(env)
       @response = Rack::Response.new(env)      
-      @format = env['shinmun.format']
-      @path   = env['shinmun.path']
-      @params = request.params.merge(env['shinmun.params'])
+      @format = env['kontrol.format']
+      @path   = env['kontrol.path']
+      @params = request.params.merge(env['kontrol.params'])
       @action = params['action'] || request.request_method.downcase
 
       Shinmun.log.debug "#{request.request_method} #{path} #{params.inspect}"
