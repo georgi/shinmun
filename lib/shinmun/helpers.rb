@@ -57,6 +57,11 @@ module Shinmun
       link_to "#{Date::MONTHNAMES[month]} #{year}", "#{blog.base_path}/#{year}/#{month}/index.html"
     end
 
+    # Render a link to a category page.
+    def category_link(category)
+      link_to category['name'], "#{blog.base_path}/categories/#{urlify category['name']}.html"
+    end
+
     # Render a date or time in a nice human readable format.
     def date(time)
       "%s %d, %d" % [Date::MONTHNAMES[time.month], time.day, time.year]
