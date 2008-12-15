@@ -1,0 +1,19 @@
+<h1>Pages</h1>
+
+<form method="post" action="/admin/create">
+  <input type="text" name="title" size="40"/>
+  <input type="submit" value="Create page"/>
+</form>
+
+<hr/>
+
+<table style="width:100%">
+  <% for page in @blog.pages %>
+    <tr>
+      <td><%= link_to page.title, "/#{page.name}" %></td>
+      <td><%= link_to 'Edit', "/admin/edit/#{page.path}" %></td>
+    </tr>
+  <% end %>
+</table>
+
+<hr/>

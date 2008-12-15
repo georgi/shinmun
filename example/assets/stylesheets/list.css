@@ -1,0 +1,13 @@
+
+ul, ol, dl {
+    list-style-position: outside;
+    margin-bottom: 1em;
+}
+
+ul li {
+    margin: 0.5em 2em;
+}
+
+ol li {
+    margin-left: 2em;
+}

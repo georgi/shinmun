@@ -1,0 +1,41 @@
+require 'shinmun'
+
+blog = Shinmun::Blog.new
+
+task :index do
+  blog.write "index.html", "index.rhtml"
+  blog.write "index.rss", "index.rxml"
+end
+
+blog.pages.each do |page|
+  task page.path do
+    blog.write page.path, "page.rhtml", :page => page
+  end
+end
+
+blog.posts.each do |post|
+  task "#{post.path}.html" do
+    blog.write "#{post.path}.html", "post.rhtml", :post => post
+  end
+end
+
+blog.archives.each do |year, month|
+  task "#{year}/#{month}" do
+    blog.write "#{year}/#{month}/index.html", "archive.rhtml", :year => year, :month => month
+  end
+end
+
+blog.categories.each do |name|
+  category = blog.find_category(name)
+  task "categories/#{category[:permalink]}" do
+    blog.write "categories/#{category[:permalink]}.html", "category.rhtml", category
+    blog.write "categories/#{category[:permalink]}.rss", "category.rxml", category
+  end
+end
+
+task :pages => blog.pages.map { |p| p.path }
+task :posts => blog.posts.map { |p| p.path }
+task :archives => blog.archives.map { |y,m| "#{y}/#{m}" }
+task :categories => blog.categories.map { |name| "categories/#{blog.urlify name}" }
+
+task :default => [:index, :pages, :posts, :archives, :categories]

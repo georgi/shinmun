@@ -2,90 +2,6 @@ module Shinmun
 
   module Helpers
 
-    # Render a hash as attributes for a HTML tag. 
-    def attributes(attributes)
-      attributes.map { |k, v| %Q{#{k}="#{v}"} }.join(' ')
-    end
-
-    # Render a HTML tag with given name. 
-    # The last argument specifies the attributes of the tag.
-    # The second argument may be the content of the tag.
-    def tag(name, *args)
-      text, attributes = args.first.is_a?(Hash) ? [nil, args.first] : args
-      "<#{name} #{attributes(attributes)}>#{text}</#{name}>"
-    end
-
-    # Render stylesheet link tag
-    def stylesheet_link_tag(*names)
-      options = names.last.is_a?(Hash) ? names.pop : {}
-      options[:media] ||= 'screen'
-      names.map { |name|
-        mtime = File.mtime("assets/#{blog.stylesheets_path}/#{name}.css").to_i
-        path = "/#{blog.stylesheets_path}/#{name}.css?#{mtime}"
-        tag :link, :href => path, :rel => 'stylesheet', :media => options[:media]
-      }.join("\n")
-    end
-
-    # Render javascript tag
-    def javascript_tag(*names)
-      names.map { |name|
-        mtime = File.mtime("assets/#{blog.javascripts_path}/#{name}.js").to_i
-        path = "/#{blog.javascripts_path}/#{name}.js?#{mtime}"
-        tag :script, :src => path, :type => 'text/javascript'
-      }.join("\n")
-    end
-
-    # Render an image tag
-    def image_tag(file, options = {})
-      mtime = File.mtime("assets/#{blog.images_path}/#{file}").to_i
-      path = "/#{blog.images_path}/#{file}?#{mtime}"
-      tag :img, options.merge(:src => path)
-    end
-
-    # Render a link
-    def link_to(text, path, options = {})
-      tag :a, text, options.merge(:href => path)
-    end
-
-    # Render a link to a post
-    def post_link(post)
-      link_to post.title, "#{blog.base_path}/#{post.path}.html"
-    end
-
-    # Render a link to an archive page.
-    def archive_link(year, month)
-      link_to "#{Date::MONTHNAMES[month]} #{year}", "#{blog.base_path}/#{year}/#{month}/index.html"
-    end
-
-    # Render a link to a category page.
-    def category_link(category)
-      link_to category['name'], "#{blog.base_path}/categories/#{urlify category['name']}.html"
-    end
-
-    # Render a date or time in a nice human readable format.
-    def date(time)
-      "%s %d, %d" % [Date::MONTHNAMES[time.month], time.day, time.year]
-    end
-
-    # Render a date or time in rfc822 format. This will be used for rss rendering.
-    def rfc822(time)
-      time.strftime("%a, %d %b %Y %H:%M:%S %z")
-    end
-
-    def markdown(text, *args)
-      BlueCloth.new(text, *args).to_html
-    rescue => e      
-      "#{text}<br/><br/><strong style='color:red'>#{e.message}</strong>"
-    end
-
-    def strip_tags(str)
-      str.gsub(/<\/?[^>]*>/, "")
-    end
-
-    def urlify(string)
-      string.downcase.gsub(/[ -]+/, '-').gsub(/[^-a-z0-9_]+/, '')
-    end
-
     # taken form ActionView::Helpers
     def distance_of_time_in_words(from_time, to_time = 0, include_seconds = false)
       from_time = from_time.to_time if from_time.respond_to?(:to_time)
@@ -116,6 +32,33 @@ module Shinmun
       else                      "over #{(distance_in_minutes / 525600).round} years"
       end
     end
+
+    # Render a link to a post
+    def post_link(post)
+      link_to post.title, "#{base_path}/#{post.year}/#{post.month}/#{post.name}"
+    end
+
+    # Render a link to an archive page.
+    def archive_link(year, month)
+      link_to "#{Date::MONTHNAMES[month]} #{year}", "#{base_path}/#{year}/#{month}"
+    end
+
+    # Render a date or time in a nice human readable format.
+    def human_date(time)
+      "%s %d, %d" % [Date::MONTHNAMES[time.month], time.day, time.year]
+    end
+
+    # Render a date or time in rfc822 format.
+    def rfc822(time)
+      time.strftime("%a, %d %b %Y %H:%M:%S %z")
+    end
+
+    def diff_line_class(line)
+      case line[0, 1]
+      when '+' then 'added'
+      when '-' then 'deleted'
+      end
+    end
+
   end
-  
 end

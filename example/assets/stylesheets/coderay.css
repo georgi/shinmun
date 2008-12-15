@@ -1,0 +1,100 @@
+.code-area {
+    width:100%;
+}
+
+.code-link {
+    padding-left:1em;
+    border-top: 1px solid #ddd;
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+}
+
+.code-link a {
+    text-decoration: none;
+    font-size: 0.8em;
+}
+
+pre.highlight {
+    margin: 0;
+}
+
+pre.highlight ol {
+    margin: 0;
+    color: #333;
+}
+
+.af { color:#00C }
+.an { color:#007 }
+.av { color:#700 }
+.aw { color:#C00 }
+.bi { color:#509; font-weight:bold }
+.c  { color:#888 }
+
+.ch { color:#04D }
+.ch .k { color:#04D }
+.ch .dl { color:#039 }
+
+.cl { color:#B06; font-weight:bold }
+.co { color:#036; font-weight:bold }
+.cr { color:#0A0 }
+.cv { color:#369 }
+.df { color:#099; font-weight:bold }
+.di { color:#088; font-weight:bold }
+.dl { color:black }
+.do { color:#970 }
+.ds { color:#D42; font-weight:bold }
+.e  { color:#666; font-weight:bold }
+.en { color:#800; font-weight:bold }
+.er { color:#F00; background-color:#FAA }
+.ex { color:#F00; font-weight:bold }
+.fl { color:#60E; font-weight:bold }
+.fu { color:#06B; font-weight:bold }
+.gv { color:#d70; font-weight:bold }
+.hx { color:#058; font-weight:bold }
+.i  { color:#00D; font-weight:bold }
+.ic { color:#B44; font-weight:bold }
+
+.il { background: #eee }
+.il .il { background: #ddd }
+.il .il .il { background: #ccc }
+.il .dl { font-weight: bold ! important; color: #888 ! important }
+
+.in { color:#B2B; font-weight:bold }
+.iv { color:#33B }
+.la { color:#970; font-weight:bold }
+.lv { color:#963 }
+.oc { color:#40E; font-weight:bold }
+.on { color:#000; font-weight:bold }
+.op { }
+.pc { color:#038; font-weight:bold }
+.pd { color:#369; font-weight:bold }
+.pp { color:#579 }
+.pt { color:#339; font-weight:bold }
+.r  { color:#080; font-weight:bold }
+
+.rx { background-color:#fff0ff }
+.rx .k { color:#808 }
+.rx .dl { color:#404 }
+.rx .mod { color:#C2C }
+.rx .fu  { color:#404; font-weight: bold }
+
+.s  { background-color:#fff0f0 }
+.s  .s { background-color:#ffe0e0 }
+.s  .s  .s { background-color:#ffd0d0 }
+.s  .k { color:#D20 }
+.s  .dl { color:#710 }
+
+.sh { background-color:#f0fff0 }
+.sh .k { color:#2B2 }
+.sh .dl { color:#161 }
+
+.sy { color:#A60 }
+.sy .k { color:#A60 }
+.sy .dl { color:#630 }
+
+.ta { color:#070 }
+.tf { color:#070; font-weight:bold }
+.ts { color:#D70; font-weight:bold }
+.ty { color:#339; font-weight:bold }
+.v  { color:#036 }
+.xt { color:#444 }

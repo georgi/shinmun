@@ -1,0 +1,13 @@
+--- 
+stylesheet_files: 
+- reset
+- typo
+- article
+- comments
+- coderay
+- style
+javascript_files: 
+- jquery.min
+- jquery-form.min
+- comments
+- coderay

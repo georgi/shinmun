@@ -1,0 +1,24 @@
+<h1>Posts</h1>
+
+<form method="post" action="/admin/create">
+  <input type="hidden" name="date" value="<%= Date.today.strftime %>"/>
+  <input type="text" name="title" size="40"/>
+  <input type="submit" value="Create post"/>
+</form>
+
+<hr/>
+
+<table style="width:100%">
+  <% for post in @posts[@page * @page_size, @page_size]  %>
+    <tr>
+      <td><%= post_link post %></td>
+      <td><%= human_date post.date %></td>
+      <td><%= link_to 'Edit', "/admin/edit/#{post.path}" %></td>
+      <td><form method="post" action="/admin/delete/<%= post.path %>"><input type="submit" value="Delete"/></form></td>
+    </tr>
+  <% end %>
+</table>
+
+<%= render '_pagination.rhtml', :list => @posts, :page => @page, :page_size => @page_size, :path => '/admin/posts' %>
+
+<hr/>

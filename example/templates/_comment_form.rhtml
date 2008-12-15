@@ -1,0 +1,90 @@
+<div class="comment-form">
+
+  <div class="loading" style="display:none">
+    <img src="/assets/images/loading.gif" />
+    Posting Comment...
+  </div>
+
+  <h4 class="preview-header" style="display:none">Comment Preview</h4>
+
+  <div class="preview">
+  </div>
+
+  <form>
+    <input type="hidden" name="path" value="<%= @post.path %>"/>
+    <p>
+      <label>Name</label><br/>
+      <input type="text" name="name" size="40"/>
+    </p>
+    <p>
+      <label>Website</label><br/>
+      <input type="text" name="website"  size="40"/>
+    </p>
+    <p>
+      <label>Comment (Use Markdown for formatting) <a href="#markdown-help" onclick="$('#markdown-help').show(); return false">show help</a></label><br/>
+      <textarea name="text" cols="60" rows="10"></textarea>
+    </p>
+    <p>
+      <input type="submit" value="Post comment"/>
+      <input type="button" value="Preview comment" class="preview-button"/>
+    </p>
+  </form>
+
+  <a name="markdown-help"></a>
+
+  <div id="markdown-help" style="display:none; margin-top:2em">
+    <h2>Comment Formatting</h2>
+
+    <ul>
+      <li>Comments may be formatted with Markdown.</li>
+      <li>Syntax highlighting is available (see below).</li>
+      <li>Errors will be shown after your comment, so please check with preview.</li>
+      <li>HTML code is filtered out for security reasons.</li>
+    </ul>
+
+    <h4>Emphasis</h4>
+    <pre>_italic_ __bold__ or *italic* **bold**</pre>
+
+    <h4>Links</h4>
+    <pre>[Link text](http://example.com)</pre>
+
+    <h4>Lists</h4>
+    <pre>
+1. Lines with beginning cardinal numbers will turn into ordered lists.
+2. This is the second item.
+
+* Lines with beginning stars will turn into unordered lists.
+* This is the second item.
+    </pre>
+
+    <h4>Block quotes</h4>
+    <pre>
+&gt; Lines with beginning brackets will turn into block quotes.
+&gt; Block quotes may be nested. </pre>
+
+    <h4>Code blocks</h4>
+    Code blocks are indented with 4 spaces and surrounded by blank lines:
+    <pre>
+
+    $ git commit -m "added markdown help"
+    </pre>
+
+    <h4>Syntax highlighting</h4>
+
+    Following languages are supported:
+    <strong>c, diff, javascript, scheme, css, html, xml, java, json, rhtml, yaml, delphi</strong>.
+
+    You have to declare the language like this:
+    <pre>
+
+    @@ruby
+
+    def method_missing(id, *args, &block)
+      puts "#{id} was called with #{args.inspect}"
+    end
+
+    </pre>
+
+  </div>
+
+</div>

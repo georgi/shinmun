@@ -1,0 +1,9 @@
+<h1>Commits</h1>
+
+<ul>
+  <% for commit in @blog.repo.commits %>
+    <li><%= link_to commit.message, "/admin/commits/#{commit.id}" %></li>
+  <% end %>
+</ul>
+
+<hr/>

@@ -1,0 +1,10 @@
+
+<div class="pagination">
+  <% if @page > 0 %>
+    <%= link_to 'Previous page', "#{@path}/#{@page - 1}" %>
+  <% end %>
+
+  <% if @page < (@list.size - 1) / @page_size %>
+  <%= link_to 'Next page', "#{path}/#{@page + 1}" %>
+<% end %>
+</div>

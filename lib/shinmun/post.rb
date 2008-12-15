@@ -25,7 +25,7 @@ module Shinmun
       end
     end
 
-    attr_accessor :prefix, :path, :type, :title, :head, :body, :summary, :body_html
+    attr_accessor :name, :type, :title, :src, :head, :body, :summary, :body_html, :tag_list
     head_accessor :author, :date, :category, :tags, :languages, :header
 
     # Initialize empty post and set specified attributes.
@@ -36,6 +36,21 @@ module Shinmun
       for k, v in attributes
         send "#{k}=", v
       end
+
+      parse src if src
+    end
+
+    def method_missing(id, *args)
+      key = id.to_s
+      if @head.has_key?(key)
+        @head[key]
+      else
+        raise NoMethodError, "undefined method `#{id}' for #{self}", caller(1)
+      end
+    end
+
+    def date=(d)
+      @head['date'] = String === d ? Date.parse(d) : d
     end
 
     # Shortcut for year of date
@@ -46,28 +61,31 @@ module Shinmun
     # Shortcut for month of date
     def month
       date.month
-    end    
-
-    def filename
-      "#{prefix}/#{path}.#{type}"
     end
 
-    # Strips off extension and prefix.
-    def filename=(file)
-      if match = file.match(/^(.*?)\/(.*)\.(.*)/)
-        @prefix = match[1]
-        @path = match[2]
-        @type = match[3]
+    def filename
+      "#{name}.#{type}"
+    end
+
+    def filename=(filename)
+      self.name, self.type = filename.split('.')
+    end
+
+    def path
+      if date
+        "#{year}/#{month}/#{name}"
       else
-        raise "incorrect filename: #{file}"
+        name
       end
     end
 
     # Split up the source into header and body. Load the header as
     # yaml document. Render body and parse the summary from rendered html.
     def parse(src)
+      src = src.delete("\r")
+
       # Parse YAML header if present
-      if src =~ /\A---.*?\n(.*?)\n\n(.*)/m
+      if src =~ /\A(---.*?)\n\n(.*)/m
         @head = YAML.load($1)
         @body = $2
       else
@@ -75,8 +93,9 @@ module Shinmun
       end
 
       @title = head['title'] or parse_title
-      @body_html = transform(body, type)
+      @body_html = transform(body)
       @summary = body_html.split("\n\n")[0]
+      @tag_list = tags.to_s.split(",").map { |s| s.strip }
 
       self
     end
@@ -99,66 +118,26 @@ module Shinmun
         @title = lines.shift.sub(/(^h1.)/,'').strip
       end
 
-      @body = lines.join("\n") if post?
+      @body = lines.join("\n")
     end
 
-    # Convert to yaml for caching.
-    def to_yaml
-      head.merge('author' => author,
-                 'path' => path,
-                 'type' => type,
-                 'title' => title,
-                 'summary' => summary,
-                 'body_html' => body_html).to_yaml
-    end
-
-    # Convert to string representation, used to create new posts.
+    # Convert to string representation
     def dump
-      head = self.head.dup
-      body = self.body.dup
-
-      if type == 'md'        
-        body = title + "\n" + ("=" * title.size) + "\n\n" + body
+      str = head.empty? ? '' : head.to_yaml + "\n"
+      unless head['title']
+        str << \
+        case type
+        when 'md'   : "#{title}\n#{'=' * title.size}\n"
+        when 'html' : "<h1>#{title}</h1>\n"
+        when 'tt'   : "h1.#{title}\n"
+        else raise
+        end
       end
-
-      head.each do |k, v|        
-        head.delete(k) if v.nil? || (v.respond_to?(:empty?) && v.empty?)
-      end
-      
-      if head.empty?
-        body
-      else
-        head.to_yaml + "\n" + body
-      end
+      str + body
     end
 
-    def post?
-      filename.match(/^posts/)
-    end
-
-    def load
-      parse(File.read(filename))
-      raise "no date defined in post #{filename}" if post? and date.nil?
-      self
-    end
-
-    def save
-      FileUtils.mkdir_p(File.dirname(filename))
-      File.open(filename, "w") { |io| io << dump }
-      self
-    end
-
-    # Variables used for templates.
-    def variables
-      head.merge(:author => author,
-                 :path => path,
-                 :title => title,
-                 :body => body_html)
-    end
-
-    # Transform the body of this post according to given type.
-    # Defaults to Markdown.
-    def transform(src, type)
+    # Transform the body of this post. Defaults to Markdown.
+    def transform(src)
       case type
       when 'html'
         RubyPants.new(src).to_html
@@ -167,6 +146,14 @@ module Shinmun
       else
         RubyPants.new(BlueCloth.new(src).to_html).to_html
       end
+    end
+
+    def eql?(obj)
+      path == obj.path
+    end
+
+    def ==(obj)
+      path == obj.path
     end
 
   end

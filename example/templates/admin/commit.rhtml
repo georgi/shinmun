@@ -1,0 +1,27 @@
+<h2>Commit <%= @commit.id %></h2>
+
+<em><%= @commit.author %> on <%= @commit.date %></em>
+
+<pre><%= @commit.message %></pre>
+
+<ul>
+  <% for diff in @commit.diffs %>
+    <li><a href="#<%= diff.a_path %>"><%= diff.a_path %></a></li>
+  <% end %>
+</ul>
+
+<% for diff in @commit.diffs %>
+  <a name="<%= diff.a_path %>"></a>
+  <div class="diff">    
+    <div class="path"><%= diff.a_path %></div>
+    <div class="body">
+      <% for line in diff.diff.split("\n")[3..-1] %>
+	<div class="line <%= diff_line_class line %>">
+	  <%=h line[1..-1] %>
+	</div>
+      <% end %>
+    </div>
+  </div>
+<% end %>
+
+<hr/>

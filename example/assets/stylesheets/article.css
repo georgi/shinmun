@@ -1,0 +1,15 @@
+.article {
+}
+
+.article h2 {
+    margin-top:0px;
+}
+
+.article .date {
+    color: #666;
+}
+
+.article .tags a {
+    color: #69c;
+    text-decoration: none;
+}
