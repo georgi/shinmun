@@ -2,6 +2,8 @@ module Shinmun
 
   class Blog < Kontrol::Application
 
+    EXAMPLE_DIR = File.expand_path(File.dirname(__FILE__) + '/../../example')
+
     include Helpers
 
     attr_reader :posts, :pages, :aggregations, :categories, :comments
@@ -19,6 +21,15 @@ module Shinmun
           sleep 300
         end
       end
+    end
+
+    def self.init(name)
+      Dir.mkdir name      
+      Dir.chdir name
+      FileUtils.cp_r EXAMPLE_DIR + '/.', '.'
+      `git init`
+      `git add .`
+      `git commit -m 'init'`
     end
 
     def posts

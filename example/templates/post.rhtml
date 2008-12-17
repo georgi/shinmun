@@ -1,10 +1,10 @@
 <div class="article">
 
+  <h1><%= @post.title %></h1>
+
   <div class="date">
     <%= human_date @post.date %>
   </div>
-
-  <h1><%= @post.title %></h1>
 
   <%= @post.body_html %>
 
