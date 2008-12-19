@@ -1,12 +1,12 @@
 Gem::Specification.new do |s|
   s.name = 'shinmun'
-  s.version = '0.2'
+  s.version = '0.3'
   s.date = '2008-12-17'
-  s.summary = 'a small blog engine'
+  s.summary = 'A small git-based blog engine'
   s.author = 'Matthias Georgi'
   s.email = 'matti.georgi@gmail.com'
   s.homepage = 'http://github.com/georgi/shinmun'  
-  s.description = "Shinmun is a small blog engine, which runs on the micro framework kontrol."
+  s.description = "A small git-based blog engine."
   s.bindir = 'bin'
   s.executables << 'shinmun'
   s.require_path = 'lib'
