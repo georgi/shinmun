@@ -2,11 +2,11 @@ Gem::Specification.new do |s|
   s.name = 'shinmun'
   s.version = '0.3'
   s.date = '2008-12-17'
-  s.summary = 'A small git-based blog engine'
+  s.summary = 'git-based blog engine'
   s.author = 'Matthias Georgi'
   s.email = 'matti.georgi@gmail.com'
   s.homepage = 'http://github.com/georgi/shinmun'  
-  s.description = "A small git-based blog engine."
+  s.description = "git-based blog engine."
   s.bindir = 'bin'
   s.executables << 'shinmun'
   s.require_path = 'lib'
