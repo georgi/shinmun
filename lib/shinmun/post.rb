@@ -25,7 +25,7 @@ module Shinmun
       end
     end
 
-    attr_accessor :name, :type, :title, :src, :head, :body, :summary, :body_html, :tag_list
+    attr_accessor :name, :type, :src, :head, :body, :summary, :body_html, :tag_list
     head_accessor :author, :date, :category, :tags, :languages, :header
 
     # Initialize empty post and set specified attributes.
@@ -33,7 +33,7 @@ module Shinmun
       @head = {}
       @body = ''
       
-      for k, v in attributes
+      attributes.each do |k, v|
         send "#{k}=", v
       end
 
@@ -47,6 +47,10 @@ module Shinmun
       else
         raise NoMethodError, "undefined method `#{id}' for #{self}", caller(1)
       end
+    end
+
+    def title
+      @title or @head['title']
     end
 
     def date=(d)
@@ -80,9 +84,8 @@ module Shinmun
     end
 
     # Split up the source into header and body. Load the header as
-    # yaml document. Render body and parse the summary from rendered html.
+    # yaml document if present.
     def parse(src)
-      # Parse YAML header if present
       if src =~ /\A(---.*?)\n\n(.*)/m
         @head = YAML.load($1)
         @body = $2
@@ -90,7 +93,7 @@ module Shinmun
         @body = src
       end
 
-      @title = head['title'] or parse_title
+      @title, @body = parse_title(@body)
       @body_html = transform(body)
       @summary = body_html.split("\n\n")[0]
       @tag_list = tags.to_s.split(",").map { |s| s.strip }
@@ -99,39 +102,46 @@ module Shinmun
     end
 
     # Parse title from different formats
-    def parse_title
-      lines = body.split("\n")
+    def parse_title(body)
+      lines = body.split(/$/).map { |line| line.delete "\n" }
+      title = nil
 
-      return if lines.empty?
+      return nil, body if lines.empty?
 
       case type
       when 'md'
-        @title = lines.shift.sub(/(^#+|#+$)/,'').strip
-        lines.shift if lines.first.match(/^(=|-)+$/)
+        title = lines.shift
+        lines.shift
 
       when 'html'
-        @title = lines.shift.sub(/(<h1>|\<\/h1>)/,'').strip
+        title = lines.shift.gsub(/(<h1>|\<\/h1>)/,'')
 
       when 'tt'
-        @title = lines.shift.sub(/(^h1.)/,'').strip
+        title = lines.shift.sub(/(^h1.)/,'')
       end
 
-      @body = lines.join("\n")
+      [title, lines.join("\n")]
+    end
+
+    # The header as yaml string.
+    def dump_head
+      head.empty? ? '' : head.to_yaml + "\n"
+    end
+
+    # Dump the title according to post type.
+    def dump_title
+      return '' if @title.nil?
+      case type
+      when 'md'   : "#{@title}\n#{'=' * @title.size}\n"
+      when 'html' : "<h1>#{@title}</h1>\n"
+      when 'tt'   : "h1.#{@title}\n"
+      else "#{@title}\n"
+      end
     end
 
     # Convert to string representation
     def dump
-      str = head.empty? ? '' : head.to_yaml + "\n"
-      unless head['title']
-        str << \
-        case type
-        when 'md'   : "#{title}\n#{'=' * title.size}\n"
-        when 'html' : "<h1>#{title}</h1>\n"
-        when 'tt'   : "h1.#{title}\n"
-        else raise
-        end
-      end
-      str + body
+      dump_head + dump_title + body
     end
 
     # Transform the body of this post. Defaults to Markdown.

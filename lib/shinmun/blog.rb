@@ -128,7 +128,7 @@ module Shinmun
     def post_comment(post, params)
       comments_for(post) << Comment.new(params)
       commit "new comment for `#{post.title}`"
-      `git push origin master`
+      # `git push origin master`
     end
 
     def find_page(name)
