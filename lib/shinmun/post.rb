@@ -82,8 +82,6 @@ module Shinmun
     # Split up the source into header and body. Load the header as
     # yaml document. Render body and parse the summary from rendered html.
     def parse(src)
-      src = src.delete("\r")
-
       # Parse YAML header if present
       if src =~ /\A(---.*?)\n\n(.*)/m
         @head = YAML.load($1)
