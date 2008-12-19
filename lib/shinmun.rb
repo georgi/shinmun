@@ -1,15 +1,12 @@
 require 'rubygems'
 require 'fileutils'
-
 require 'bluecloth'
 require 'rubypants'
 require 'coderay'
-require 'packr'
-require 'grit'
+require 'kontrol'
 
 begin; require 'redcloth'; rescue LoadError; end
 
-require 'kontrol'
 require 'shinmun/bluecloth_coderay'
 require 'shinmun/helpers'
 require 'shinmun/blog'
