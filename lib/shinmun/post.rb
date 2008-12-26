@@ -53,6 +53,10 @@ module Shinmun
       @title or @head['title']
     end
 
+    def title=(title)
+      @title = title
+    end
+
     def date=(d)
       @head['date'] = String === d ? Date.parse(d) : d
     end
