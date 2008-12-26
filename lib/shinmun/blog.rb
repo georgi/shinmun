@@ -98,10 +98,12 @@ module Shinmun
       store.commit(message)
     end
 
-    # Create a new post with given title.
+    # Create a new post with given attributes.
     def create_post(atts = {})
       atts = { :type => 'md' }.merge(symbolize_keys(atts))
-      atts[:name] = urlify(atts[:title]) or raise "no title given"
+      title = atts[:title] or raise "no title given"
+      atts[:name] ||= urlify(title)
+      atts[:date] ||= Date.today
       post = Post.new(atts)
       tree_for(post)[post.filename] = post
       commit "created `#{post.title}`"
