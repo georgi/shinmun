@@ -253,13 +253,22 @@ domain:
     $ /etc/init.d/apache2 restart
 
 
-### Administration
+### Web Frontend
 
-The example blog has a builtin administration page. To activate you
-have to create a file named `password` with a single password inside.
+The example blog has a builtin web frontend. To activate you have to
+create a file named `password` with a single password inside. Now
+browse to `/admin` and login using some arbitrary username and your
+password.
 
-Now browse to `/admin` and login using some arbitrary username and
-your password.
+The frontend allows you to create, edit, read or delete posts or
+pages. Editing a post shows up a form with the [wmd editor][6]. You
+have to look yourself for a correct YAML header, otherwise you will
+get incorrect results.
+
+One nice thing about the frontend is the *Commits* page, where you can
+look at a list of recent commits. Clicking on a commit brings you to a
+single commit overview, where you can inspect changes introduced by
+this particular commit.
 
 
 ### Download
@@ -272,3 +281,4 @@ Download or fork the package at my [github repository][1]
 [3]: http://github.com/georgi/kontrol
 [4]: http://coderay.rubychan.de/
 [5]: http://www.modrails.com/
+[6]: http://wmd-editor.com/
