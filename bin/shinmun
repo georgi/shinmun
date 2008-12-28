@@ -7,6 +7,14 @@ when 'init'
   Shinmun::Blog.init ARGV[1]
 
 when 'post'
+  Shinmun::Blog.new.create_post(:title => ARGV[1], :date => Date.today)
+
+when 'page'
   Shinmun::Blog.new.create_post(:title => ARGV[1])
 
+else
+  puts "Usage:"
+  puts "  shinmun init dir - creates a new blog"
+  puts "  shinmun post 'Title of the post' - create a new post"
+  puts "  shinmun page 'Title of the page' - create a new page"
 end

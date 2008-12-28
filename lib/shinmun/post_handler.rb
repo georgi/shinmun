@@ -13,5 +13,3 @@ module Shinmun
 end
 
 GitStore::Handler['md'] = Shinmun::PostHandler.new
-
-

@@ -7,10 +7,8 @@ module Shinmun
   #     --- 
   #     category: Ruby
   #     date: 2008-09-05
-  #      
-  #     BlueCloth, a Markdown library
-  #     =============================
-  #
+  #     title: BlueCloth, a Markdown library
+  #     ---
   #     This is the summary, which is by definition the first paragraph of the
   #     article. The summary shows up in list views and rss feeds.  
   #
@@ -26,7 +24,7 @@ module Shinmun
     end
 
     attr_accessor :name, :type, :src, :head, :body, :summary, :body_html, :tag_list
-    head_accessor :author, :date, :category, :tags
+    head_accessor :title, :author, :date, :category, :tags
 
     # Initialize empty post and set specified attributes.
     def initialize(attributes={})
@@ -47,14 +45,6 @@ module Shinmun
       else
         raise NoMethodError, "undefined method `#{id}' for #{self}", caller(1)
       end
-    end
-
-    def title
-      @title or @head['title']
-    end
-
-    def title=(title)
-      @title = title
     end
 
     def date=(d)
@@ -90,62 +80,28 @@ module Shinmun
     # Split up the source into header and body. Load the header as
     # yaml document if present.
     def parse(src)
-      if src =~ /\A(---.*?)\n\n(.*)/m
+      if src =~ /\A(---.*?)---(.*)/m
         @head = YAML.load($1)
         @body = $2
       else
         @body = src
       end
 
-      @title, @body = parse_title(@body)
-      @body_html = transform(body)
+      @body_html = transform(@body)
       @summary = body_html.split("\n\n")[0]
       @tag_list = tags.to_s.split(",").map { |s| s.strip }
 
       self
     end
 
-    # Parse title from different formats
-    def parse_title(body)
-      lines = body.split(/$/).map { |line| line.delete "\n" }
-      title = nil
-
-      return nil, body if lines.empty?
-
-      case type
-      when 'md'
-        title = lines.shift
-        lines.shift
-
-      when 'html'
-        title = lines.shift.gsub(/(<h1>|\<\/h1>)/,'')
-
-      when 'tt'
-        title = lines.shift.sub(/(^h1.)/,'')
-      end
-
-      [title, lines.join("\n")]
-    end
-
     # The header as yaml string.
     def dump_head
-      head.empty? ? '' : head.to_yaml + "\n"
-    end
-
-    # Dump the title according to post type.
-    def dump_title
-      return '' if @title.nil?
-      case type
-      when 'md'   : "#{@title}\n#{'=' * @title.size}\n"
-      when 'html' : "<h1>#{@title}</h1>\n"
-      when 'tt'   : "h1.#{@title}\n"
-      else "#{@title}\n"
-      end
+      head.empty? ? '' : head.to_yaml + "---\n"
     end
 
     # Convert to string representation
     def dump
-      dump_head + dump_title + body
+      dump_head + body
     end
 
     # Transform the body of this post. Defaults to Markdown.

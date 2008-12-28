@@ -31,11 +31,13 @@ describe Shinmun::Blog do
     file 'map.rb', File.read(TEST_DIR + '/map.rb')
     
     Dir.mkdir 'templates'
+    
     Dir[TEMPLATES_DIR + '/*'].each do |path|      
       unless path.include?('~')
         file 'templates/' + File.basename(path), File.read(path)
       end
-    end   
+    end
+    
     @blog.store.load
     
     @posts = [@blog.create_post(:title => 'New post', :date => '2008-10-10', :category => 'Ruby', :body => 'Body1'),
@@ -44,7 +46,7 @@ describe Shinmun::Blog do
 
     @pages = [@blog.create_post(:title => 'Page 1', :body => 'Body1'),
               @blog.create_post(:title => 'Page 2', :body => 'Body2')]
-    
+
     @blog.store.load
   end
 
@@ -66,7 +68,17 @@ describe Shinmun::Blog do
 
   def xpath(xml, path)
     REXML::XPath.match(REXML::Document.new(xml), path)
-  end  
+  end
+  
+  def assert_listing(xml, list)
+    titles = xpath(xml, "//h2/a")
+    summaries = xpath(xml, "//p")
+
+    list.each_with_index do |(title, summary), i|
+      titles[i].text.should == title
+      summaries[i].text.strip.should == summary
+    end
+  end
 
   it "should find posts for a category" do
     category = @blog.find_category('ruby')
@@ -92,7 +104,7 @@ describe Shinmun::Blog do
 
   it "should update a post" do
     post = @blog.create_post(:title => 'New post', :date => '2008-10-10')
-    @blog.update_post(post, "---\ndate: 2008-11-11\n\nThe title\n=========\n")
+    @blog.update_post(post, "---\ndate: 2008-11-11\ntitle: The title\n---")
     @blog.store.load
     
     post = @blog.find_post(2008, 11, 'new-post')
@@ -117,16 +129,6 @@ describe Shinmun::Blog do
     xpath(xml, "//p")[0].text.should == 'Body1'
   end
 
-  def assert_listing(xml, list)
-    titles = xpath(xml, "//h2/a")
-    summaries = xpath(xml, "//p")
-
-    list.each_with_index do |(title, summary), i|
-      titles[i].text.should == title
-      summaries[i].text.strip.should == summary
-    end
-  end
-
   it "should render categories" do
     get('/categories/ruby.rss')['Content-Type'].should == 'application/rss+xml'
 
@@ -149,7 +151,7 @@ describe Shinmun::Blog do
   end
 
   it "should render pages" do
-    xml = get('/page-1').body    
+    xml = get('/page-1').body
     xpath(xml, "//h1")[0].text.should == 'Page 1'
     xpath(xml, "//p")[0].text.should == 'Body1'
 

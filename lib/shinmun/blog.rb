@@ -11,7 +11,7 @@ module Shinmun
     config_reader 'blog.yml', :title, :description, :language, :author, :url, :repository, :base_path, :categories
 
     # Initialize the blog
-    def initialize(&block)
+    def initialize
       super
 
       @aggregations = {}
@@ -51,11 +51,11 @@ module Shinmun
     end
 
     def recent_posts
-      posts.sort_by { |post| post.date }.reverse[0, 20]
+      posts.sort_by { |post| post.date.to_s }.reverse[0, 20]
     end
 
     def posts_by_date      
-      posts.sort_by { |post| post.date }.reverse
+      posts.sort_by { |post| post.date.to_s }.reverse
     end
 
     # Return all posts for a given month.
@@ -103,7 +103,6 @@ module Shinmun
       atts = { :type => 'md' }.merge(symbolize_keys(atts))
       title = atts[:title] or raise "no title given"
       atts[:name] ||= urlify(title)
-      atts[:date] ||= Date.today
       post = Post.new(atts)
       tree_for(post)[post.filename] = post
       commit "created `#{post.title}`"
