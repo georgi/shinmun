@@ -26,7 +26,7 @@ module Shinmun
     end
 
     attr_accessor :name, :type, :src, :head, :body, :summary, :body_html, :tag_list
-    head_accessor :author, :date, :category, :tags, :languages, :header
+    head_accessor :author, :date, :category, :tags
 
     # Initialize empty post and set specified attributes.
     def initialize(attributes={})
