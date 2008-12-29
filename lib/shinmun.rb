@@ -4,6 +4,7 @@ require 'bluecloth'
 require 'rubypants'
 require 'coderay'
 require 'kontrol'
+require 'git_store'
 
 begin; require 'redcloth'; rescue LoadError; end
 
