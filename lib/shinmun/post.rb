@@ -94,14 +94,9 @@ module Shinmun
       self
     end
 
-    # The header as yaml string.
-    def dump_head
-      head.empty? ? '' : head.to_yaml + "---\n"
-    end
-
     # Convert to string representation
     def dump
-      dump_head + body
+      (head.empty? ? '' : head.to_yaml + "---") + body
     end
 
     # Transform the body of this post. Defaults to Markdown.
