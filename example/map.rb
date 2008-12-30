@@ -22,8 +22,12 @@ Kontrol.map do
 
   post '/comments' do
     post = find_by_path(params['path'])
-    post_comment(post, params)
-    render '_comments.rhtml', :comments => comments_for(post)
+    if params['preview']
+      render '_comments.rhtml', :comments => [Shinmun::Comment.new(params)]
+    else
+      post_comment(post, params)
+      render '_comments.rhtml', :comments => comments_for(post)
+    end    
   end
 
   get '/assets/javascripts\.js' do
