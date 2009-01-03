@@ -1,14 +1,20 @@
 module Shinmun
 
   class Blog < Kontrol::Application
-
+    
     EXAMPLE_DIR = File.expand_path(File.dirname(__FILE__) + '/../../example')
 
     include Helpers
 
     attr_reader :posts, :pages, :aggregations, :categories, :comments
-    
-    config_reader 'blog.yml', :title, :description, :language, :author, :url, :repository, :base_path, :categories
+
+    %w[assets comments config posts pages].each do |name|
+      define_method(name) { store[name] }
+    end
+
+    %w[title description language author url repository base_path categories].each do |name|
+      define_method(name) { config['blog.yml'][name] }
+    end
 
     # Initialize the blog
     def initialize
@@ -32,16 +38,8 @@ module Shinmun
       `git commit -m 'init'`
     end
 
-    def posts
-      store['posts'] ||= GitStore::Tree.new
-    end
-
-    def pages
-      store['pages'] ||= GitStore::Tree.new
-    end
-
-    def comments
-      store['comments'] ||= GitStore::Tree.new
+    def repo
+      store.repo
     end
     
     def load_aggregations
