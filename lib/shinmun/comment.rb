@@ -5,7 +5,7 @@ module Shinmun
     attr_accessor :time, :name, :email, :website, :text
 
     def initialize(attributes)
-      attributes.each do |k, v|
+      for k, v in attributes
         send("#{k}=", v) if respond_to?("#{k}=")
       end
 

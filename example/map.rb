@@ -31,18 +31,17 @@ Kontrol.map do
   end
 
   get '/assets/javascripts\.js' do
-    scripts = assets['javascripts'].to_a.join
-    if_none_match(etag(scripts)) { scripts }    
+    render_javascripts
   end
 
   get '/assets/stylesheets\.css' do
-    styles = assets['stylesheets'].to_a.join
-    if_none_match(etag(styles)) { styles }
+    render_stylesheets
   end
 
   get '/assets/(.*)' do |path|
-    file = assets[path] or raise "#{path} not found"
-    if_none_match(etag(file)) { file }
+    if_modified_since do
+      assets[path] or raise "#{path} not found"
+    end
   end
 
   map '/admin' do
