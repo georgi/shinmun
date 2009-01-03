@@ -1,0 +1,33 @@
+body {
+    padding:1em;
+}
+
+.container {
+    width: 600px;
+    margin: 0 auto;
+}
+
+hr {
+    border: 0;
+    color: #ccc;
+    background-color: #ccc;
+    height: 1px;
+    margin-top: 2em;
+    margin-bottom: 2em;
+}
+
+blockquote {
+    border-top: 3px double #69c;
+    border-bottom: 3px double #69c;
+    padding: 5px;
+    font-style: oblique;
+    margin-left: 5%;
+    margin-right: 5%;
+}
+
+.pagination {
+    text-align: right;
+    margin-top: 1em;
+    font-weight: bold;
+}
+
