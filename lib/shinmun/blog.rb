@@ -1,20 +1,27 @@
 module Shinmun
 
   class Blog < Kontrol::Application
-
+    
     EXAMPLE_DIR = File.expand_path(File.dirname(__FILE__) + '/../../example')
 
     include Helpers
 
-    attr_reader :posts, :pages, :aggregations, :categories, :comments
-    
-    config_reader 'blog.yml', :title, :description, :language, :author, :url, :repository, :base_path, :categories
+    attr_reader :aggregations, :categories, :comments
+
+    %w[ assets comments config posts pages ].each do |name|
+      define_method(name) { store.root.tree(name) }
+    end
+
+    %w[ title description language author url base_path categories ].each do |name|
+      define_method(name) { config['blog.yml'][name] }
+    end
 
     # Initialize the blog
-    def initialize
+    def initialize(path)
       super
 
       @aggregations = {}
+      
       Thread.start do
         loop do
           load_aggregations
@@ -32,18 +39,6 @@ module Shinmun
       `git commit -m 'init'`
     end
 
-    def posts
-      store['posts'] ||= GitStore::Tree.new
-    end
-
-    def pages
-      store['pages'] ||= GitStore::Tree.new
-    end
-
-    def comments
-      store['comments'] ||= GitStore::Tree.new
-    end
-    
     def load_aggregations
       config['aggregations.yml'].to_a.each do |c|
         aggregations[c['name']] = Object.const_get(c['class']).new(c['url'])
@@ -54,13 +49,9 @@ module Shinmun
       posts.sort_by { |post| post.date.to_s }.reverse[0, 20]
     end
 
-    def posts_by_date      
-      posts.sort_by { |post| post.date.to_s }.reverse
-    end
-
     # Return all posts for a given month.
     def posts_for_month(year, month)
-      posts.select { |p| p.year == year and p.month == month }
+      posts.select { |p| p.year == year and p.month == month }.sort_by { |p| p.date.to_s }
     end
 
     # Return all posts with any of given tags.
@@ -79,12 +70,8 @@ module Shinmun
       posts.map { |p| [p.year, p.month] }.uniq.sort
     end
 
-    def tree_for(post)
-      if post.date
-        (posts[post.year] ||= GitStore::Tree.new)[post.month] ||= GitStore::Tree.new
-      else
-        pages
-      end      
+    def tree(post)
+      post.date ? posts.tree(post.year).tree(post.month) : pages
     end
 
     def symbolize_keys(hash)      
@@ -94,41 +81,40 @@ module Shinmun
       end
     end
 
-    def commit(message)
-      store.commit(message)
+    def transaction(message, &block)
+      store.transaction(message, &block)
     end
 
     # Create a new post with given attributes.
-    def create_post(atts = {})
-      atts = { :type => 'md' }.merge(symbolize_keys(atts))
-      title = atts[:title] or raise "no title given"
-      atts[:name] ||= urlify(title)
+    def create_post(atts)
       post = Post.new(atts)
-      tree_for(post)[post.filename] = post
-      commit "created `#{post.title}`"
-      tree_for(post)[post.filename]
+      transaction "create '#{post.title}'" do
+        store[post.path] = post
+      end
     end
 
     def update_post(post, data)
-      tree_for(post).delete(post.filename)
-      post.parse data
-      tree_for(post)[post.filename] = post
-      commit "updated `#{post.title}`"
-      post
+      transaction "update '#{post.title}'" do
+        store.delete(post.path)
+        post.parse data
+        store[post.path] = post
+      end
     end
 
     def delete_post(post)
-      tree_for(post).delete(post.filename)      
-      commit "deleted `#{post.title}`"
+      transaction "delete '#{post.title}'" do
+        store.delete(post.path)
+      end
     end
 
-    def comments_for(post)
-      comments["#{post.path}.yml"] ||= []
+    def comments_for(path)
+      comments[path + '.yml'] || []
     end
 
-    def post_comment(post, params)
-      comments_for(post) << Comment.new(params)
-      commit "new comment for `#{post.title}`"
+    def post_comment(path, params)
+      transaction "new comment for '#{path}'" do
+        comments[path + '.yml'] = comments[path + '.yml'].to_a + [ Comment.new(params) ]
+      end
     end
 
     def find_page(name)
@@ -145,10 +131,6 @@ module Shinmun
       { :name => name, :posts => posts, :permalink => permalink }
     end
 
-    def find_by_path(path)
-      posts.find { |p| p.path == path } or pages.find { |p| p.path == path }
-    end
-
     def write(file, template, vars={})
       file = "public/#{base_path}/#{file}"
       FileUtils.mkdir_p(File.dirname(file))
@@ -161,6 +143,6 @@ module Shinmun
       super(name, vars.merge(:blog => self))
     end
     
-  end
+  end  
   
 end

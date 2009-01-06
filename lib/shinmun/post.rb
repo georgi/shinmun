@@ -14,17 +14,12 @@ module Shinmun
   #
   class Post
 
-    # Define accessor methods for head variable.
-    def self.head_accessor(*names)
-      names.each do |name|
-        name = name.to_s
-        define_method(name) { @head[name] }
-        define_method("#{name}=") {|v| @head[name] = v }
-      end
+    %w[title author date category tags].each do |name|
+      define_method(name) { head[name] }
+      define_method("#{name}=") {|v| head[name] = v }
     end
 
-    attr_accessor :name, :type, :src, :head, :body, :summary, :body_html, :tag_list
-    head_accessor :title, :author, :date, :category, :tags
+    attr_accessor :dirname, :name, :type, :src, :head, :body, :summary, :body_html, :tag_list
 
     # Initialize empty post and set specified attributes.
     def initialize(attributes={})
@@ -35,7 +30,14 @@ module Shinmun
         send "#{k}=", v
       end
 
-      parse src if src
+      @type ||= 'md'
+      
+      parse(src) if src
+
+      raise "post without a title" if title.nil?
+      
+      @name ||= title.downcase.gsub(/[ -]+/, '-').gsub(/[^-a-z0-9_]+/, '')
+      @dirname = date ? "posts/#{year}/#{month}" : 'pages'      
     end
 
     def method_missing(id, *args)
@@ -47,8 +49,8 @@ module Shinmun
       end
     end
 
-    def date=(d)
-      @head['date'] = String === d ? Date.parse(d) : d
+    def date=(date)
+      @head['date'] = String === date ? Date.parse(date) : date
     end
 
     # Shortcut for year of date
@@ -70,11 +72,13 @@ module Shinmun
     end
 
     def path
-      if date
-        "#{year}/#{month}/#{name}"
-      else
-        name
-      end
+      dirname.to_s.empty? ? filename : "#{dirname}/#{filename}"
+    end
+
+    def path=(path)
+      list = path.split('/')
+      self.dirname = list[0..-2].join('/')
+      self.filename = list[-1]
     end
 
     # Split up the source into header and body. Load the header as
@@ -89,7 +93,8 @@ module Shinmun
 
       @body_html = transform(@body)
       @summary = body_html.split("\n\n")[0]
-      @tag_list = tags.to_s.split(",").map { |s| s.strip }
+      @tag_list = tags.to_s.split(",").map { |s| s.strip }      
+      @dirname = date ? "posts/#{year}/#{month}" : 'pages'
 
       self
     end
@@ -112,11 +117,17 @@ module Shinmun
     end
 
     def eql?(obj)
-      path == obj.path
+      self == obj
     end
 
     def ==(obj)
-      path == obj.path
+      if Post === obj
+        if date
+          year == obj.year and month == obj.month and name == obj.name
+        else
+          name == obj.name
+        end
+      end
     end
 
   end

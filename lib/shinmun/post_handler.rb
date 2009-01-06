@@ -1,11 +1,11 @@
 module Shinmun
 
   class PostHandler
-    def read(name, data)
-      Post.new(:filename => name, :src => data)
+    def read(path, data)
+      Post.new(:path => path, :src => data)
     end
 
-    def write(post)
+    def write(path, post)
       post.dump
     end    
   end

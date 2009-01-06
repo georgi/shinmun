@@ -33,14 +33,22 @@ module Shinmun
       end
     end
 
+    def post_path(post)
+      "#{base_path}/#{post.year}/#{post.month}/#{post.name}"
+    end
+
+    def archive_path(year, month)
+      "#{base_path}/#{year}/#{month}"
+    end
+
     # Render a link to a post
     def post_link(post)
-      link_to post.title, "#{base_path}/#{post.year}/#{post.month}/#{post.name}"
+      link_to post.title, post_path(post)
     end
 
     # Render a link to an archive page.
     def archive_link(year, month)
-      link_to "#{Date::MONTHNAMES[month]} #{year}", "#{base_path}/#{year}/#{month}"
+      link_to "#{Date::MONTHNAMES[month]} #{year}", archive_path(year, month)
     end
 
     # Render a date or time in a nice human readable format.

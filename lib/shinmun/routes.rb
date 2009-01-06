@@ -1,19 +1,20 @@
-Kontrol.map do
+Shinmun::Blog.map do
+  
   get '/categories/(.*)\.rss' do |category|
     render 'category.rxml', find_category(category)
   end
-
+ 
   get '/categories/(.*)' do |category|
     render 'category.rhtml', find_category(category)
   end
 
   get '/(\d+)/(\d+)/(.*)' do |year, month, name|
     post = find_post(year.to_i, month.to_i, name)
-    render 'post.rhtml', :post => post, :comments => comments_for(post)
+    render 'post.rhtml', :post => post, :comments => comments_for(post.path)
   end
 
   get '/(\d+)/(\d+)' do |year, month|
-    render 'archive.rhtml', :year => year.to_i, :month => month.to_i
+    render 'archive.rhtml', :year => year.to_i, :month => month.to_i, :posts => posts_for_month(year.to_i, month.to_i)
   end
 
   get '/index\.rss' do
@@ -21,27 +22,27 @@ Kontrol.map do
   end
 
   post '/comments' do
-    post = find_by_path(params['path'])
     if params['preview']
       render '_comments.rhtml', :comments => [Shinmun::Comment.new(params)]
     else
-      post_comment(post, params)
-      render '_comments.rhtml', :comments => comments_for(post)
+      post_comment(params['path'], params)
+      render '_comments.rhtml', :comments => comments_for(path)
     end    
   end
 
   get '/assets/javascripts\.js' do
-    render_javascripts
+    scripts = assets['javascripts'].to_a.join
+    if_none_match(etag(scripts)) { scripts }    
   end
 
   get '/assets/stylesheets\.css' do
-    render_stylesheets
+    styles = assets['stylesheets'].to_a.join
+    if_none_match(etag(styles)) { styles }
   end
 
   get '/assets/(.*)' do |path|
-    if_modified_since do
-      assets[path] or raise "#{path} not found"
-    end
+    file = assets[path] or raise "#{path} not found"
+    if_none_match(etag(file)) { file }
   end
 
   map '/admin' do
@@ -68,17 +69,19 @@ Kontrol.map do
 
     map '/edit/(.*)' do
       get do |path|
-        render 'admin/edit.rhtml', :post => find_by_path(path)
+        render 'admin/edit.rhtml', :post => store[path]
       end
 
-      post do |path|        
-        update_post(post = find_by_path(path), params['data'])
+      post do |path|
+        post = store[path]
+        update_post(post, params['data'])
         redirect(post.date ? '/admin/posts/' : '/admin/pages')
       end
     end
 
     post '/delete/(.*)' do |path|
-      delete_post(post = find_by_path(path))
+      post = store[path]
+      delete_post post
       redirect(post.date ? '/admin/posts/' : '/admin/pages/')
     end
 
@@ -98,7 +101,12 @@ Kontrol.map do
   end
 
   get '/(.*)' do |path|
-    post = find_page(path)
-    render 'page.rhtml', :post => post if post
+    page = find_page(path)
+    if page
+      render 'page.rhtml', :page => page
+    else
+      raise "page '#{path}' not found"
+    end
   end
+  
 end

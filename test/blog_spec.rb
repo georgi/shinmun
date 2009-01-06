@@ -6,16 +6,27 @@ require 'pp'
 describe Shinmun::Blog do
 
   TEST_DIR = File.expand_path(File.dirname(__FILE__))
-  TEMPLATES_DIR = File.expand_path(TEST_DIR + '/../templates')
-  REPO = TEST_DIR + '/test_repo'
+  TEMPLATES_DIR = File.expand_path(TEST_DIR + '/templates')
+  REPO = TEST_DIR + '/repo'
 
   before do
     FileUtils.rm_rf REPO
     Dir.mkdir REPO
     Dir.chdir REPO
-    
-    `git init`
+    initialize_blog
+  end
+  
+  def file(file, data)
+    FileUtils.mkpath(File.dirname(file))
+    open(file, 'w') { |io| io << data }
+    `git add #{file}`
+    `git commit -m 'added #{file}'`
+    File.unlink(file)
+  end
 
+  def initialize_blog
+    `git init`
+    
     file 'config/blog.yml', {
       'title' => 'Title',
       'description' => 'Description',
@@ -25,11 +36,9 @@ describe Shinmun::Blog do
       'categories' => ['Ruby', 'Javascript']
     }.to_yaml
 
-    @blog = Shinmun::Blog.new
+    @blog = Shinmun::Blog.new(REPO)
     @request = Rack::MockRequest.new(@blog)
 
-    file 'map.rb', File.read(TEST_DIR + '/map.rb')
-    
     Dir.mkdir 'templates'
     
     Dir[TEMPLATES_DIR + '/*'].each do |path|      
@@ -39,14 +48,14 @@ describe Shinmun::Blog do
     end
     
     @blog.store.load
-    
+
     @posts = [@blog.create_post(:title => 'New post', :date => '2008-10-10', :category => 'Ruby', :body => 'Body1'),
               @blog.create_post(:title => 'And this', :date => '2008-10-11', :category => 'Ruby', :body => 'Body2'),
               @blog.create_post(:title => 'Again',    :date => '2008-11-10', :category => 'Javascript', :body => 'Body3')]
 
     @pages = [@blog.create_post(:title => 'Page 1', :body => 'Body1'),
-              @blog.create_post(:title => 'Page 2', :body => 'Body2')]
-
+              @blog.create_post(:title => 'Page 2', :body => 'Body2')]    
+    
     @blog.store.load
   end
 
@@ -58,16 +67,12 @@ describe Shinmun::Blog do
     @request.post(*args)
   end  
 
-  def file(file, data)
-    FileUtils.mkpath(File.dirname(file))
-    open(file, 'w') { |io| io << data }
-    `git add #{file}`
-    `git commit -m 'spec'`
-    File.unlink(file)    
-  end
-
   def xpath(xml, path)
     REXML::XPath.match(REXML::Document.new(xml), path)
+  end
+
+  def query(hash)
+    Rack::Utils.build_query(hash)
   end
   
   def assert_listing(xml, list)
@@ -76,13 +81,15 @@ describe Shinmun::Blog do
 
     list.each_with_index do |(title, summary), i|
       titles[i].text.should == title
-      summaries[i].text.strip.should == summary
+      summaries[i].text.to_s.strip.should == summary
     end
-  end
+  end 
 
   it "should find posts for a category" do
+    
     category = @blog.find_category('ruby')
     category[:name].should == 'Ruby'
+    
     category[:posts].should include(@posts[0])
     category[:posts].should include(@posts[1])
 
@@ -106,7 +113,7 @@ describe Shinmun::Blog do
     post = @blog.create_post(:title => 'New post', :date => '2008-10-10')
     @blog.update_post(post, "---\ndate: 2008-11-11\ntitle: The title\n---")
     @blog.store.load
-    
+
     post = @blog.find_post(2008, 11, 'new-post')
     post.should_not be_nil
     post.title.should == 'The title'
@@ -146,6 +153,9 @@ describe Shinmun::Blog do
   end
 
   it "should render index and archives" do
+    @blog.posts_for_month(2008, 10).should_not be_empty
+    @blog.posts_for_month(2008, 11).should_not be_empty
+    
     assert_listing(get('/2008/10').body, [['New post', 'Body1'], ['And this', 'Body2']])
     assert_listing(get('/').body, [['Again', 'Body3'], ['And this', 'Body2'], ['New post', 'Body1']])
   end
@@ -161,15 +171,17 @@ describe Shinmun::Blog do
   end
 
   it "should post a comment" do
-    post('/comments?' + Rack::Utils.build_query('path' => @posts[0].path, 'name' => 'Hans', 'website' => '', 'text' => 'Hello'))
-    post('/comments?' + Rack::Utils.build_query('path' => @posts[0].path, 'name' => 'Peter', 'website' => '', 'text' => 'Servus'))
+    
+    post "/comments/posts/2008/10/new-post.md?name=Hans&text=Hallo"
+    post "/comments/posts/2008/10/new-post.md?name=Peter&text=Servus"
+    
     @blog.store.load
 
-    comments = @blog.comments_for(@posts[0])
+    comments = @blog.comments_for(@posts[0].path)
 
     comments[0].should_not be_nil
     comments[0].name.should == 'Hans'
-    comments[0].text.should == 'Hello'
+    comments[0].text.should == 'Hallo'
 
     comments[1].should_not be_nil
     comments[1].name.should == 'Peter'
