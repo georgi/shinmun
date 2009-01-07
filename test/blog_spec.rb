@@ -20,8 +20,6 @@ describe Shinmun::Blog do
     FileUtils.mkpath(File.dirname(file))
     open(file, 'w') { |io| io << data }
     `git add #{file}`
-    `git commit -m 'added #{file}'`
-    File.unlink(file)
   end
 
   def initialize_blog
@@ -36,6 +34,7 @@ describe Shinmun::Blog do
       'categories' => ['Ruby', 'Javascript']
     }.to_yaml
 
+    ENV['RACK_ENV'] = 'production'
     @blog = Shinmun::Blog.new(REPO)
     @request = Rack::MockRequest.new(@blog)
 
@@ -46,6 +45,8 @@ describe Shinmun::Blog do
         file 'templates/' + File.basename(path), File.read(path)
       end
     end
+
+    `git commit -m 'spec'` 
     
     @blog.store.load
 
@@ -54,8 +55,8 @@ describe Shinmun::Blog do
               @blog.create_post(:title => 'Again',    :date => '2008-11-10', :category => 'Javascript', :body => 'Body3')]
 
     @pages = [@blog.create_post(:title => 'Page 1', :body => 'Body1'),
-              @blog.create_post(:title => 'Page 2', :body => 'Body2')]    
-    
+              @blog.create_post(:title => 'Page 2', :body => 'Body2')]
+
     @blog.store.load
   end
 
@@ -85,8 +86,7 @@ describe Shinmun::Blog do
     end
   end 
 
-  it "should find posts for a category" do
-    
+  it "should find posts for a category" do    
     category = @blog.find_category('ruby')
     category[:name].should == 'Ruby'
     
@@ -170,10 +170,9 @@ describe Shinmun::Blog do
     xpath(xml, "//p")[0].text.should == 'Body2'
   end
 
-  it "should post a comment" do
-    
-    post "/comments/posts/2008/10/new-post.md?name=Hans&text=Hallo"
-    post "/comments/posts/2008/10/new-post.md?name=Peter&text=Servus"
+  it "should post a comment" do    
+    post "/comments?path=posts/2008/10/new-post.md&name=Hans&text=Hallo"
+    post "/comments?path=posts/2008/10/new-post.md&name=Peter&text=Servus"
     
     @blog.store.load
 

@@ -6,7 +6,7 @@ module Shinmun
 
     include Helpers
 
-    attr_reader :aggregations, :categories, :comments
+    attr_reader :aggregations, :categories, :comments, :repo
 
     %w[ assets comments config posts pages ].each do |name|
       define_method(name) { store.root.tree(name) }
@@ -21,6 +21,7 @@ module Shinmun
       super
 
       @aggregations = {}
+      @repo = Grit::Repo.new(path)
       
       Thread.start do
         loop do
@@ -45,13 +46,17 @@ module Shinmun
       end
     end
 
+    def posts_by_date
+      posts.sort_by { |post| post.date.to_s }.reverse
+    end
+
     def recent_posts
-      posts.sort_by { |post| post.date.to_s }.reverse[0, 20]
+      posts_by_date[0, 20]
     end
 
     # Return all posts for a given month.
     def posts_for_month(year, month)
-      posts.select { |p| p.year == year and p.month == month }.sort_by { |p| p.date.to_s }
+      posts_by_date.select { |p| p.year == year and p.month == month }
     end
 
     # Return all posts with any of given tags.
@@ -141,6 +146,11 @@ module Shinmun
 
     def render(name, vars = {})
       super(name, vars.merge(:blog => self))
+    end
+
+    def call(env)
+      templates['helpers.rb']
+      super
     end
     
   end  

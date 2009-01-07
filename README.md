@@ -1,19 +1,23 @@
-Shinmun, the git-based blog engine
+Shinmun - a git-based blog engine
 ==========================================
 
-Shinmun is a **minimalist blog engine**. You just write posts as text
-files and serve your blog straight from a git repository. You write
-posts in your favorite editor like Emacs or VI and deploy via 
-`git push`.
+Shinmun is a small git-based blog engine. Write posts in your favorite
+editor, git-push it and serve your blog straight from a
+repository.
+
 
 ### Features
 
+* Posts are text files formatted with [Markdown][8], [Textile][9] or [HTML][10]
+* Runs on [Rack][6], [Kontrol][3] and [GitStore][7]
+* Deploy via [git-push][11]
 * Index, category and archive listings
 * RSS feeds
 * Flickr and Delicious aggregations
-* Runs on Rack via [Kontrol][3]
-* Syntax highlighting provided by CodeRay
+* Syntax highlighting provided by [CodeRay][4]
 * AJAX comment system with Markdown preview
+* Web frontend using [WMD Editor][12]
+
 
 ### Quickstart
 
@@ -55,7 +59,8 @@ your new article.
 ### Post Format
 
 Each blog post is just a text file with a YAML header and a body. The
-YAML header is surrounded with 2 lines of 3 dashes.
+YAML header is surrounded with 2 lines of 3 dashes. This format is
+compatible with [Jekyll][13] and [Github Pages][14].
 
 The YAML header has following attributes:
 
@@ -150,23 +155,23 @@ Inside `config/blog.yml` you set the properties of your blog:
 * url: used for RSS
 * categories: a list of categories
 
+
 ### Assets
 
-By default Shinmun serves asset files from your assets directory. If
-you want some other behaviour, you can tweak the `map.rb` file in your
-blog folder, which contains all routes.
+Shinmun serves asset files from your assets directory. Files in the
+directories `assets/stylesheets` and `assets/javascripts` will be
+served as one file each under the URLs `assets/stylesheets.css` and
+`assets/javascripts.css`. You have to name them accordingly like
+`1-reset.css` and `2-typo.css` to define the order.
 
-If you set the variables `javascripts_files` or `stylesheets_files` in
-`config/asstes.yml`, Shinmun will serve the javascripts as
-`assets/javascripts.js` and stylesheets as `assets/stylesheets.css`
-automatically. Both variables should be arrays of the filenames
-without extension.
 
 ### Templates
 
 Layout and templates are rendered by *ERB*.  The layout is defined in
 `templates/layout.rhtml`. The content will be provided in the variable
 `@content`. A minimal example:
+
+    @@rhtml
 
     <html>
       <head>
@@ -180,6 +185,8 @@ Layout and templates are rendered by *ERB*.  The layout is defined in
 
 The attributes of a post are accessible as instance variables in a
 template:
+
+    @@rhtml
 
     <div class="article">    
       <div class="date">
@@ -199,6 +206,7 @@ post has a corresponding comment file located at `comments/<path to
 post>`. So administration of comments is possible by editing the YAML
 file, which can be done on your local machine, as you can just pull
 the comments from your live server.
+
 
 ### Deployment
 
@@ -230,6 +238,7 @@ just write, commit and finally push a post by:
     $ git commit -a -m 'new post'
     $ git push live
 
+
 ### Phusion Passenger
 
 Shinmun is compatible with [Phusion Passenger][5]. Install Phusion
@@ -237,6 +246,8 @@ Passenger as described in my [blog post][2].
 
 Assuming that you are on a Debian or Ubuntu system, you can create a
 file named `/etc/apache2/sites-available/blog`:
+
+    @@xml
 
     <VirtualHost *:80>
         ServerName myblog.com
@@ -255,13 +266,11 @@ domain:
 
 ### Web Frontend
 
-The example blog has a builtin web frontend. To activate you have to
-create a file named `password` with a single password inside. Now
-browse to `/admin` and login using some arbitrary username and your
-password.
+The example blog has a builtin web frontend. Currently it only works
+on localhost:9292.
 
 The frontend allows you to create, edit, read or delete posts or
-pages. Editing a post shows up a form with the [wmd editor][6]. You
+pages. Editing a post shows up a form with the [wmd editor][12]. You
 have to look yourself for a correct YAML header, otherwise you will
 get incorrect results.
 
@@ -271,7 +280,7 @@ single commit overview, where you can inspect changes introduced by
 this particular commit.
 
 
-### Download
+### GitHub Project
 
 Download or fork the package at my [github repository][1]
 
@@ -281,4 +290,12 @@ Download or fork the package at my [github repository][1]
 [3]: http://github.com/georgi/kontrol
 [4]: http://coderay.rubychan.de/
 [5]: http://www.modrails.com/
-[6]: http://wmd-editor.com/
+[6]: http://github.com/rack/rack
+[7]: http://github.com/georgi/git_store
+[8]: http://daringfireball.net/projects/markdown/
+[9]: http://textile.thresholdstate.com/
+[10]: http://en.wikipedia.org/wiki/Html
+[11]: http://www.kernel.org/pub/software/scm/git/docs/git-push.html
+[12]: http://wmd-editor.com/
+[13]: http://github.com/mojombo/jekyll
+[14]: http://github.com/blog/272-github-pages

@@ -5,6 +5,7 @@ require 'rubypants'
 require 'coderay'
 require 'kontrol'
 require 'git_store'
+require 'grit'
 
 begin; require 'redcloth'; rescue LoadError; end
 

@@ -22,11 +22,11 @@ Shinmun::Blog.map do
   end
 
   post '/comments' do
-    if params['preview']
+    if params['preview'] == 'true'
       render '_comments.rhtml', :comments => [Shinmun::Comment.new(params)]
     else
       post_comment(params['path'], params)
-      render '_comments.rhtml', :comments => comments_for(path)
+      render '_comments.rhtml', :comments => comments_for(params['path'])
     end    
   end
 
@@ -46,12 +46,18 @@ Shinmun::Blog.map do
   end
 
   map '/admin' do
-    use Rack::Auth::Basic do |username, password|
-      File.read(File.join(File.dirname(__FILE__), "password")).chomp("\n") == password
-    end
+    use(Class.new do
+          def initialize(app); @app = app; end
+          def call(env)
+            if env['HTTP_HOST'] == 'localhost:9292'
+              @app.call(env)
+            else
+              [401, {}, '<h1>Not Allowed</h1>']
+            end
+          end
+        end)
 
     get '/posts/(.*)' do |page|
-      session[:admin] = true
       render 'admin/posts.rhtml', :posts => posts_by_date, :page => page.to_i, :page_size => 10
     end
 
