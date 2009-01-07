@@ -22,7 +22,6 @@ LICENSE
 README.md
 Rakefile
 bin/shinmun
-example/
 example/pages
 example/pages/about.md
 example/posts
@@ -46,8 +45,6 @@ example/templates/admin/commits.rhtml
 example/templates/category.rxml
 example/templates/_pagination.rhtml
 example/templates/layout.rhtml
-example/comments
-example/assets
 example/assets/images
 example/assets/images/favicon.ico
 example/assets/images/loading.gif
@@ -61,7 +58,6 @@ example/assets/stylesheets/3-table.css
 example/assets/stylesheets/4-article.css
 example/assets/stylesheets/2-typo.css
 example/assets/print.css
-example/assets/wmd
 example/assets/wmd/images
 example/assets/wmd/images/wmd.png
 example/assets/wmd/images/bg-fill.png
@@ -84,15 +80,12 @@ example/assets/wmd/showdown.js
 example/assets/wmd/wmd-plus.js
 example/assets/wmd/wmd-base.js
 example/assets/wmd/wmd.js
-example/assets/javascripts
 example/assets/javascripts/2-jquery-form.min.js
 example/assets/javascripts/1-jquery.min.js
 example/assets/javascripts/4-coderay.js
 example/assets/javascripts/3-comments.js
 example/config.ru
-example/config
 example/config/blog.yml
-example/password
 lib/shinmun.rb
 lib/shinmun/aggregations/delicious.rb
 lib/shinmun/aggregations/flickr.rb
@@ -103,7 +96,6 @@ lib/shinmun/comment.rb
 lib/shinmun/helpers.rb
 lib/shinmun/post.rb
 lib/shinmun/post_handler.rb
-test
 test/templates
 test/templates/index.rhtml
 test/templates/page.rhtml
