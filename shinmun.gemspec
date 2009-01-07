@@ -22,9 +22,7 @@ LICENSE
 README.md
 Rakefile
 bin/shinmun
-example/pages
 example/pages/about.md
-example/posts
 example/posts/2009
 example/posts/2009/1
 example/Rakefile
