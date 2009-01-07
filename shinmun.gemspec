@@ -23,8 +23,6 @@ README.md
 Rakefile
 bin/shinmun
 example/pages/about.md
-example/posts/2009
-example/posts/2009/1
 example/Rakefile
 example/templates
 example/templates/index.rhtml
@@ -43,10 +41,8 @@ example/templates/admin/commits.rhtml
 example/templates/category.rxml
 example/templates/_pagination.rhtml
 example/templates/layout.rhtml
-example/assets/images
 example/assets/images/favicon.ico
 example/assets/images/loading.gif
-example/assets/stylesheets
 example/assets/stylesheets/7-diff.css
 example/assets/stylesheets/8-blog.css
 example/assets/stylesheets/6-comments.css
@@ -56,7 +52,6 @@ example/assets/stylesheets/3-table.css
 example/assets/stylesheets/4-article.css
 example/assets/stylesheets/2-typo.css
 example/assets/print.css
-example/assets/wmd/images
 example/assets/wmd/images/wmd.png
 example/assets/wmd/images/bg-fill.png
 example/assets/wmd/images/italic.png
@@ -94,7 +89,6 @@ lib/shinmun/comment.rb
 lib/shinmun/helpers.rb
 lib/shinmun/post.rb
 lib/shinmun/post_handler.rb
-test/templates
 test/templates/index.rhtml
 test/templates/page.rhtml
 test/templates/_comments.rhtml
