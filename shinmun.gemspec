@@ -97,6 +97,7 @@ lib/shinmun.rb
 lib/shinmun/aggregations/delicious.rb
 lib/shinmun/aggregations/flickr.rb
 lib/shinmun/blog.rb
+lib/shinmun/routes.rb
 lib/shinmun/bluecloth_coderay.rb
 lib/shinmun/comment.rb
 lib/shinmun/helpers.rb
