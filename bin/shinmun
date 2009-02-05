@@ -7,10 +7,16 @@ when 'init'
   Shinmun::Blog.init ARGV[1]
 
 when 'post'
-  Shinmun::Blog.new.create_post(:title => ARGV[1], :date => Date.today)
+  post = Shinmun::Post.new(:title => ARGV[1], :date => Date.today)
+  FileUtils.mkpath(File.dirname(post.path))
+  open(post.path, 'w') { |io| io.write post.dump }
+  puts "created #{post.path}"
 
 when 'page'
-  Shinmun::Blog.new.create_post(:title => ARGV[1])
+  post = Shinmun::Post.new(:title => ARGV[1])
+  FileUtils.mkpath(File.dirname(post.path))
+  open(post.path, 'w') { |io| io.write post.dump }
+  puts "created #{post.path}"
 
 else
   puts "Usage:"
