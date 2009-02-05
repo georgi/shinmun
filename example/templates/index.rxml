@@ -13,7 +13,7 @@
 	<category><%= post.category %></category>
 	<description><%= strip_tags post.summary %></description>
 	<author><%= @author || @blog.author %></author>
-	<link><%= @blog.url %>/<%= post.path %></link>
+	<link><%= @blog.url %>/<%= post_path post %></link>
 	<pubDate><%= rfc822 post.date %></pubDate>
       </item>
     <% end %>

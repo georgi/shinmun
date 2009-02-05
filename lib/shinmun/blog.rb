@@ -21,7 +21,8 @@ module Shinmun
       super
 
       @aggregations = {}
-      @repo = Grit::Repo.new(path)
+
+      @repo = Grit::Repo.new(path) if defined?(Grit)
       
       Thread.start do
         loop do
