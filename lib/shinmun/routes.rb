@@ -108,6 +108,7 @@ Shinmun::Blog.map do
 
   get '/(.*)' do |path|
     page = find_page(path)
+          
     if page
       render 'page.rhtml', :page => page
     else

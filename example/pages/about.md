@@ -1,5 +1,6 @@
-About
-=====
+---
+title: About
+---
 
 This is the blog of Heinz Heinzmann.
 
