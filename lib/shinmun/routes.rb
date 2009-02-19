@@ -8,6 +8,10 @@ Shinmun::Blog.map do
     render 'category.rhtml', find_category(category)
   end
 
+  get '/tags/(.*)' do |tag|
+    render 'category.rhtml', :name => "Tag: #{tag}", :posts => posts.select { |p| p.tag_list.include?(tag)  }
+  end
+
   get '/(\d+)/(\d+)/(.*)' do |year, month, name|
     post = find_post(year.to_i, month.to_i, name)
     render 'post.rhtml', :post => post, :comments => comments_for(post.path)

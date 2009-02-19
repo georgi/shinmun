@@ -12,9 +12,9 @@
 
   <div style="margin:1em 0em 1em 0em; color:#666">
     <% if @post.category %>
-      Posted in category <%= link_to @post.category, "/categories/#{urlify @post.category}.html" %> by <%= @blog.author %>.
+      Posted in category <%= link_to @post.category, "/categories/#{urlify @post.category}" %> by <%= @blog.author %>.
     <% end %>
-    Tagged with <%= @post.tags %>.
+    Tagged with <%= @post.tag_list.map {|tag| link_to tag, "/tags/#{urlify tag}" }.join(', ') %>.
   </div>
 
   <h6>Similar Posts</h6>
