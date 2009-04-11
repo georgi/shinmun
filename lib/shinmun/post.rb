@@ -84,7 +84,7 @@ module Shinmun
     # Split up the source into header and body. Load the header as
     # yaml document if present.
     def parse(src)
-      if src =~ /\A(---.*?)---(.*)/m
+      if src =~ /\A---(.*?)---(.*)/m
         @head = YAML.load($1)
         @body = $2
       else
@@ -101,7 +101,7 @@ module Shinmun
 
     # Convert to string representation
     def dump
-      (head.empty? ? '' : head.to_yaml + "---") + body
+      head.to_yaml + "---" + body
     end
 
     # Transform the body of this post. Defaults to Markdown.
