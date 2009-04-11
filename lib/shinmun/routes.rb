@@ -1,7 +1,7 @@
 Shinmun::Blog.map do
   
   get '/categories/(.*)\.rss' do |category|
-    render 'category.rxml', find_category(category)
+    render 'category.rxml', find_category(category).merge(:layout => false)
   end
  
   get '/categories/(.*)' do |category|
@@ -22,7 +22,7 @@ Shinmun::Blog.map do
   end
 
   get '/index\.rss' do
-    render 'index.rxml'
+    render 'index.rxml', :layout => false
   end
 
   post '/comments' do

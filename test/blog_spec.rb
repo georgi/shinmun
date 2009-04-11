@@ -156,7 +156,7 @@ describe Shinmun::Blog do
     @blog.posts_for_month(2008, 10).should_not be_empty
     @blog.posts_for_month(2008, 11).should_not be_empty
     
-    assert_listing(get('/2008/10').body, [['New post', 'Body1'], ['And this', 'Body2']])
+    assert_listing(get('/2008/10').body, [['And this', 'Body2'], ['New post', 'Body1']])
     assert_listing(get('/').body, [['Again', 'Body3'], ['And this', 'Body2'], ['New post', 'Body1']])
   end
 

@@ -6,7 +6,7 @@ module Shinmun
 
     include Helpers
 
-    attr_reader :aggregations, :categories, :comments, :repo
+    attr_reader :aggregations, :categories, :comments, :repo, :store
 
     %w[ assets comments config posts pages ].each do |name|
       define_method(name) { store.root.tree(name) }
@@ -22,6 +22,12 @@ module Shinmun
 
       @aggregations = {}
 
+      if ENV['RACK_ENV'] == 'production'
+        @store = GitStore.new(path)
+      else
+        @store = GitStore::FileStore.new(path)
+      end
+      
       @repo = Grit::Repo.new(path) if defined?(Grit)
       
       Thread.start do
@@ -145,12 +151,18 @@ module Shinmun
       end
     end
 
+    def load_template(file)
+      store['templates'][file] or raise "template #{file} not found"
+    end    
+
     def render(name, vars = {})
       super(name, vars.merge(:blog => self))
     end
 
     def call(env)
-      templates['helpers.rb']
+      store.refresh!
+      store['templates']['helpers.rb']
+      
       super
     end
     
