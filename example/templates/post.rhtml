@@ -14,7 +14,7 @@
     <% if @post.category %>
       Posted in category <%= link_to @post.category, "/categories/#{urlify @post.category}" %> by <%= @blog.author %>.
     <% end %>
-    Tagged with <%= @post.tag_list.map {|tag| link_to tag, "/tags/#{urlify tag}" }.join(', ') %>.
+    Tagged with <%= @post.tag_list.map {|tag| link_to tag, "/tags/#{tag}" }.join(', ') %>.
   </div>
 
   <h6>Similar Posts</h6>

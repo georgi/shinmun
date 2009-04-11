@@ -88,7 +88,7 @@ module Shinmun
         @head = YAML.load($1)
         @body = $2
       else
-        @body = src
+        raise ArgumentError, "yaml header not found in src"
       end
 
       @body_html = transform(@body)
