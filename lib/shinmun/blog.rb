@@ -8,7 +8,7 @@ module Shinmun
 
     attr_reader :aggregations, :categories, :comments, :repo, :store
 
-    %w[ assets comments config posts pages ].each do |name|
+    %w[ assets comments config posts pages templates ].each do |name|
       define_method(name) { store.root.tree(name) }
     end
 
@@ -28,6 +28,8 @@ module Shinmun
         @store = GitStore::FileStore.new(path)
       end
       
+      @store.load
+      
       @repo = Grit::Repo.new(path) if defined?(Grit)
       
       Thread.start do
@@ -45,6 +47,19 @@ module Shinmun
       `git init`
       `git add .`
       `git commit -m 'init'`
+    end
+
+    def load_template(file)
+      templates[file] or raise "template #{file} not found"
+    end    
+
+    def render(name, vars = {})
+      super(name, vars.merge(:blog => self))
+    end
+
+    def call(env)
+      store.refresh!      
+      super
     end
 
     def load_aggregations
@@ -149,21 +164,6 @@ module Shinmun
       open(file, 'wb') do |io|
         io << render(template, vars)
       end
-    end
-
-    def load_template(file)
-      store['templates'][file] or raise "template #{file} not found"
-    end    
-
-    def render(name, vars = {})
-      super(name, vars.merge(:blog => self))
-    end
-
-    def call(env)
-      store.refresh!
-      store['templates']['helpers.rb']
-      
-      super
     end
     
   end  

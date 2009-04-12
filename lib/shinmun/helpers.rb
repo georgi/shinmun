@@ -60,6 +60,16 @@ module Shinmun
     def rfc822(time)
       time.strftime("%a, %d %b %Y %H:%M:%S %z")
     end
+    
+    # Render a link for the navigation bar. If the text of the link
+    # matches the @header variable, the css class will be set to acitve.
+    def navi_link(text, path)
+      link_to text, path, :class => (request.path_info == path) ? 'active' : nil
+    end
+
+    def html_escape(s)
+      s.to_s.gsub(/>/, '&gt;').gsub(/</n, '&lt;')
+    end
 
     def diff_line_class(line)
       case line[0, 1]
