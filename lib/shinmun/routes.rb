@@ -1,31 +1,31 @@
 Shinmun::Blog.map do
   
-  get '/categories/(.*)\.rss' do |category|
+  category_feed '/categories/(.*)\.rss' do |category|
     render 'category.rxml', find_category(category).merge(:layout => false)
   end
  
-  get '/categories/(.*)' do |category|
+  category '/categories/(.*)' do |category|
     render 'category.rhtml', find_category(category)
   end
 
-  get '/tags/(.*)' do |tag|
+  tag '/tags/(.*)' do |tag|
     render 'category.rhtml', :name => "Tag: #{tag}", :posts => posts.select { |p| p.tag_list.include?(tag)  }
   end
 
-  get '/(\d+)/(\d+)/(.*)' do |year, month, name|
+  post '/(\d+)/(\d+)/(.*)' do |year, month, name|
     post = find_post(year.to_i, month.to_i, name)
     render 'post.rhtml', :post => post, :comments => comments_for(post.path)
   end
 
-  get '/(\d+)/(\d+)' do |year, month|
+  archive '/(\d+)/(\d+)' do |year, month|
     render 'archive.rhtml', :year => year.to_i, :month => month.to_i, :posts => posts_for_month(year.to_i, month.to_i)
   end
 
-  get '/index\.rss' do
+  feed '/index\.rss' do
     render 'index.rxml', :layout => false
   end
 
-  post '/comments' do
+  comments '/comments' do
     if params['preview'] == 'true'
       render '_comments.rhtml', :comments => [Shinmun::Comment.new(params)]
     else
@@ -34,76 +34,25 @@ Shinmun::Blog.map do
     end    
   end
 
-  get '/assets/javascripts\.js' do
+  javascripts '/assets/javascripts\.js' do
     scripts = assets['javascripts'].to_a.join
-    if_none_match(etag(scripts)) { scripts }    
+    if_none_match(etag(scripts)) do
+      text scripts
+    end
   end
 
-  get '/assets/stylesheets\.css' do
+  stylesheets '/assets/stylesheets\.css' do
     styles = assets['stylesheets'].to_a.join
-    if_none_match(etag(styles)) { styles }
+    if_none_match(etag(styles)) do
+      text styles
+    end
   end
 
-  get '/assets/(.*)' do |path|
+  assets '/assets/(.*)' do |path|
     file = assets[path] or raise "#{path} not found"
-    if_none_match(etag(file)) { file }
-  end
-
-  map '/admin' do
-    use(Class.new do
-          def initialize(app); @app = app; end
-          def call(env)
-            if env['HTTP_HOST'] == 'localhost:9292'
-              @app.call(env)
-            else
-              [401, {}, '<h1>Not Allowed</h1>']
-            end
-          end
-        end)
-
-    get '/posts/(.*)' do |page|
-      render 'admin/posts.rhtml', :posts => posts_by_date, :page => page.to_i, :page_size => 10
+    if_none_match(etag(file)) do
+      text file
     end
-
-    get '/pages' do
-      render 'admin/pages.rhtml'
-    end
-
-    get '/commits/(.*)' do |id|    
-      render 'admin/commit.rhtml', :commit => repo.commit(id)
-    end
-
-    get '/commits' do
-      render 'admin/commits.rhtml'
-    end
-
-    map '/edit/(.*)' do
-      get do |path|
-        render 'admin/edit.rhtml', :post => store[path]
-      end
-
-      post do |path|
-        post = store[path]
-        update_post(post, params['data'])
-        redirect(post.date ? '/admin/posts/' : '/admin/pages')
-      end
-    end
-
-    post '/delete/(.*)' do |path|
-      post = store[path]
-      delete_post post
-      redirect(post.date ? '/admin/posts/' : '/admin/pages/')
-    end
-
-    post '/create' do
-      post = create_post(params)
-      redirect "/admin/edit/#{post.path}"
-    end
-
-    get '' do
-      redirect '/admin/posts/'
-    end
-
   end
 
   get '/$' do

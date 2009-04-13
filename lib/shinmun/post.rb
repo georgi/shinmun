@@ -82,7 +82,7 @@ module Shinmun
     end
 
     # Split up the source into header and body. Load the header as
-    # yaml document if present.
+    # yaml document.
     def parse(src)
       if src =~ /\A---(.*?)---(.*)/m
         @head = YAML.load($1)

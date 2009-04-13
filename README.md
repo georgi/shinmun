@@ -2,9 +2,7 @@ Shinmun - a git-based blog engine
 ==========================================
 
 Shinmun is a small git-based blog engine. Write posts in your favorite
-editor, git-push it and serve your blog straight from a
-repository.
-
+editor, git-push it and serve your blog straight from a repository.
 
 ### Features
 
@@ -16,7 +14,6 @@ repository.
 * Flickr and Delicious aggregations
 * Syntax highlighting provided by [CodeRay][4]
 * AJAX comment system with Markdown preview
-* Web frontend using [WMD Editor][12]
 
 
 ### Quickstart
@@ -92,11 +89,9 @@ RHTML, YAML, Delphi
 To activate CodeRay for a code block, you have to declare the language
 in lower case:
 
-        @@ruby
-        
-        def method_missing(id, *args, &block)
-          puts "#{id} was called with #{args.inspect}"
-        end             
+    def method_missing(id, *args, &block)
+      puts "#{id} was called with #{args.inspect}"
+    end             
 
 **Note that the declaration MUST be followed by a blank line!**
 
@@ -171,8 +166,6 @@ Layout and templates are rendered by *ERB*.  The layout is defined in
 `templates/layout.rhtml`. The content will be provided in the variable
 `@content`. A minimal example:
 
-    @@rhtml
-
     <html>
       <head>
         <title><%= @blog.title %></title>
@@ -185,8 +178,6 @@ Layout and templates are rendered by *ERB*.  The layout is defined in
 
 The attributes of a post are accessible as instance variables in a
 template:
-
-    @@rhtml
 
     <div class="article">    
       <div class="date">
@@ -247,8 +238,6 @@ Passenger as described in my [blog post][2].
 Assuming that you are on a Debian or Ubuntu system, you can create a
 file named `/etc/apache2/sites-available/blog`:
 
-    @@xml
-
     <VirtualHost *:80>
         ServerName myblog.com
         DocumentRoot /var/www/blog/public
@@ -262,22 +251,6 @@ After restarting Apache your blog should run on Apache on your desired
 domain:
 
     $ /etc/init.d/apache2 restart
-
-
-### Web Frontend
-
-The example blog has a builtin web frontend. Currently it only works
-on localhost:9292.
-
-The frontend allows you to create, edit, read or delete posts or
-pages. Editing a post shows up a form with the [wmd editor][12]. You
-have to look yourself for a correct YAML header, otherwise you will
-get incorrect results.
-
-One nice thing about the frontend is the *Commits* page, where you can
-look at a list of recent commits. Clicking on a commit brings you to a
-single commit overview, where you can inspect changes introduced by
-this particular commit.
 
 
 ### GitHub Project
@@ -296,6 +269,3 @@ Download or fork the package at my [github repository][1]
 [9]: http://textile.thresholdstate.com/
 [10]: http://en.wikipedia.org/wiki/Html
 [11]: http://www.kernel.org/pub/software/scm/git/docs/git-push.html
-[12]: http://wmd-editor.com/
-[13]: http://github.com/mojombo/jekyll
-[14]: http://github.com/blog/272-github-pages
