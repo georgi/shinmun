@@ -5,9 +5,8 @@ require 'pp'
 
 describe Shinmun::Blog do
 
-  TEST_DIR = File.expand_path(File.dirname(__FILE__))
-  TEMPLATES_DIR = File.expand_path(TEST_DIR + '/templates')
-  REPO = TEST_DIR + '/repo'
+  TEMPLATES_DIR = File.expand_path(File.dirname(__FILE__) + '/templates')
+  REPO = '/tmp/shinmun-test'
 
   before do
     FileUtils.rm_rf REPO

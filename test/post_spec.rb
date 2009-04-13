@@ -17,11 +17,11 @@ nodes.
 END
 
   it 'should parse and dump in the same way' do
-    Shinmun::Post.new(:type => 'md').parse(POST).dump.should == (POST)
+    Shinmun::Post.new(:type => 'md', :src => POST).dump.should == (POST)
   end
 
   it "should parse the yaml header" do
-    post = Shinmun::Post.new(:type => 'md').parse(POST)
+    post = Shinmun::Post.new(:type => 'md', :src => POST)
     post.title.should == 'Patroon - a Javascript Template Engine'
     post.category.should == 'Javascript'
     post.date.should == Date.new(2008,9,9)
