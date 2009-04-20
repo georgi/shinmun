@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name = 'shinmun'
-  s.version = '0.4'
-  s.date = '2008-04-13'
+  s.version = '0.4.1'
+  s.date = '2008-04-20'
   s.summary = 'git-based blog engine'
   s.author = 'Matthias Georgi'
   s.email = 'matti.georgi@gmail.com'
@@ -40,6 +40,7 @@ example/config/blog.yml
 example/pages/about.md
 example/templates/_comment_form.rhtml
 example/templates/_comments.rhtml
+example/templates/comments.rhtml
 example/templates/_pagination.rhtml
 example/templates/archive.rhtml
 example/templates/category.rhtml
