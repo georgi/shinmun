@@ -27,10 +27,10 @@ Shinmun::Blog.map do
 
   comments '/comments' do
     if params['preview'] == 'true'
-      render '_comments.rhtml', :comments => [Shinmun::Comment.new(params)]
+      render 'comments.rhtml', :comments => [Shinmun::Comment.new(params)], :layout => false
     else
       post_comment(params['path'], params)
-      render '_comments.rhtml', :comments => comments_for(params['path'])
+      render 'comments.rhtml', :comments => comments_for(params['path']), :layout => false
     end    
   end
 
