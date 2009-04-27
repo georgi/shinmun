@@ -9,12 +9,24 @@ Shinmun::Blog.map do
   end
 
   tag '/tags/(.*)' do |tag|
-    render 'category.rhtml', :name => "Tag: #{tag}", :posts => posts.select { |p| p.tag_list.include?(tag)  }
+    render 'category.rhtml', :name => "Tag: #{tag}", :posts => posts_with_tags(tag)
+  end
+
+  comments '/(\d+)/(\d+)/(.*)/comments' do |year, month, name|
+    post = find_post(year.to_i, month.to_i, name) or raise "post not found #{request.path_info}"
+    
+    if params['preview']
+      comments = comments_for(post).push(Shinmun::Comment.new(params))
+      render 'post.rhtml', :post => post, :comments => comments
+    else
+      create_comment(post, params)
+      render 'post.rhtml', :post => post, :comments => comments_for(post)
+    end
   end
 
   post '/(\d+)/(\d+)/(.*)' do |year, month, name|
-    post = find_post(year.to_i, month.to_i, name)
-    render 'post.rhtml', :post => post, :comments => comments_for(post.path)
+    post = find_post(year.to_i, month.to_i, name) or raise "post not found #{request.path_info}"
+    render 'post.rhtml', :post => post, :comments => comments_for(post)
   end
 
   archive '/(\d+)/(\d+)' do |year, month|
@@ -25,47 +37,21 @@ Shinmun::Blog.map do
     render 'index.rxml', :layout => false
   end
 
-  comments '/comments' do
-    if params['preview'] == 'true'
-      render 'comments.rhtml', :comments => [Shinmun::Comment.new(params)], :layout => false
-    else
-      post_comment(params['path'], params)
-      render 'comments.rhtml', :comments => comments_for(params['path']), :layout => false
-    end    
-  end
-
-  javascripts '/assets/javascripts\.js' do
-    scripts = assets['javascripts'].to_a.join
-    if_none_match(etag(scripts)) do
-      text scripts
-    end
-  end
-
-  stylesheets '/assets/stylesheets\.css' do
-    styles = assets['stylesheets'].to_a.join
-    if_none_match(etag(styles)) do
-      text styles
-    end
-  end
-
-  assets '/assets/(.*)' do |path|
-    file = assets[path] or raise "#{path} not found"
-    if_none_match(etag(file)) do
-      text file
-    end
-  end
-
-  get '/$' do
+  index '/$' do
     render 'index.rhtml'
   end
 
-  get '/(.*)' do |path|
+  page '/(.*)' do |path|
+    path = path.gsub('..', '')
     page = find_page(path)
           
     if page
       render 'page.rhtml', :page => page
+      
+    elsif File.exist?(path)
+      text File.read("#{self.path}/public/#{path}")
     else
-      raise "page '#{path}' not found"
+      render '404.rhtml', :path => path
     end
   end
   

@@ -35,7 +35,7 @@ module Shinmun
 
     def post_path(post)
       "#{base_path}/#{post.year}/#{post.month}/#{post.name}"
-    end
+    end    
 
     def archive_path(year, month)
       "#{base_path}/#{year}/#{month}"

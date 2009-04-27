@@ -1,7 +1,7 @@
 module Shinmun
 
   class Comment
-
+    
     attr_accessor :time, :name, :email, :website, :text
 
     def initialize(attributes)

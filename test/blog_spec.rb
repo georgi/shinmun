@@ -1,70 +1,51 @@
 require 'shinmun'
 require 'rack/mock'
+require 'rexml/document'
 require 'rexml/xpath'
 require 'pp'
 
 describe Shinmun::Blog do
 
-  TEMPLATES_DIR = File.expand_path(File.dirname(__FILE__) + '/templates')
-  REPO = '/tmp/shinmun-test'
+  DIR = '/tmp/shinmun-test'
 
   before do
-    FileUtils.rm_rf REPO
-    Dir.mkdir REPO
-    Dir.chdir REPO
-    initialize_blog
-  end
-  
-  def file(file, data)
-    FileUtils.mkpath(File.dirname(file))
-    open(file, 'w') { |io| io << data }
-    `git add #{file}`
-  end
-
-  def initialize_blog
-    `git init`
+    FileUtils.rm_rf DIR
     
-    file 'config/blog.yml', {
-      'title' => 'Title',
-      'description' => 'Description',
-      'language' => 'en',
-      'author' =>  'The Author',
-      'url' => 'http://www.my-blog-url.com',
-      'categories' => ['Ruby', 'Javascript']
-    }.to_yaml
-
+    Shinmun::Blog.init(DIR)
+    
     ENV['RACK_ENV'] = 'production'
-    @blog = Shinmun::Blog.new(REPO)
-    @request = Rack::MockRequest.new(@blog)
-
-    Dir.mkdir 'templates'
     
-    Dir[TEMPLATES_DIR + '/*'].each do |path|      
-      unless path.include?('~')
-        file 'templates/' + File.basename(path), File.read(path)
-      end
-    end
-
-    `git commit -m 'spec'` 
+    @blog = Shinmun::Blog.new(DIR)
     
-    @blog.store.load
-
+    @blog.config = {
+      :title => 'Title',
+      :description => 'Description',
+      :language => 'en',
+      :author =>  'The Author',
+      :categories => ['Ruby', 'Javascript']
+    }
+    
     @posts = [@blog.create_post(:title => 'New post', :date => '2008-10-10', :category => 'Ruby', :body => 'Body1'),
               @blog.create_post(:title => 'And this', :date => '2008-10-11', :category => 'Ruby', :body => 'Body2'),
               @blog.create_post(:title => 'Again',    :date => '2008-11-10', :category => 'Javascript', :body => 'Body3')]
 
-    @pages = [@blog.create_post(:title => 'Page 1', :body => 'Body1'),
-              @blog.create_post(:title => 'Page 2', :body => 'Body2')]
+    @pages = [@blog.create_page(:title => 'Page 1', :body => 'Body1'),
+              @blog.create_page(:title => 'Page 2', :body => 'Body2')]
 
-    @blog.store.load
+    @blog.load
+  end
+
+  def request(method, uri, options={})
+    @request = Rack::MockRequest.new(@blog)    
+    @response = @request.request(method, uri, options)
   end
 
   def get(*args)
-    @request.get(*args)
+    request(:get, *args)
   end
 
   def post(*args)
-    @request.post(*args)
+    request(:post, *args)
   end  
 
   def xpath(xml, path)
@@ -98,34 +79,14 @@ describe Shinmun::Blog do
   end
 
   it "should create a post" do
-    @blog.create_post(:title => 'New post', :date => '2008-10-10')
-    @blog.store.load
-    
+    post = @blog.create_post(:title => 'New post', :date => '2008-10-10')
+    @blog.load
+
     post = @blog.find_post(2008, 10, 'new-post')
     post.should_not be_nil
     post.title.should == 'New post'
     post.date.should == Date.new(2008, 10, 10)
     post.name.should == 'new-post'
-  end
-
-  it "should update a post" do
-    post = @blog.create_post(:title => 'New post', :date => '2008-10-10')
-    @blog.update_post(post, "---\ndate: 2008-11-11\ntitle: The title\n---")
-    @blog.store.load
-
-    post = @blog.find_post(2008, 11, 'new-post')
-    post.should_not be_nil
-    post.title.should == 'The title'
-    post.date.should == Date.new(2008, 11, 11)
-    post.name.should == 'new-post'
-  end
-
-  it "should delete a post" do
-    post = @blog.create_post(:title => 'New post', :date => '2008-10-10')
-    @blog.delete_post(post)        
-    @blog.store.load
-
-    @blog.find_post(2008, 10, 'new-post').should be_nil
   end
 
   it "should render posts" do
@@ -143,10 +104,10 @@ describe Shinmun::Blog do
     xpath(xml, '/rss/channel/title')[0].text.should == 'Ruby'
     xpath(xml, '/rss/channel/item/title')[0].text.should == 'And this'
     xpath(xml, '/rss/channel/item/pubDate')[0].text.should == "Sat, 11 Oct 2008 00:00:00 +0000"
-    xpath(xml, '/rss/channel/item/link')[0].text.should == "http://www.my-blog-url.com/2008/10/and-this"
+    xpath(xml, '/rss/channel/item/link')[0].text.should == "http://example.org/2008/10/and-this"
     xpath(xml, '/rss/channel/item/title')[1].text.should == 'New post'
     xpath(xml, '/rss/channel/item/pubDate')[1].text.should == "Fri, 10 Oct 2008 00:00:00 +0000"
-    xpath(xml, '/rss/channel/item/link')[1].text.should == "http://www.my-blog-url.com/2008/10/new-post"
+    xpath(xml, '/rss/channel/item/link')[1].text.should == "http://example.org/2008/10/new-post"
     
     assert_listing(get('/categories/ruby').body, [['And this', 'Body2'], ['New post', 'Body1']])
   end
@@ -170,12 +131,10 @@ describe Shinmun::Blog do
   end
 
   it "should post a comment" do    
-    post "/comments?path=posts/2008/10/new-post.md&name=Hans&text=Hallo"
-    post "/comments?path=posts/2008/10/new-post.md&name=Peter&text=Servus"
+    post "/2008/10/new-post/comments?name=Hans&text=Hallo"
+    post "/2008/10/new-post/comments?name=Peter&text=Servus"
     
-    @blog.store.load
-
-    comments = @blog.comments_for(@posts[0].path)
+    comments = @blog.comments_for(@posts[0])
 
     comments[0].should_not be_nil
     comments[0].name.should == 'Hans'

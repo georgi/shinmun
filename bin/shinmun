@@ -7,16 +7,22 @@ when 'init'
   Shinmun::Blog.init ARGV[1]
 
 when 'post'
-  post = Shinmun::Post.new(:title => ARGV[1], :date => Date.today)
-  FileUtils.mkpath(File.dirname(post.path))
-  open(post.path, 'w') { |io| io.write post.dump }
-  puts "created #{post.path}"
+  blog = Shinmun::Blog.new('.')
+  post = blog.create_post(:title => ARGV[1], :date => Date.today)
+  path = blog.post_file(post)
+  
+  `git checkout #{path}`
+  
+  exec "#{ENV['EDITOR']} #{path}"
 
 when 'page'
-  post = Shinmun::Post.new(:title => ARGV[1])
-  FileUtils.mkpath(File.dirname(post.path))
-  open(post.path, 'w') { |io| io.write post.dump }
-  puts "created #{post.path}"
+  blog = Shinmun::Blog.new('.')
+  post = blog.create_page(:title => ARGV[1])
+  path = blog.post_file(post)
+
+  `git checkout #{path}`
+
+  exec "#{ENV['EDITOR']} #{path}"
 
 else
   puts "Usage:"

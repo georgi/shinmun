@@ -1,104 +1,71 @@
 module Shinmun
+  ROOT = File.expand_path(File.dirname(__FILE__) + '/../..')
 
   class Blog < Kontrol::Application
-    
-    EXAMPLE_DIR = File.expand_path(File.dirname(__FILE__) + '/../../example')
-
     include Helpers
 
-    attr_reader :aggregations, :categories, :comments, :repo, :store
+    attr_accessor :config, :store, :posts, :pages
 
-    %w[ assets comments config posts pages templates ].each do |name|
-      define_method(name) { store.root.tree(name) }
-    end
-
-    %w[ title description language author url base_path categories ].each do |name|
-      define_method(name) { config['blog.yml'][name] }
+    %w[ base_path title description language author categories ].each do |name|
+      define_method(name) { @config[name.to_sym] }
     end
 
     # Initialize the blog
     def initialize(path)
       super
 
-      @aggregations = {}
-
       if ENV['RACK_ENV'] == 'production'
         @store = GitStore.new(path)
       else
         @store = GitStore::FileStore.new(path)
       end
-      
+
+      @store.handler['md'] = PostHandler.new      
       @store.load
-      
-      @repo = Grit::Repo.new(path) if defined?(Grit)
-      
-      Thread.start do
-        loop do
-          load_aggregations
-          sleep 300
-        end
+
+      @config = {}
+    end
+
+    def self.init(path)
+      path = File.expand_path(path)
+      Dir.mkdir(path)
+
+      FileUtils.cp_r "#{ROOT}/assets", path
+      FileUtils.cp_r "#{ROOT}/templates", path
+      FileUtils.cp "#{ROOT}/config.ru", path
+
+      Dir.mkdir("#{path}/posts")
+      Dir.mkdir("#{path}/pages")
+      Dir.mkdir("#{path}/comments")
+      Dir.mkdir("#{path}/public")
+
+      FileUtils.ln_s("../assets", "#{path}/public/assets")
+
+      Dir.chdir(path) do
+        `git init`
+        `git add .`
+        `git commit -m 'init'`
       end
     end
-
-    def self.init(name)
-      Dir.mkdir name      
-      Dir.chdir name
-      FileUtils.cp_r EXAMPLE_DIR + '/.', '.'
-      `git init`
-      `git add .`
-      `git commit -m 'init'`
-    end
-
-    def load_template(file)
-      templates[file] or raise "template #{file} not found"
-    end    
 
     def render(name, vars = {})
       super(name, vars.merge(:blog => self))
     end
 
+    def load
+      store.load
+      @pages = store['pages'].values
+      @posts = store['posts'].values.sort_by { |post| post.date.to_s }.reverse
+    end
+
     def call(env)
-      store.refresh!      
+      load if store.changed?
+      
       super
     end
-
-    def load_aggregations
-      config['aggregations.yml'].to_a.each do |c|
-        aggregations[c['name']] = Object.const_get(c['class']).new(c['url'])
-      end
-    end
-
-    def posts_by_date
-      posts.sort_by { |post| post.date.to_s }.reverse
-    end
-
-    def recent_posts
-      posts_by_date[0, 20]
-    end
-
-    # Return all posts for a given month.
-    def posts_for_month(year, month)
-      posts_by_date.select { |p| p.year == year and p.month == month }
-    end
-
-    # Return all posts with any of given tags.
-    def posts_with_tags(tags)
-      return [] if tags.nil? or tags.empty?
-      tags = tags.split(',').map { |t| t.strip } if tags.is_a?(String)
-      posts.select do |post|
-        tags.any? do |tag| 
-          post.tag_list.include?(tag)
-        end
-      end
-    end
-
-    # Return all archives as tuples of [year, month].
-    def archives
-      posts.map { |p| [p.year, p.month] }.uniq.sort
-    end
-
-    def tree(post)
-      post.date ? posts.tree(post.year).tree(post.month) : pages
+    
+    def url
+      "http://#{request.host}"
     end
 
     def symbolize_keys(hash)      
@@ -112,36 +79,54 @@ module Shinmun
       store.transaction(message, &block)
     end
 
-    # Create a new post with given attributes.
-    def create_post(atts)
-      post = Post.new(atts)
-      transaction "create '#{post.title}'" do
-        store[post.path] = post
-      end
+    def post_file(post)
+      'posts' + post_path(post) + '.' + post.type
     end
 
-    def update_post(post, data)
-      transaction "update '#{post.title}'" do
-        store.delete(post.path)
-        post.parse data
-        store[post.path] = post
-      end
+    def page_file(post)
+      'pages' + page_path(post) + '.' + post.type
     end
 
-    def delete_post(post)
-      transaction "delete '#{post.title}'" do
-        store.delete(post.path)
-      end
+    def comment_file(post)
+      'comments/' + post_path(post) + '.yml'
     end
 
-    def comments_for(path)
-      comments[path + '.yml'] || []
+    def create_post(attr)
+      post = Post.new(attr)
+      path = post_file(post)
+      
+      transaction "create post '#{post.title}'" do
+        store[path] = post
+      end
+
+      post
     end
 
-    def post_comment(path, params)
-      transaction "new comment for '#{path}'" do
-        comments[path + '.yml'] = comments[path + '.yml'].to_a + [ Comment.new(params) ]
+    def create_page(attr)
+      post = Post.new(attr)
+      path = page_file(post)
+
+      transaction "create page '#{post.title}'" do
+        store[path] = post
       end
+
+      post
+    end
+
+    def comments_for(post)
+      store[comment_file post] || []
+    end
+
+    def create_comment(post, params)
+      path = comment_file(post)
+      comments = comments_for(post)
+      comment = Comment.new(params)
+      
+      transaction "new comment for '#{post.title}'" do
+        store[path] = comments + [comment]
+      end
+      
+      comment
     end
 
     def find_page(name)
@@ -149,21 +134,41 @@ module Shinmun
     end
 
     def find_post(year, month, name)
-      tree = posts[year, month] and tree.find { |p| p.name == name }
+      posts.find { |p| p.year == year and p.month == month and p.name == name }
     end
 
     def find_category(permalink)
-      name = categories.find { |name| urlify(name) == permalink } or raise "category not found"
-      posts = self.posts.select { |p| p.category == name }.sort_by { |p| p.date }.reverse
-      { :name => name, :posts => posts, :permalink => permalink }
+      name = categories.find { |name| urlify(name) == permalink }
+      
+      { :name => name,
+        :posts => posts.select { |p| p.category == name },
+        :permalink => permalink }
+    end
+    
+    def recent_posts
+      posts[0, 20]
     end
 
-    def write(file, template, vars={})
-      file = "public/#{base_path}/#{file}"
-      FileUtils.mkdir_p(File.dirname(file))
-      open(file, 'wb') do |io|
-        io << render(template, vars)
+    # Return all posts for a given month.
+    def posts_for_month(year, month)
+      posts.select { |p| p.year == year and p.month == month }
+    end
+    
+    # Return all posts with any of given tags.
+    def posts_with_tags(tags)
+      return [] if tags.nil? or tags.empty?
+      tags = tags.split(',').map { |t| t.strip } if tags.is_a?(String)
+      
+      posts.select do |post|
+        tags.any? do |tag| 
+          post.tag_list.include?(tag)
+        end
       end
+    end
+
+    # Return all archives as tuples of [year, month].
+    def archives
+      posts.map { |p| [p.year, p.month] }.uniq.sort
     end
     
   end  

@@ -1,0 +1,33 @@
+<div class="article">
+
+  <h1><%= @post.title %></h1>
+
+  <div class="date">
+    <%= human_date @post.date %>
+  </div>
+
+  <%= @post.body_html %>
+
+  <p>
+    <% if @post.category %>
+      Posted in category <%= link_to @post.category, "/categories/#{urlify @post.category}" %>.
+    <% end %>
+
+    <% unless @post.tag_list.empty? %>
+      Tagged with <%= @post.tag_list.map {|tag| link_to tag, "/tags/#{tag}" }.join(', ') %>.
+    <% end %>
+  </p>
+
+  <% if @comments %>
+    <h2>Comments</h2>
+
+    <div class="comments">
+      <%= render '_comments.rhtml', :comments => @comments %>
+    </div>
+  <% end %>
+
+  <h2>Leave a comment</h2>
+
+  <%= render '_comment_form.rhtml', :post => @post %>
+
+</div>
