@@ -2,6 +2,8 @@
 
 require 'shinmun'
 
+ENV['RACK_ENV'] = 'production'
+
 case ARGV[0]
 when 'init'
   Shinmun::Blog.init ARGV[1]
@@ -11,7 +13,7 @@ when 'post'
   post = blog.create_post(:title => ARGV[1], :date => Date.today)
   path = blog.post_file(post)
   
-  `git checkout #{path}`
+  `git checkout master posts`
   
   exec "#{ENV['EDITOR']} #{path}"
 
@@ -20,7 +22,7 @@ when 'page'
   post = blog.create_page(:title => ARGV[1])
   path = blog.post_file(post)
 
-  `git checkout #{path}`
+  `git checkout master pages`
 
   exec "#{ENV['EDITOR']} #{path}"
 

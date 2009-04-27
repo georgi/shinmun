@@ -48,8 +48,8 @@ Shinmun::Blog.map do
     if page
       render 'page.rhtml', :page => page
       
-    elsif File.exist?(path)
-      text File.read("#{self.path}/public/#{path}")
+    elsif file = store[path]
+      text file
     else
       render '404.rhtml', :path => path
     end

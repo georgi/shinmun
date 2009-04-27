@@ -8,16 +8,18 @@ describe Shinmun::Blog do
 
   DIR = '/tmp/shinmun-test'
 
+  attr_reader :blog
+
   before do
-    FileUtils.rm_rf DIR
-    
-    Shinmun::Blog.init(DIR)
-    
     ENV['RACK_ENV'] = 'production'
+    
+    FileUtils.rm_rf DIR
+
+    Shinmun::Blog.init(DIR)
     
     @blog = Shinmun::Blog.new(DIR)
     
-    @blog.config = {
+    blog.config = {
       :title => 'Title',
       :description => 'Description',
       :language => 'en',
@@ -25,18 +27,18 @@ describe Shinmun::Blog do
       :categories => ['Ruby', 'Javascript']
     }
     
-    @posts = [@blog.create_post(:title => 'New post', :date => '2008-10-10', :category => 'Ruby', :body => 'Body1'),
-              @blog.create_post(:title => 'And this', :date => '2008-10-11', :category => 'Ruby', :body => 'Body2'),
-              @blog.create_post(:title => 'Again',    :date => '2008-11-10', :category => 'Javascript', :body => 'Body3')]
+    @posts = [blog.create_post(:title => 'New post', :date => '2008-10-10', :category => 'Ruby', :body => 'Body1'),
+              blog.create_post(:title => 'And this', :date => '2008-10-11', :category => 'Ruby', :body => 'Body2'),
+              blog.create_post(:title => 'Again',    :date => '2008-11-10', :category => 'Javascript', :body => 'Body3')]
 
-    @pages = [@blog.create_page(:title => 'Page 1', :body => 'Body1'),
-              @blog.create_page(:title => 'Page 2', :body => 'Body2')]
+    @pages = [blog.create_page(:title => 'Page 1', :body => 'Body1'),
+              blog.create_page(:title => 'Page 2', :body => 'Body2')]
 
-    @blog.load
+    blog.load
   end
 
   def request(method, uri, options={})
-    @request = Rack::MockRequest.new(@blog)    
+    @request = Rack::MockRequest.new(blog)    
     @response = @request.request(method, uri, options)
   end
 
@@ -64,25 +66,29 @@ describe Shinmun::Blog do
       titles[i].text.should == title
       summaries[i].text.to_s.strip.should == summary
     end
-  end 
+  end
+
+  it "should load templates" do
+    blog.load_template("index.rhtml").should be_kind_of(ERB)
+  end
 
   it "should find posts for a category" do    
-    category = @blog.find_category('ruby')
+    category = blog.find_category('ruby')
     category[:name].should == 'Ruby'
     
     category[:posts].should include(@posts[0])
     category[:posts].should include(@posts[1])
 
-    category = @blog.find_category('javascript')
+    category = blog.find_category('javascript')
     category[:name].should == 'Javascript'
     category[:posts].should include(@posts[2])
   end
 
   it "should create a post" do
-    post = @blog.create_post(:title => 'New post', :date => '2008-10-10')
-    @blog.load
+    post = blog.create_post(:title => 'New post', :date => '2008-10-10')
+    blog.load
 
-    post = @blog.find_post(2008, 10, 'new-post')
+    post = blog.find_post(2008, 10, 'new-post')
     post.should_not be_nil
     post.title.should == 'New post'
     post.date.should == Date.new(2008, 10, 10)
@@ -113,8 +119,8 @@ describe Shinmun::Blog do
   end
 
   it "should render index and archives" do
-    @blog.posts_for_month(2008, 10).should_not be_empty
-    @blog.posts_for_month(2008, 11).should_not be_empty
+    blog.posts_for_month(2008, 10).should_not be_empty
+    blog.posts_for_month(2008, 11).should_not be_empty
     
     assert_listing(get('/2008/10').body, [['And this', 'Body2'], ['New post', 'Body1']])
     assert_listing(get('/').body, [['Again', 'Body3'], ['And this', 'Body2'], ['New post', 'Body1']])
@@ -134,7 +140,7 @@ describe Shinmun::Blog do
     post "/2008/10/new-post/comments?name=Hans&text=Hallo"
     post "/2008/10/new-post/comments?name=Peter&text=Servus"
     
-    comments = @blog.comments_for(@posts[0])
+    comments = blog.comments_for(@posts[0])
 
     comments[0].should_not be_nil
     comments[0].name.should == 'Hans'

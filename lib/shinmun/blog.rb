@@ -14,16 +14,11 @@ module Shinmun
     def initialize(path)
       super
 
-      if ENV['RACK_ENV'] == 'production'
-        @store = GitStore.new(path)
-      else
-        @store = GitStore::FileStore.new(path)
-      end
-
-      @store.handler['md'] = PostHandler.new      
-      @store.load
-
       @config = {}
+      @store = GitStore.new(path)
+      @store.handler['md'] = PostHandler.new
+      @store.handler['rhtml'] = ERBHandler.new
+      @store.handler['rxml'] = ERBHandler.new
     end
 
     def self.init(path)
@@ -48,19 +43,24 @@ module Shinmun
       end
     end
 
+    def load_template(file)
+      store['templates/' + file]
+    end
+
     def render(name, vars = {})
       super(name, vars.merge(:blog => self))
     end
 
     def load
-      store.load
-      @pages = store['pages'].values
-      @posts = store['posts'].values.sort_by { |post| post.date.to_s }.reverse
+      store.load(ENV['RACK_ENV'] != 'production')
+      
+      @pages = store.tree('pages').values
+      @posts = store.tree('posts').values.sort_by { |post| post.date.to_s }.reverse
     end
 
     def call(env)
-      load if store.changed?
-      
+      load if store.changed? or ENV['RACK_ENV'] != 'production'
+        
       super
     end
     
@@ -94,8 +94,8 @@ module Shinmun
     def create_post(attr)
       post = Post.new(attr)
       path = post_file(post)
-      
-      transaction "create post '#{post.title}'" do
+
+      transaction "create post `#{post.title}'" do
         store[path] = post
       end
 
@@ -106,7 +106,7 @@ module Shinmun
       post = Post.new(attr)
       path = page_file(post)
 
-      transaction "create page '#{post.title}'" do
+      transaction "create page `#{post.title}'" do
         store[path] = post
       end
 
@@ -122,7 +122,7 @@ module Shinmun
       comments = comments_for(post)
       comment = Comment.new(params)
       
-      transaction "new comment for '#{post.title}'" do
+      transaction "new comment for `#{post.title}'" do
         store[path] = comments + [comment]
       end
       
