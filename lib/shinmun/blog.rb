@@ -55,17 +55,20 @@ module Shinmun
       store.tree('pages').values
     end
 
-    der posts
+    def posts
       store.tree('posts').values.sort_by { |post| post.date.to_s }.reverse
     end
 
     def call(env)
-      store.load if store.changed?
-      store.load(true) if ENV['RACK_ENV'] != 'production')
-        
+      if ENV['RACK_ENV'] == 'production'
+        store.load if store.changed?
+      else
+        store.load(true)
+      end
+      
       super
     end
-    
+
     def url
       "http://#{request.host}"
     end
@@ -146,7 +149,7 @@ module Shinmun
         :posts => posts.select { |p| p.category == name },
         :permalink => permalink }
     end
-    
+
     def recent_posts
       posts[0, 20]
     end
@@ -155,7 +158,7 @@ module Shinmun
     def posts_for_month(year, month)
       posts.select { |p| p.year == year and p.month == month }
     end
-    
+
     # Return all posts with any of given tags.
     def posts_with_tags(tags)
       return [] if tags.nil? or tags.empty?
@@ -172,7 +175,7 @@ module Shinmun
     def archives
       posts.map { |p| [p.year, p.month] }.uniq.sort
     end
-    
-  end  
+
+  end
   
 end

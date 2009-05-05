@@ -15,6 +15,3 @@ require 'shinmun/blog'
 require 'shinmun/routes'
 require 'shinmun/post'
 require 'shinmun/comment'
-
-require 'shinmun/aggregations/delicious'
-require 'shinmun/aggregations/flickr'

@@ -34,7 +34,7 @@ describe Shinmun::Blog do
     @pages = [blog.create_page(:title => 'Page 1', :body => 'Body1'),
               blog.create_page(:title => 'Page 2', :body => 'Body2')]
 
-    blog.load
+    blog.store.load
   end
 
   def request(method, uri, options={})
@@ -86,7 +86,7 @@ describe Shinmun::Blog do
 
   it "should create a post" do
     post = blog.create_post(:title => 'New post', :date => '2008-10-10')
-    blog.load
+    blog.store.load
 
     post = blog.find_post(2008, 10, 'new-post')
     post.should_not be_nil
@@ -139,6 +139,8 @@ describe Shinmun::Blog do
   it "should post a comment" do    
     post "/2008/10/new-post/comments?name=Hans&text=Hallo"
     post "/2008/10/new-post/comments?name=Peter&text=Servus"
+
+    blog.store.load
     
     comments = blog.comments_for(@posts[0])
 

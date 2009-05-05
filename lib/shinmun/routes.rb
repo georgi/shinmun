@@ -20,13 +20,16 @@ Shinmun::Blog.map do
       render 'post.rhtml', :post => post, :comments => comments
     else
       create_comment(post, params)
-      render 'post.rhtml', :post => post, :comments => comments_for(post)
+      redirect post_path(post)
     end
   end
 
   post '/(\d+)/(\d+)/(.*)' do |year, month, name|
-    post = find_post(year.to_i, month.to_i, name) or raise "post not found #{request.path_info}"
-    render 'post.rhtml', :post => post, :comments => comments_for(post)
+    if post = find_post(year.to_i, month.to_i, name)
+      render 'post.rhtml', :post => post, :comments => comments_for(post)
+    else
+      render '404.rhtml', :path => request.path_info
+    end
   end
 
   archive '/(\d+)/(\d+)' do |year, month|
