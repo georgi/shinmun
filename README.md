@@ -12,7 +12,7 @@ editor, git-push it and serve your blog straight from a repository.
 * Index, category and archive listings
 * RSS feeds
 * Syntax highlighting provided by [CodeRay][4]
-* AJAX comment system with Markdown preview
+* Markdown comments
 
 
 ### Quickstart
@@ -86,6 +86,8 @@ RHTML, YAML, Delphi
 To activate CodeRay for a code block, you have to declare the language
 in lower case:
 
+    @@ruby
+
     def method_missing(id, *args, &block)
       puts "#{id} was called with #{args.inspect}"
     end             
@@ -95,26 +97,8 @@ in lower case:
 
 ### Directory layout
 
-* `assets`: contains images, stylesheets and javascripts
-* `comments`: comments are stored as yaml files
-* `config`: configuration of blog, aggregations and assets
-* `posts`: post files sorted by year/month.
-* `pages`: contains static pages
-* `templates`: ERB templates for layout, posts and others
-
-An example tree:
-
     + config.ru
-    + map.rb
-    + helpers.rb
     + assets
-      + images
-      + stylesheets
-      + javascripts      
-    + config
-      + aggregations.yml
-      + assets.yml
-      + blog.yml
     + pages
       + about.md
     + posts
@@ -138,7 +122,7 @@ An example tree:
 
 ### Blog configuation
 
-Inside `config.ru` you can set the properties of your blog:
+In `config.ru` you can set the properties of your blog:
 
     blog.config = {
       :language => 'en',
