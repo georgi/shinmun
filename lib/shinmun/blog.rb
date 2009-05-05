@@ -51,15 +51,17 @@ module Shinmun
       super(name, vars.merge(:blog => self))
     end
 
-    def load
-      store.load(ENV['RACK_ENV'] != 'production')
-      
-      @pages = store.tree('pages').values
-      @posts = store.tree('posts').values.sort_by { |post| post.date.to_s }.reverse
+    def pages      
+      store.tree('pages').values
+    end
+
+    der posts
+      store.tree('posts').values.sort_by { |post| post.date.to_s }.reverse
     end
 
     def call(env)
-      load if store.changed? or ENV['RACK_ENV'] != 'production'
+      store.load if store.changed?
+      store.load(true) if ENV['RACK_ENV'] != 'production')
         
       super
     end

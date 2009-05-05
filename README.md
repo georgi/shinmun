@@ -1,5 +1,5 @@
 Shinmun - a git-based blog engine
-==========================================
+=================================
 
 Shinmun is a small git-based blog engine. Write posts in your favorite
 editor, git-push it and serve your blog straight from a repository.
@@ -11,7 +11,6 @@ editor, git-push it and serve your blog straight from a repository.
 * Deploy via [git-push][11]
 * Index, category and archive listings
 * RSS feeds
-* Flickr and Delicious aggregations
 * Syntax highlighting provided by [CodeRay][4]
 * AJAX comment system with Markdown preview
 
@@ -21,9 +20,9 @@ editor, git-push it and serve your blog straight from a repository.
 Install the gems:
 
     $ gem sources -a http://gems.github.com
-    $ gem install rack BlueCloth rubypants coderay mojombo-grit georgi-git_store georgi-kontrol georgi-shinmun
+    $ gem install rack BlueCloth rubypants coderay georgi-git_store georgi-kontrol georgi-shinmun
 
-Create a sample blog (this step requires the git executable):
+Create a sample blog:
 
     $ shinmun init myblog
 
@@ -48,9 +47,7 @@ folder:
     shinmun post 'The title of the post'
 
 Shinmun will then create a post file in the right place, for example
-in `posts/2008/9/the-title-of-the-post.md`. After creating you will
-probably open the file, set the category and tags and start writing
-your new article.
+in `posts/2008/9/the-title-of-the-post.md` and open it with $EDITOR.
 
 
 ### Post Format
@@ -141,23 +138,15 @@ An example tree:
 
 ### Blog configuation
 
-Inside `config/blog.yml` you set the properties of your blog:
+Inside `config.ru` you can set the properties of your blog:
 
-* title: the title of your blog, used inside templates
-* description: used for RSS
-* language: used for RSS
-* author: used for RSS
-* url: used for RSS
-* categories: a list of categories
-
-
-### Assets
-
-Shinmun serves asset files from your assets directory. Files in the
-directories `assets/stylesheets` and `assets/javascripts` will be
-served as one file each under the URLs `assets/stylesheets.css` and
-`assets/javascripts.css`. You have to name them accordingly like
-`1-reset.css` and `2-typo.css` to define the order.
+    blog.config = {
+      :language => 'en',
+      :title => "Blog Title",
+      :author => "The Author",
+      :categories => ["Ruby", "Javascript"],
+      :description => "Blog description"
+    }
 
 
 ### Templates
@@ -176,17 +165,20 @@ Layout and templates are rendered by *ERB*.  The layout is defined in
       </body>
      </html>
 
-The attributes of a post are accessible as instance variables in a
-template:
+The attributes of a post are accessible via the @post variable:
 
-    <div class="article">    
+    <div class="article">
+     
+      <h1><%= @post.title %></h1>
+     
       <div class="date">
-        <%= date @date %>
+        <%= human_date @post.date %>
       </div>
-      <h2><%= @title %></h2>  
-      <%= @body %>
-      <h3>Comments</h3>
-      <!-- comment form -->
+     
+      <%= @post.body_html %>
+
+      ...      
+
     </div>
 
 
