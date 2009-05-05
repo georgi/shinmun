@@ -29,7 +29,6 @@ lib/shinmun/comment.rb
 lib/shinmun/handlers.rb
 lib/shinmun/helpers.rb
 lib/shinmun/post.rb
-lib/shinmun/post_handler.rb
 lib/shinmun/routes.rb
 templates/index.rhtml
 templates/page.rhtml
