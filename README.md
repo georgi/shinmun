@@ -97,8 +97,10 @@ in lower case:
 
 ### Directory layout
 
-    + config.ru
     + assets
+      + print.css
+      + styles.css
+    + config.ru
     + pages
       + about.md
     + posts
@@ -107,18 +109,18 @@ in lower case:
         + 9
           + my-article.md
     + templates
+      + 404.rhtml
+      + archive.rhtml
       + category.rhtml
       + category.rxml
       + _comments.rhtml
       + _comment_form.rhtml
-      + feed.rxml
-      + helpers.rb
       + index.rhtml
       + index.rxml
+      + index.rhtml
       + layout.rhtml
-      + post.rhtml  
       + page.rhtml
-
+      + post.rhtml  
 
 ### Blog configuation
 
