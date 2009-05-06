@@ -52,11 +52,11 @@ module Shinmun
     end
 
     def pages      
-      store.tree('pages').values
+      store.tree('pages').values.select { |v| Post === v }
     end
 
     def posts
-      store.tree('posts').values.sort_by { |post| post.date.to_s }.reverse
+      store.tree('posts').values.select { |v| Post === v }.sort_by { |p| p.date.to_s }.reverse
     end
 
     def call(env)
