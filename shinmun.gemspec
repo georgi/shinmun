@@ -13,6 +13,8 @@ Gem::Specification.new do |s|
   s.add_dependency 'rubypants'
   s.add_dependency 'rack'
   s.add_dependency 'coderay'
+  s.add_dependency 'kontrol'
+  s.add_dependency 'git_store'
   s.has_rdoc = true
   s.extra_rdoc_files = ['README.md']  
   s.files = %w{
