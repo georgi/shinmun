@@ -19,25 +19,24 @@ module Shinmun
       define_method("#{name}=") {|v| head[name] = v }
     end
 
-    attr_accessor :dirname, :name, :type, :src, :head, :body, :summary, :body_html, :tag_list
+    attr_writer :name
+    attr_accessor :src, :type, :head, :body, :file, :mtime
 
     # Initialize empty post and set specified attributes.
     def initialize(attributes={})
       @head = {}
       @body = ''
+      @type = 'md'
       
       attributes.each do |k, v|
         send "#{k}=", v
       end
-
-      @type ||= 'md'
       
-      parse(src) if src
+      load if file
+    end
 
-      raise "post without a title" if title.nil?
-      
-      @name ||= title.downcase.gsub(/[ -]+/, '-').gsub(/[^-a-z0-9_]+/, '')
-      @dirname = date ? "posts/#{year}/#{month}" : 'pages'      
+    def name
+      @name ||= title.to_s.downcase.gsub(/[ -]+/, '-').gsub(/[^-a-z0-9_]+/, '')
     end
 
     def method_missing(id, *args)
@@ -47,10 +46,6 @@ module Shinmun
       else
         raise NoMethodError, "undefined method `#{id}' for #{self}", caller(1)
       end
-    end
-
-    def date=(date)
-      @head['date'] = String === date ? Date.parse(date) : date
     end
 
     # Shortcut for year of date
@@ -63,22 +58,39 @@ module Shinmun
       date.month
     end
 
-    def filename
-      "#{name}.#{type}"
+    def tag_list
+      @tag_list ||= tags.to_s.split(",").map { |s| s.strip }
     end
 
-    def filename=(filename)
-      self.name, self.type = filename.split('.')
+    def body_html
+      @body_html ||= transform(@body)
+    end
+
+    def summary
+      @summary ||= body_html.split("\n\n")[0]
     end
 
     def path
-      dirname.to_s.empty? ? filename : "#{dirname}/#{filename}"
+      folder = date ? "posts/#{year}/#{month}" : 'pages'
+      "#{folder}/#{name}.#{type}"
     end
 
-    def path=(path)
-      list = path.split('/')
-      self.dirname = list[0..-2].join('/')
-      self.filename = list[-1]
+    def load
+      self.type = File.extname(file)[1..-1]
+      self.name = File.basename(file).chomp(".#{type}")
+      self.mtime = File.mtime(file)
+      
+      parse(File.read(file))
+    end
+
+    def changed?
+      File.mtime(file) != mtime
+    end
+
+    def save
+      File.open(path, 'w') do |io|
+        io << dump
+      end
     end
 
     # Split up the source into header and body. Load the header as
@@ -88,15 +100,12 @@ module Shinmun
         @head = YAML.load($1)
         @body = $2
       else
-        raise ArgumentError, "yaml header not found in src"
+        @body = src
       end
-
-      @body_html = transform(@body)
-      @summary = body_html.split("\n\n")[0]
-      @tag_list = tags.to_s.split(",").map { |s| s.strip }      
-      @dirname = date ? "posts/#{year}/#{month}" : 'pages'
-
-      self
+      
+      @body_html = nil
+      @tag_list = nil
+      @summary = nil
     end
 
     # Convert to string representation
@@ -121,13 +130,7 @@ module Shinmun
     end
 
     def ==(obj)
-      if Post === obj
-        if date
-          year == obj.year and month == obj.month and name == obj.name
-        else
-          name == obj.name
-        end
-      end
+      Post === obj and file == obj.file
     end
 
   end

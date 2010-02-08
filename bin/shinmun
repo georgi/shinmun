@@ -9,26 +9,23 @@ when 'init'
   Shinmun::Blog.init ARGV[1]
 
 when 'post'
-  blog = Shinmun::Blog.new('.')
-  post = blog.create_post(:title => ARGV[1], :date => Date.today)
-  path = blog.post_file(post)
-  
-  `git checkout master posts`
-  
-  exec "#{ENV['EDITOR']} #{path}"
+  post = Shinmun::Post.new(:title => ARGV[1], :date => Date.today)
+  post.save
+
+  puts "Created post '#{post.path}'"
 
 when 'page'
-  blog = Shinmun::Blog.new('.')
-  post = blog.create_page(:title => ARGV[1])
-  path = blog.post_file(post)
+  post = Shinmun::Post.new(:title => ARGV[1])
+  post.save
 
-  `git checkout master pages`
-
-  exec "#{ENV['EDITOR']} #{path}"
+  puts "Created page '#{post.path}'"
 
 else
   puts "Usage:"
   puts "  shinmun init dir - creates a new blog"
   puts "  shinmun post 'Title of the post' - create a new post"
   puts "  shinmun page 'Title of the page' - create a new page"
+  exit
 end
+
+

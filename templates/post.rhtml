@@ -17,17 +17,5 @@
       Tagged with <%= @post.tag_list.map {|tag| link_to tag, "/tags/#{tag}" }.join(', ') %>.
     <% end %>
   </p>
-
-  <% if @comments %>
-    <h2>Comments</h2>
-
-    <div class="comments">
-      <%= render '_comments.rhtml', :comments => @comments %>
-    </div>
-  <% end %>
-
-  <h2>Leave a comment</h2>
-
-  <%= render '_comment_form.rhtml', :post => @post %>
-
+  
 </div>

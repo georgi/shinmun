@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = 'shinmun'
-  s.version = '0.5.2'
+  s.version = '0.9'
   s.summary = 'git-based blog engine'
   s.author = 'Matthias Georgi'
   s.email = 'matti.georgi@gmail.com'
@@ -11,36 +11,33 @@ Gem::Specification.new do |s|
   s.require_path = 'lib'
   s.add_dependency 'BlueCloth'
   s.add_dependency 'rubypants'
-  s.add_dependency 'rack'
-  s.add_dependency 'coderay'
-  s.add_dependency 'kontrol'
-  s.add_dependency 'git_store'
+  s.add_dependency 'rack', '>= 1.0'
+  s.add_dependency 'coderay', '>= 0.9.1'
+  s.add_dependency 'kontrol', '>= 0.3.1'
   s.has_rdoc = true
   s.extra_rdoc_files = ['README.md']  
   s.files = %w{
+.gems
 README.md
+LICENSE
 Rakefile
-assets/print.css
-assets/styles.css
+public/stylesheets/print.css
+public/stylesheets/styles.css
 bin/shinmun
 config.ru
 lib/shinmun.rb
 lib/shinmun/blog.rb
 lib/shinmun/bluecloth_coderay.rb
 lib/shinmun/comment.rb
-lib/shinmun/handlers.rb
 lib/shinmun/helpers.rb
 lib/shinmun/post.rb
 lib/shinmun/routes.rb
 templates/index.rhtml
 templates/page.rhtml
 templates/404.rhtml
-templates/_comments.rhtml
 templates/category.rhtml
-templates/_comment_form.rhtml
 templates/post.rhtml
 templates/index.rxml
-templates/category.rxml
 templates/archive.rhtml
 templates/layout.rhtml
 test/blog_spec.rb

@@ -1,7 +1,7 @@
 <h1><%= "#{Date::MONTHNAMES[@month]} #{@year}" %></h1>
 
 <div class="articles">
-  <% for post in @blog.posts_for_month(@year, @month) %>
+  <% for post in @posts %>
     <div class="article">
       <div class="date"><%= human_date post.date %></div>
       <h2><%= post_link post %></h2>

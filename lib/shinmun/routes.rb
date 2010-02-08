@@ -1,39 +1,28 @@
 Shinmun::Blog.map do
-  
-  category_feed '/categories/(.*)\.rss' do |category|
-    render 'category.rxml', find_category(category).merge(:layout => false)
-  end
  
-  category '/categories/(.*)' do |category|
-    render 'category.rhtml', find_category(category)
+  category '/categories/(.*)' do |name|
+    category = find_category(name)
+    
+    render 'category.rhtml', :category => category, :posts => posts_by_category[category]
   end
 
   tag '/tags/(.*)' do |tag|
-    render 'category.rhtml', :name => "Tag: #{tag}", :posts => posts_with_tags(tag)
-  end
-
-  comments '/(\d+)/(\d+)/(.*)/comments' do |year, month, name|
-    post = find_post(year.to_i, month.to_i, name) or raise "post not found #{request.path_info}"
-    
-    if params['preview']
-      comments = comments_for(post).push(Shinmun::Comment.new(params))
-      render 'post.rhtml', :post => post, :comments => comments
-    else
-      create_comment(post, params)
-      redirect post_path(post)
-    end
+    render 'category.rhtml', :name => "Tag: #{tag}", :posts => posts_by_tag[tag]
   end
 
   post '/(\d+)/(\d+)/(.*)' do |year, month, name|
-    if post = find_post(year.to_i, month.to_i, name)
-      render 'post.rhtml', :post => post, :comments => comments_for(post)
+    if post = posts_by_date[year.to_i][month.to_i][name]
+      render 'post.rhtml', :post => post
     else
       render '404.rhtml', :path => request.path_info
     end
   end
 
   archive '/(\d+)/(\d+)' do |year, month|
-    render 'archive.rhtml', :year => year.to_i, :month => month.to_i, :posts => posts_for_month(year.to_i, month.to_i)
+    render('archive.rhtml',
+           :year => year.to_i,
+           :month => month.to_i,
+           :posts => posts_by_date[year.to_i][month.to_i].values)
   end
 
   feed '/index\.rss' do
@@ -41,18 +30,18 @@ Shinmun::Blog.map do
   end
 
   index '/$' do
-    render 'index.rhtml'
+    render 'index.rhtml', :posts => posts[0, 20]
   end
 
   page '/(.*)' do |path|
     path = path.gsub('..', '')
-    page = find_page(path)
-          
-    if page
-      render 'page.rhtml', :page => page
-      
-    elsif file = store[path]
-      text file
+
+    if page = pages[path]
+      render 'page.rhtml', :page => page      
+    elsif File.exist?("public/#{path}")
+      file = Rack::File.new(nil)
+      file.path = "public/#{path}"
+      response.body = file
     else
       render '404.rhtml', :path => path
     end
