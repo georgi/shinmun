@@ -88,6 +88,7 @@ module Shinmun
     end
 
     def save
+      FileUtils.mkpath(File.dirname(path))
       File.open(path, 'w') do |io|
         io << dump
       end
