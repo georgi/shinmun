@@ -17,12 +17,10 @@ Gem::Specification.new do |s|
   s.has_rdoc = true
   s.extra_rdoc_files = ['README.md']  
   s.files = %w{
-.gems
 README.md
 LICENSE
 Rakefile
-public/stylesheets/print.css
-public/stylesheets/styles.css
+public/styles.css
 bin/shinmun
 config.ru
 lib/shinmun.rb

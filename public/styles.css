@@ -1,0 +1,71 @@
+html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p,
+blockquote, pre, a, abbr, acronym, address, del, dfn, img,
+q, fieldset, form, label, legend, table,
+caption, tbody, tfoot, thead, tr, th, td {
+    margin: 0; 
+    padding: 0; 
+    border: 0; 
+    font-weight: inherit;
+    font-style: inherit;
+    font-size: 100%; 
+    font-family: inherit;
+    vertical-align: baseline;
+}
+
+body {
+    line-height: 1.5;
+    background: #fff;
+    margin:0.5em 0;
+    font-size: 80%;
+    color: #222;
+    font-family: Arial, sans-serif;
+}
+
+p {
+    margin-bottom: 1em;
+}
+
+a {
+    color: #444;
+}
+
+a:visited {
+    color: #444;
+}
+
+h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
+    text-decoration: none;
+}
+
+h1 { font-size: 2em; line-height: 1; margin-top: 1em; margin-bottom: 1em; }
+h2 { font-size: 1.5em; margin-top: 0.75em; margin-bottom: 0.75em; }
+h3 { font-size: 1.3em; line-height: 1; margin-top: 1.7em; margin-bottom: 1em; }
+h4 { font-size: 1.2em; line-height: 1.25; margin-top: 1.25em; margin-bottom: 1.25em; }
+h5 { font-size: 1em; font-weight: bold; margin-bottom: 1.5em; }
+h6 { font-size: 1em; font-weight: bold; }
+
+hr { 
+    height: 1px;
+    color: #ccc;
+}
+
+.container {
+    width: 600px;
+    margin: 0 auto;
+}
+
+.article {
+}
+
+.article h2 {
+    margin-top:0px;
+}
+
+.article .date {
+    color: #666;
+}
+
+.article .tags a {
+    color: #69c;
+    text-decoration: none;
+}

@@ -30,7 +30,6 @@ module Shinmun
       FileUtils.cp_r "#{ROOT}/public", path
       FileUtils.cp_r "#{ROOT}/templates", path
       FileUtils.cp "#{ROOT}/config.ru", path
-      FileUtils.cp "#{ROOT}/.gems", path
 
       Dir.mkdir("#{path}/posts")
       Dir.mkdir("#{path}/pages")

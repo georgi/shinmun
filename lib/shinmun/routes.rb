@@ -26,7 +26,7 @@ Shinmun::Blog.map do
   end
 
   feed '/index\.rss' do
-    render 'index.rxml', :layout => false
+    render 'index.rxml', :layout => false, :posts => posts[0, 20]
   end
 
   index '/$' do

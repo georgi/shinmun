@@ -5,8 +5,7 @@
     <meta http-equiv="Content-Language" content="English" />
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <link rel="alternate" type="application/rss+xml" title="RSS" href="/index.rss" />
-    <link rel="stylesheet" media="screen" type="text/css" href="/assets/styles.css" />
-    <link rel="stylesheet" media="print" type="text/css" href="/assets/print.css" />
+    <link rel="stylesheet" media="screen" type="text/css" href="/styles.css" />
   </head>
   <body>
     <div class="container">
@@ -23,20 +22,20 @@
       <hr/>
 
       <p>
-	<h4>Categories</h4>
-	<ul>
-	  <li><%= link_to 'Ruby', '/categories/ruby' %></li>
-	  <li><%= link_to 'Javascript', '/categories/javascript' %></li>
-	</ul>
+        <h4>Categories</h4>
+        <ul>
+          <li><%= link_to 'Ruby', '/categories/ruby' %></li>
+          <li><%= link_to 'Javascript', '/categories/javascript' %></li>
+        </ul>
       </p>
 
       <p>
-	<h4>Archive</h4>
-	<ul>
+        <h4>Archive</h4>
+        <ul>
           <% for year, month in @blog.archives %>
             <li><%= archive_link year, month %></li>
           <% end %>
-	</ul>
+        </ul>
       </p>
 
     </div>
