@@ -33,6 +33,9 @@ module Shinmun
 
       Dir.mkdir("#{path}/posts")
       Dir.mkdir("#{path}/pages")
+      File.open("#{path}/Gemfile") do |io|
+        io.puts('gem "shinmun"')
+      end
     end
 
     def render(name, vars = {})
