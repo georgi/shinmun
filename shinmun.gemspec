@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = 'shinmun'
-  s.version = '0.9.3'
+  s.version = '1.0'
   s.summary = 'file based blog engine'
   s.author = 'Matthias Georgi'
   s.email = 'matti.georgi@gmail.com'
