@@ -51,8 +51,7 @@ in `posts/2008/9/the-title-of-the-post.md`.
 ### Post Format
 
 Each blog post is just a text file with a YAML header and a body. The
-YAML header is surrounded with 2 lines of 3 dashes. This format is
-compatible with [Jekyll][13] and [Github Pages][14].
+YAML header is surrounded with 2 lines of 3 dashes.
 
 The YAML header has following attributes:
 
