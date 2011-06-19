@@ -34,11 +34,14 @@ module Shinmun
     
     # Render a link for the navigation bar.
     def navi_link(text, path)
-      if path.match(/categories\/(.*)/)        
-        active = $1 == urlify(@category) if @category
-        active = $1 == urlify(@post.category) if @post
-      else
-        active = request.path_info == path
+      active = request.path_info == path
+
+      if path.match(/categories\/(.*)/) 
+        category = $1
+        if request.path.match(/(\d+)\/(\d+)\/(.*)/)
+          post = posts_by_date[$1.to_i][$2.to_i][$3]
+          active ||= category == urlify(post.category) if post
+        end
       end
       
       link_to text, path, :class => active ? 'active' : nil

@@ -115,14 +115,16 @@ module Shinmun
     end
 
     # Transform the body of this post. Defaults to Markdown.
-    def transform(src)
+    def transform(src, options={})
       case type
       when 'html'
         RubyPants.new(src).to_html
       when 'tt'
         RubyPants.new(RedCloth.new(src).to_html).to_html
       else
-        RubyPants.new(BlueCloth.new(src).to_html).to_html
+        bluecloth = BlueCloth.new(src)
+        bluecloth.code_css = options[:code_css]
+        RubyPants.new(bluecloth.to_html).to_html
       end
     end
 
