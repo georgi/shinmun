@@ -33,7 +33,7 @@ module Shinmun
 
       Dir.mkdir("#{path}/posts")
       Dir.mkdir("#{path}/pages")
-      File.open("#{path}/Gemfile") do |io|
+      File.open("#{path}/Gemfile", "w") do |io|
         io.puts('gem "shinmun"')
       end
     end
