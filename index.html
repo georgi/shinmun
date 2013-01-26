@@ -1,0 +1,252 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Shinmun by georgi</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1 class="header">Shinmun</h1>
+        <p class="header">Shinmun is a small file based blog engine. Write posts in your favorite editor, track them with git and deploy to Heroku. Small, fast and simple.</p>
+
+        <ul>
+          <li class="download"><a class="buttons" href="https://github.com/georgi/shinmun/zipball/master">Download ZIP</a></li>
+          <li class="download"><a class="buttons" href="https://github.com/georgi/shinmun/tarball/master">Download TAR</a></li>
+          <li><a class="buttons github" href="https://github.com/georgi/shinmun">View On GitHub</a></li>
+        </ul>
+
+        <p class="header">This project is maintained by <a class="header name" href="https://github.com/georgi">georgi</a></p>
+
+
+      </header>
+      <section>
+        <h1>Shinmun - a file based blog engine</h1>
+
+<p>Shinmun is a small file based blog engine. Write posts in your favorite
+editor, track them with git and deploy to Heroku. Small, fast and simple.</p>
+
+<h3>Features</h3>
+
+<ul>
+<li>Posts are text files formatted with <a href="http://daringfireball.net/projects/markdown/">Markdown</a>, <a href="http://textile.thresholdstate.com/">Textile</a> or <a href="http://en.wikipedia.org/wiki/Html">HTML</a>
+</li>
+<li>Deploy via <a href="http://www.kernel.org/pub/software/scm/git/docs/git-push.html">git-push</a>
+</li>
+<li>Easy and fast deploying on Heroku</li>
+<li>Index, category and archive listings</li>
+<li>RSS feeds</li>
+<li>Syntax highlighting provided by <a href="http://coderay.rubychan.de/">CodeRay</a>
+</li>
+</ul><h3>Quickstart</h3>
+
+<p>Install the gems:</p>
+
+<pre><code>$ gem install shinmun
+</code></pre>
+
+<p>Create a sample blog:</p>
+
+<pre><code>$ shinmun init myblog
+</code></pre>
+
+<p>This will create a directory with all necessary files. Now start the
+web server:</p>
+
+<pre><code>$ cd myblog
+$ rackup
+</code></pre>
+
+<p>Browse to the following url:</p>
+
+<pre><code>http://localhost:9292
+</code></pre>
+
+<p>Voilà, your first blog is up and running!</p>
+
+<h3>Writing Posts</h3>
+
+<p>Posts can be created by using the <code>shinmun</code> command inside your blog
+folder:</p>
+
+<pre><code>shinmun post 'The title of the post'
+</code></pre>
+
+<p>Shinmun will then create a post file in the right place, for example
+in <code>posts/2008/9/the-title-of-the-post.md</code>.</p>
+
+<h3>Post Format</h3>
+
+<p>Each blog post is just a text file with a YAML header and a body. The
+YAML header is surrounded with 2 lines of 3 dashes.</p>
+
+<p>The YAML header has following attributes:</p>
+
+<ul>
+<li>
+<code>title</code>: mandatory</li>
+<li>
+<code>date</code>: posts need one, pages not</li>
+<li>
+<code>category</code>: a post belongs to one category</li>
+<li>
+<code>tags</code>: a comma separated list of tags</li>
+</ul><p>Example post:</p>
+
+<pre><code>--- 
+date: 2008-09-05
+category: Ruby
+tags: bluecloth, markdown
+title: BlueCloth, a Markdown library
+---
+This is the summary, which is by definition the first paragraph of the
+article. The summary shows up in category listings or the index listing.
+</code></pre>
+
+<h3>Syntax highlighting</h3>
+
+<p>Thanks to the fantastic highlighting library <a href="http://coderay.rubychan.de/">CodeRay</a>, highlighted
+code blocks can be embedded easily in Markdown. For Textile support
+you have to require <code>coderay/for_redcloth</code>. These languages are
+supported: C, Diff, Javascript, Scheme, CSS, HTML, XML, Java, JSON,
+RHTML, YAML, Delphi</p>
+
+<p>To activate CodeRay for a code block, you have to declare the language
+in lower case:</p>
+
+<pre><code>@@ruby
+
+def method_missing(id, *args, &amp;block)
+  puts "#{id} was called with #{args.inspect}"
+end             
+</code></pre>
+
+<p><strong>Note that the declaration MUST be followed by a blank line!</strong></p>
+
+<h3>Directory layout</h3>
+
+<pre><code>+ config.ru
++ pages
+  + about.md
++ posts
+  + 2007
+  + 2008
+    + 9
+      + my-article.md
++ public
+  + styles.css
++ templates
+  + 404.rhtml
+  + archive.rhtml
+  + category.rhtml
+  + index.rhtml
+  + index.rxml
+  + layout.rhtml
+  + page.rhtml
+  + post.rhtml  
+</code></pre>
+
+<h3>Blog configuation</h3>
+
+<p>In <code>config.ru</code> you can set the properties of your blog:</p>
+
+<pre><code>blog.config = {
+  :language =&gt; 'en',
+  :title =&gt; "Blog Title",
+  :author =&gt; "The Author",
+  :categories =&gt; ["Ruby", "Javascript"],
+  :description =&gt; "Blog description"
+}
+</code></pre>
+
+<h3>Templates</h3>
+
+<p>Layout and templates are rendered by <em>ERB</em>.  The layout is defined in
+<code>templates/layout.rhtml</code>. The content will be provided in the variable
+<code>@content</code>. A minimal example:</p>
+
+<pre><code>&lt;html&gt;
+  &lt;head&gt;
+    &lt;title&gt;&lt;%= @blog.title %&gt;&lt;/title&gt;
+    &lt;%= stylesheet_link_tag 'style' %&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+     &lt;%= @content %&gt;
+  &lt;/body&gt;
+ &lt;/html&gt;
+</code></pre>
+
+<p>The attributes of a post are accessible via the <a href="https://github.com/post" class="user-mention">@post</a> variable:</p>
+
+<pre><code>&lt;div class="article"&gt;
+
+  &lt;h1&gt;&lt;%= @post.title %&gt;&lt;/h1&gt;
+
+  &lt;div class="date"&gt;
+    &lt;%= human_date @post.date %&gt;
+  &lt;/div&gt;
+
+  &lt;%= @post.body_html %&gt;
+
+  ...      
+
+&lt;/div&gt;
+</code></pre>
+
+<h3>Deployment on Heroku</h3>
+
+<p>Install the Heroku gem:</p>
+
+<pre><code>$ gem install heroku
+</code></pre>
+
+<p>Installing your public key:</p>
+
+<pre><code>$ heroku keys:add
+
+Enter your Heroku credentials.
+Email: joe@example.com
+Password: 
+Uploading ssh public key /Users/joe/.ssh/id_rsa.pub
+</code></pre>
+
+<p>Create an app on Heroku.</p>
+
+<pre><code>$ heroku create myblog
+Created http://myblog.heroku.com/ | git@heroku.com:mybblog.git
+Git remote heroku added
+</code></pre>
+
+<p>Now on your local machine, you create a new remote repository and push
+your blog to Heroku:</p>
+
+<pre><code>$ cd ~/myblog
+$ git init
+$ git add .
+$ git commit -m 'initial commit'
+$ git push heroku
+</code></pre>
+
+<p>That's it. Your blog is deployed.</p>
+
+<h3>GitHub Project</h3>
+
+<p>Download or fork the package at my <a href="http://github.com/georgi/shinmun">github repository</a></p>
+      </section>
+      <footer>
+        <p><small>Hosted on <a href="https://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
+      </footer>
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+		
+  </body>
+</html>
