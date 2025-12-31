@@ -5,3 +5,4 @@ test/repo
 vendor/bundle
 .bundle
 *.gem
+_site

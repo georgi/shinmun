@@ -1,0 +1,7 @@
+language: en
+title: Shinmun Blog
+author: Shinmun Team
+categories:
+  - Ruby
+  - Javascript
+description: A lightweight file-based blog engine

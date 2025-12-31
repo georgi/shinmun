@@ -1,5 +1,6 @@
 #! /usr/bin/env ruby
 
+$LOAD_PATH.unshift File.expand_path('../lib', __dir__)
 require 'shinmun'
 
 ENV['RACK_ENV'] = 'production'
@@ -20,11 +21,28 @@ when 'page'
 
   puts "Created page '#{post.path}'"
 
+when 'export'
+  output_dir = ARGV[1] || '_site'
+  
+  # Load the blog from current directory
+  blog = Shinmun::Blog.new(Dir.pwd)
+  
+  # Load config from config.yml if it exists
+  config_file = File.join(Dir.pwd, 'config.yml')
+  if File.exist?(config_file)
+    config = YAML.safe_load(File.read(config_file), permitted_classes: [Symbol])
+    blog.config = config.transform_keys(&:to_sym)
+  end
+  
+  exporter = Shinmun::Exporter.new(blog, output_dir)
+  exporter.export
+
 else
   puts "Usage:"
   puts "  shinmun init dir - creates a new blog"
   puts "  shinmun post 'Title of the post' - create a new post"
   puts "  shinmun page 'Title of the page' - create a new page"
+  puts "  shinmun export [output_dir] - export static site to output_dir (default: _site)"
   exit
 end
 

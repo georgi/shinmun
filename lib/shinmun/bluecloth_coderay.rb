@@ -16,8 +16,10 @@ module Shinmun
         src.gsub(CODE_BLOCK_PATTERN) do |_|
           language = $1
           code = $2
-          highlighted = CodeRay.scan(code, language.to_sym).html(:css => code_css_setting, :line_numbers => :table).delete("\n")
-          "\n\n<pre class='highlight'>#{highlighted}</pre>\n\n"
+          # Strip leading indentation from the code
+          code = code.gsub(/^    /, '')
+          highlighted = CodeRay.scan(code, language.to_sym).html(:css => code_css_setting, :line_numbers => nil)
+          "\n\n<div class=\"CodeRay\"><pre>#{highlighted}</pre></div>\n\n"
         end
       end
 
