@@ -193,6 +193,20 @@ your blog to Heroku:
 That's it. Your blog is deployed.
 
 
+### Deployment on GitHub Pages
+
+Shinmun can generate a static site that you can host on GitHub Pages for free.
+
+Export your blog to static files:
+
+    $ shinmun export docs
+
+Commit the `docs` folder and push to GitHub. Then enable GitHub Pages in your
+repository settings, selecting the `docs` folder as the source.
+
+For detailed instructions including GitHub Actions automation and custom domain
+setup, see the [GitHub Pages Guide](pages/github-pages-guide.md).
+
 
 ### GitHub Project
 
