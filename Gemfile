@@ -1,0 +1,12 @@
+source 'https://rubygems.org'
+
+gem 'bluecloth', '~> 2.2'
+gem 'rubypants'
+gem 'rack', '>= 1.0'
+gem 'coderay', '>= 0.9.1'
+gem 'kontrol', '>= 0.3.1'
+gem 'rspec', '~> 3.0'
+gem 'rake'
+gem 'rdoc'
+gem 'rack-test'
+gem 'rexml'

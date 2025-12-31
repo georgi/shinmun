@@ -2,3 +2,6 @@
 doc/*
 pkg/*
 test/repo
+vendor/bundle
+.bundle
+*.gem

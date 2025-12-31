@@ -84,6 +84,7 @@ module Shinmun
     end
 
     def changed?
+      return false unless file
       File.mtime(file) != mtime
     end
 
@@ -98,7 +99,7 @@ module Shinmun
     # yaml document.
     def parse(src)
       if src =~ /\A---(.*?)---(.*)/m
-        @head = YAML.load($1)
+        @head = YAML.safe_load($1, permitted_classes: [Date, Time, DateTime])
         @body = $2
       else
         @body = src
@@ -122,8 +123,9 @@ module Shinmun
       when 'tt'
         RubyPants.new(RedCloth.new(src).to_html).to_html
       else
-        bluecloth = BlueCloth.new(src)
-        bluecloth.code_css = options[:code_css]
+        # Pre-process source with CodeRay highlighting if needed
+        processed_src = Shinmun::BlueClothCodeRay.process(src, options)
+        bluecloth = BlueCloth.new(processed_src)
         RubyPants.new(bluecloth.to_html).to_html
       end
     end
