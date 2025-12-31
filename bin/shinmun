@@ -27,14 +27,11 @@ when 'export'
   # Load the blog from current directory
   blog = Shinmun::Blog.new(Dir.pwd)
   
-  # Load config from config.ru if it exists
-  config_file = File.join(Dir.pwd, 'config.ru')
+  # Load config from config.yml if it exists
+  config_file = File.join(Dir.pwd, 'config.yml')
   if File.exist?(config_file)
-    # Extract config from config.ru
-    config_content = File.read(config_file)
-    if config_content =~ /blog\.config\s*=\s*(\{[^}]+\})/m
-      blog.config = eval($1)
-    end
+    config = YAML.safe_load(File.read(config_file), permitted_classes: [Symbol])
+    blog.config = config.transform_keys(&:to_sym)
   end
   
   exporter = Shinmun::Exporter.new(blog, output_dir)
