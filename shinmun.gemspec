@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.bindir = 'bin'
   s.executables << 'shinmun'
   s.require_path = 'lib'
-  s.required_ruby_version = '>= 2.7.0'
+  s.required_ruby_version = '>= 3.2.0'
   s.add_dependency 'bluecloth', '~> 2.2'
   s.add_dependency 'rubypants'
   s.add_dependency 'rack', '>= 1.0'
