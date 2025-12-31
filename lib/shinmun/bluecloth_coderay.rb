@@ -1,23 +1,36 @@
-class BlueCloth
+# CodeRay extension for BlueCloth
+# Since BlueCloth 2.x is a C extension, we can't override transform_code_blocks
+# Instead, we provide a wrapper module to process code blocks with syntax highlighting
 
-  attr_accessor :code_css
+module Shinmun
+  module BlueClothCodeRay
+    CODE_BLOCK_PATTERN = /^(?:[ ]{4}|\t)@@(\w+)\n\n(.*?)\n\n/m
 
-  def transform_code_blocks( str, rs )
-    @log.debug " Transforming code blocks"
+    class << self
+      attr_accessor :code_css
 
-    str.gsub(CodeBlockRegexp) {|block|
-      codeblock = $1
-      remainder = $2
-
-      # Generate the codeblock
-      if codeblock =~ /^(?:[ ]{4}|\t)@@(.*?)\n\n(.*)\n\n/m
-         "\n\n<pre class='highlight'>%s</pre>\n\n%s" %
-          [CodeRay.scan(outdent($2), $1).html(:css => (code_css || :class), :line_numbers => :list).delete("\n"), remainder]
-      else
-         "\n\n<pre><code>%s\n</code></pre>\n\n%s" %
-          [encode_code(outdent(codeblock), rs).rstrip, remainder]
+      # Pre-process markdown source to convert @@language code blocks
+      # to highlighted HTML before BlueCloth processing
+      def preprocess(src)
+        code_css_setting = code_css || :class
+        src.gsub(CODE_BLOCK_PATTERN) do |_|
+          language = $1
+          code = $2
+          highlighted = CodeRay.scan(code, language.to_sym).html(:css => code_css_setting, :line_numbers => :table).delete("\n")
+          "\n\n<pre class='highlight'>#{highlighted}</pre>\n\n"
+        end
       end
-    }
-  end
 
+      # Process markdown with optional CodeRay highlighting
+      # If the source contains @@language patterns, pre-process them
+      def process(src, options = {})
+        self.code_css = options[:code_css]
+        if src =~ CODE_BLOCK_PATTERN
+          preprocess(src)
+        else
+          src
+        end
+      end
+    end
+  end
 end

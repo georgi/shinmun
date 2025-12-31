@@ -1,12 +1,12 @@
 $:.unshift "#{File.dirname __FILE__}/../lib"
 
 require 'shinmun'
-require 'rack/mock'
+require 'rack/test'
 require 'rexml/document'
 require 'rexml/xpath'
 require 'pp'
 
-describe Shinmun::Blog do
+RSpec.describe Shinmun::Blog do
 
   DIR = '/tmp/shinmun-test'
 
@@ -70,30 +70,30 @@ describe Shinmun::Blog do
     summaries = xpath(xml, "//p")
 
     list.each_with_index do |(title, summary), i|
-      titles[i].text.should == title
-      summaries[i].text.to_s.strip.should == summary
+      expect(titles[i].text).to eq(title)
+      expect(summaries[i].text.to_s.strip).to eq(summary)
     end
   end
 
   it "should load templates" do
-    blog.load_template("index.rhtml").should be_kind_of(ERB)
+    expect(blog.load_template("index.rhtml")).to be_kind_of(Kontrol::Template)
   end
 
   it "should find posts for a category" do    
-    blog.find_category('ruby').should == 'Ruby'
+    expect(blog.find_category('ruby')).to eq('Ruby')
     
-    blog.posts_by_category['Ruby'].should include(@posts[0])
-    blog.posts_by_category['Ruby'].should include(@posts[1])
+    expect(blog.posts_by_category['Ruby']).to include(@posts[0])
+    expect(blog.posts_by_category['Ruby']).to include(@posts[1])
 
-    blog.find_category('javascript').should == 'Javascript'
-    blog.posts_by_category['Javascript'].should include(@posts[2])
+    expect(blog.find_category('javascript')).to eq('Javascript')
+    expect(blog.posts_by_category['Javascript']).to include(@posts[2])
   end
 
   it "should render posts" do
     xml = get('/2008/10/new-post').body
     
-    xpath(xml, "//h1")[0].text.should == 'New post'
-    xpath(xml, "//p")[0].text.should == 'Body1'
+    expect(xpath(xml, "//h1")[0].text).to eq('New post')
+    expect(xpath(xml, "//p")[0].text).to eq('Body1')
   end
 
   it "should render categories" do    
@@ -101,8 +101,8 @@ describe Shinmun::Blog do
   end
 
   it "should render index and archives" do
-    blog.posts_by_date[2008][10].should_not be_empty
-    blog.posts_by_date[2008][11].should_not be_empty
+    expect(blog.posts_by_date[2008][10]).not_to be_empty
+    expect(blog.posts_by_date[2008][11]).not_to be_empty
     
     assert_listing(get('/2008/10').body, [['And this', 'Body2'], ['New post', 'Body1']])
     assert_listing(get('/').body, [['Again', 'Body3'], ['And this', 'Body2'], ['New post', 'Body1']])
@@ -110,19 +110,19 @@ describe Shinmun::Blog do
 
   it "should render pages" do
     xml = get('/page-1').body
-    xpath(xml, "//h1")[0].text.should == 'Page 1'
-    xpath(xml, "//p")[0].text.should == 'Body1'
+    expect(xpath(xml, "//h1")[0].text).to eq('Page 1')
+    expect(xpath(xml, "//p")[0].text).to eq('Body1')
 
     xml = get('/page-2').body    
-    xpath(xml, "//h1")[0].text.should == 'Page 2'
-    xpath(xml, "//p")[0].text.should == 'Body2'
+    expect(xpath(xml, "//h1")[0].text).to eq('Page 2')
+    expect(xpath(xml, "//p")[0].text).to eq('Body2')
   end
 
   it "should render a post" do
     xml = get('/2008/10/new-post').body
 
-    xpath(xml, "//h1")[0].text.should == 'New post'
-    xpath(xml, "//div[@class='date']")[0].text.strip.should == 'October 10, 2008'
+    expect(xpath(xml, "//h1")[0].text).to eq('New post')
+    expect(xpath(xml, "//div[@class='date']")[0].text.strip).to eq('October 10, 2008')
   end
   
 end

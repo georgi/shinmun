@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = 'shinmun'
-  s.version = '1.0.3'
+  s.version = '1.1.0'
   s.summary = 'file based blog engine'
   s.author = 'Matthias Georgi'
   s.email = 'matti.georgi@gmail.com'
@@ -9,17 +9,18 @@ Gem::Specification.new do |s|
   s.bindir = 'bin'
   s.executables << 'shinmun'
   s.require_path = 'lib'
-  s.add_dependency 'BlueCloth'
+  s.required_ruby_version = '>= 2.7.0'
+  s.add_dependency 'bluecloth', '~> 2.2'
   s.add_dependency 'rubypants'
   s.add_dependency 'rack', '>= 1.0'
   s.add_dependency 'coderay', '>= 0.9.1'
   s.add_dependency 'kontrol', '>= 0.3.1'
-  s.has_rdoc = true
   s.extra_rdoc_files = ['README.md']  
   s.files = %w{
 README.md
 LICENSE
 Rakefile
+Gemfile
 public/styles.css
 bin/shinmun
 config.ru
@@ -42,4 +43,3 @@ test/blog_spec.rb
 test/post_spec.rb
 }
 end
-
