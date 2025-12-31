@@ -4,17 +4,17 @@
     <title><%= @blog.title %></title>
     <meta http-equiv="Content-Language" content="English" />
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <link rel="alternate" type="application/rss+xml" title="RSS" href="/index.rss" />
-    <link rel="stylesheet" media="screen" type="text/css" href="/styles.css" />
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="<%= @blog.base_path %>/index.rss" />
+    <link rel="stylesheet" media="screen" type="text/css" href="<%= @blog.base_path %>/styles.css" />
   </head>
   <body>
     <div class="container">
-      <h3><a href="/"><%= @blog.title %></a> - <%= @blog.description %></h3>
+      <h3><a href="<%= @blog.base_path %>/"><%= @blog.title %></a> - <%= @blog.description %></h3>
 
       <div class="menu">
-        <%= link_to 'Home', '/' %> -
-        <%= link_to 'About', '/about' %> -
-        <%= link_to 'Subscribe RSS', '/index.rss' %>
+        <%= link_to 'Home', "#{@blog.base_path}/" %> -
+        <%= link_to 'About', "#{@blog.base_path}/about" %> -
+        <%= link_to 'Subscribe RSS', "#{@blog.base_path}/index.rss" %>
       </div>
 
       <%= @content %>
@@ -24,8 +24,8 @@
       <p>
         <h4>Categories</h4>
         <ul>
-          <li><%= link_to 'Ruby', '/categories/ruby' %></li>
-          <li><%= link_to 'Javascript', '/categories/javascript' %></li>
+          <li><%= link_to 'Ruby', "#{@blog.base_path}/categories/ruby" %></li>
+          <li><%= link_to 'Javascript', "#{@blog.base_path}/categories/javascript" %></li>
         </ul>
       </p>
 

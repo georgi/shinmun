@@ -5,3 +5,4 @@ categories:
   - Ruby
   - Javascript
 description: A lightweight file-based blog engine
+base_path: /shinmun

@@ -5,11 +5,11 @@ module Shinmun
     Kontrol::Template.send(:include, self)
 
     def post_path(post)
-      "/#{post.year}/#{post.month}/#{post.name}"
+      "#{base_path}/#{post.year}/#{post.month}/#{post.name}"
     end    
 
     def archive_path(year, month)
-      "/#{year}/#{month}"
+      "#{base_path}/#{year}/#{month}"
     end
 
     # Render a link to a post
