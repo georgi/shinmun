@@ -1,0 +1,95 @@
+current directory: /home/runner/work/shinmun/shinmun/vendor/bundle/ruby/3.2.0/gems/bluecloth-2.2.0/ext
+/usr/bin/ruby3.2 -I/usr/lib/ruby/vendor_ruby extconf.rb
+checking for srand()... yes
+checking for random()... yes
+checking for bzero() in string.h,strings.h... yes
+checking for strcasecmp()... yes
+checking for strncasecmp()... yes
+checking for mkdio.h... yes
+checking for ruby/encoding.h... yes
+creating extconf.h
+creating Makefile
+
+current directory: /home/runner/work/shinmun/shinmun/vendor/bundle/ruby/3.2.0/gems/bluecloth-2.2.0/ext
+make DESTDIR\= sitearchdir\=./.gem.20251231-3562-hxgivl sitelibdir\=./.gem.20251231-3562-hxgivl clean
+
+current directory: /home/runner/work/shinmun/shinmun/vendor/bundle/ruby/3.2.0/gems/bluecloth-2.2.0/ext
+make DESTDIR\= sitearchdir\=./.gem.20251231-3562-hxgivl sitelibdir\=./.gem.20251231-3562-hxgivl
+compiling Csio.c
+compiling bluecloth.c
+bluecloth.c: In function ‘bluecloth_initialize’:
+bluecloth.c:232:17: warning: ‘RB_OBJ_INFECT’ is deprecated: taintedness turned out to be a wrong idea. [-Wdeprecated-declarations]
+  232 |                 OBJ_INFECT( self, text );
+      |                 ^~~~~~~~~~
+In file included from /usr/include/ruby-3.2.0/ruby/internal/core/rstring.h:30,
+                 from /usr/include/ruby-3.2.0/ruby/internal/arithmetic/char.h:29,
+                 from /usr/include/ruby-3.2.0/ruby/internal/arithmetic.h:24,
+                 from /usr/include/ruby-3.2.0/ruby/ruby.h:28,
+                 from /usr/include/ruby-3.2.0/ruby.h:38,
+                 from bluecloth.h:14,
+                 from bluecloth.c:25:
+/usr/include/ruby-3.2.0/ruby/internal/fl_type.h:114:30: note: declared here
+  114 | #define RB_OBJ_INFECT        RB_OBJ_INFECT
+      |                              ^~~~~~~~~~~~~
+/usr/include/ruby-3.2.0/ruby/internal/fl_type.h:884:1: note: in expansion of macro ‘RB_OBJ_INFECT’
+  884 | RB_OBJ_INFECT(VALUE dst, VALUE src)
+      | ^~~~~~~~~~~~~
+bluecloth.c: In function ‘bluecloth_to_html’:
+bluecloth.c:266:17: warning: ‘RB_OBJ_INFECT’ is deprecated: taintedness turned out to be a wrong idea. [-Wdeprecated-declarations]
+  266 |                 OBJ_INFECT( result, self );
+      |                 ^~~~~~~~~~
+/usr/include/ruby-3.2.0/ruby/internal/fl_type.h:114:30: note: declared here
+  114 | #define RB_OBJ_INFECT        RB_OBJ_INFECT
+      |                              ^~~~~~~~~~~~~
+/usr/include/ruby-3.2.0/ruby/internal/fl_type.h:884:1: note: in expansion of macro ‘RB_OBJ_INFECT’
+  884 | RB_OBJ_INFECT(VALUE dst, VALUE src)
+      | ^~~~~~~~~~~~~
+bluecloth.c: In function ‘bluecloth_header’:
+bluecloth.c:306:17: warning: ‘RB_OBJ_INFECT’ is deprecated: taintedness turned out to be a wrong idea. [-Wdeprecated-declarations]
+  306 |                 OBJ_INFECT( fieldstring, self );
+      |                 ^~~~~~~~~~
+/usr/include/ruby-3.2.0/ruby/internal/fl_type.h:114:30: note: declared here
+  114 | #define RB_OBJ_INFECT        RB_OBJ_INFECT
+      |                              ^~~~~~~~~~~~~
+/usr/include/ruby-3.2.0/ruby/internal/fl_type.h:884:1: note: in expansion of macro ‘RB_OBJ_INFECT’
+  884 | RB_OBJ_INFECT(VALUE dst, VALUE src)
+      | ^~~~~~~~~~~~~
+bluecloth.c:311:17: warning: ‘RB_OBJ_INFECT’ is deprecated: taintedness turned out to be a wrong idea. [-Wdeprecated-declarations]
+  311 |                 OBJ_INFECT( fieldstring, self );
+      |                 ^~~~~~~~~~
+/usr/include/ruby-3.2.0/ruby/internal/fl_type.h:114:30: note: declared here
+  114 | #define RB_OBJ_INFECT        RB_OBJ_INFECT
+      |                              ^~~~~~~~~~~~~
+/usr/include/ruby-3.2.0/ruby/internal/fl_type.h:884:1: note: in expansion of macro ‘RB_OBJ_INFECT’
+  884 | RB_OBJ_INFECT(VALUE dst, VALUE src)
+      | ^~~~~~~~~~~~~
+bluecloth.c:316:17: warning: ‘RB_OBJ_INFECT’ is deprecated: taintedness turned out to be a wrong idea. [-Wdeprecated-declarations]
+  316 |                 OBJ_INFECT( fieldstring, self );
+      |                 ^~~~~~~~~~
+/usr/include/ruby-3.2.0/ruby/internal/fl_type.h:114:30: note: declared here
+  114 | #define RB_OBJ_INFECT        RB_OBJ_INFECT
+      |                              ^~~~~~~~~~~~~
+/usr/include/ruby-3.2.0/ruby/internal/fl_type.h:884:1: note: in expansion of macro ‘RB_OBJ_INFECT’
+  884 | RB_OBJ_INFECT(VALUE dst, VALUE src)
+      | ^~~~~~~~~~~~~
+compiling css.c
+compiling docheader.c
+compiling emmatch.c
+compiling generate.c
+compiling html5.c
+compiling markdown.c
+compiling mkdio.c
+compiling resource.c
+compiling setup.c
+compiling tags.c
+compiling version.c
+compiling xml.c
+compiling xmlpage.c
+linking shared-object bluecloth_ext.so
+
+current directory: /home/runner/work/shinmun/shinmun/vendor/bundle/ruby/3.2.0/gems/bluecloth-2.2.0/ext
+make DESTDIR\= sitearchdir\=./.gem.20251231-3562-hxgivl sitelibdir\=./.gem.20251231-3562-hxgivl install
+/usr/bin/install -c -m 0755 bluecloth_ext.so ./.gem.20251231-3562-hxgivl
+
+current directory: /home/runner/work/shinmun/shinmun/vendor/bundle/ruby/3.2.0/gems/bluecloth-2.2.0/ext
+make DESTDIR\= sitearchdir\=./.gem.20251231-3562-hxgivl sitelibdir\=./.gem.20251231-3562-hxgivl clean

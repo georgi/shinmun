@@ -1,0 +1,114 @@
+== v2.2.0 [2011-11-01] Michael Granger <ged@FaerieMUD.org>
+
+- Config -> RbConfig (1.9.3 deprecation fix)
+- Adding a manpage for bin/bluecloth for packagers that require every
+  binary have one (e.g., Debian) (fixes #78). Thanks to Cédric
+  Boutillier for the contribution.
+- Updated for Discount 2.0.9
+
+
+== v2.1.0 [2011-03-12] Michael Granger <ged@FaerieMUD.org>
+
+- Removed deprecated #filter_html, #filter_html= methods
+- Fixed inverted footnotes option logic; added specs for footnotes
+  option.
+- Updated to Discount 2.0.8
+
+
+== v2.0.11 [2011-02-10] Michael Granger <ged@FaerieMUD.org>
+
+Enhancements:
+
+* gem-testers support
+* Update to Discount 2.0.5
+
+Bugfixes:
+
+* Removed unnecessary requires from top-level file
+* Fix for Windows devkit installs
+
+
+== v2.0.10 [2011-02-09] Michael Granger <ged@FaerieMUD.org>
+
+Enhancements:
+
+Updated to Discount 2.0.4:
+* Added configuration options for all of Discount's extensions.
+* Worked around a Discount bug when rendering the same document twice (appends a \0)
+
+
+== 2.0.9 [2011-01-17] Michael Granger <ged@FaerieMUD.org>
+
+Enhancements:
+
+* 1.9.2 compatibility
+* Updated to Discount 1.6.8
+
+Bugfixes:
+
+* Transcode input to UTF8, then re-transcode back to the original encoding on the way out
+  (fixes #63)
+
+
+== 2.0.8 [2010-09-23] Michael Granger <ged@FaerieMUD.org>
+
+Updated to Discount 1.6.6; add HTML5 tag support.
+
+
+== 2.0.7 [2010-08-11] Michael Granger <ged@FaerieMUD.org>
+
+Fixed m17n
+
+
+== 2.0.6 [2010-01-21] Michael Granger <ged@FaerieMUD.org>
+
+Enhancements:
+
+* HTML results now have the same encoding as the source Markdown text (fixes #63).
+* Native Windows gems.
+* Updated to Discount 1.5.8.
+
+Bugfixes
+
+* Fix a sefault when creating a BlueCloth object with an object other than a 
+  String. Closes #61 and #62.
+* Test for bzero (used in generate.c), and if it isn't defined (e.g., 
+  Windows using VC), define it in terms of memset(). 
+
+
+== 2.0.5 [2010-01-16] Michael Granger <ged@FaerieMUD.org>
+
+* Set the top-level 'Markdown' constant as an alias for BlueCloth if it's not
+  already set by something else.
+* Adding a spec to test out the DoS reported by Ben Sandofsky (refs #57).
+* Updated with Discount 1.4.4.
+
+
+== 2.0.4 [2009-07-15] Michael Granger <ged@FaerieMUD.org>
+
+* Updated to Discount 1.4.2.
+* Added some more tests for various Discount extensions.
+* Added support for the MKD_AUTOLINK and MKD_SAFELINK.
+* Fixing tests under Ruby 1.9.1. Thanks to Diego Elio Pettenò for the fix.
+* Adding Discount files for missing symbols on some platforms.
+
+
+== 2.0.3 [2009-06-15] Michael Granger <ged@FaerieMUD.org>
+
+Dependency fix.
+
+
+== 2.0.2 [2009-05-14] Michael Granger <ged@FaerieMUD.org>
+
+* Updated to Discount 1.4.0.
+* Added support for the MKD_TAGTEXT constant.
+
+
+== 2.0.1 [2009-05-14] Michael Granger <ged@FaerieMUD.org>
+
+Fixed the VERSION constant.
+
+
+== 2.0.0 [2009-03-25] Michael Granger <ged@FaerieMUD.org>
+
+Rewritten using Discount.
