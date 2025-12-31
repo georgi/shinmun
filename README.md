@@ -160,39 +160,6 @@ The attributes of a post are accessible via the @post variable:
     </div>
 
 
-### Deployment on Heroku
-
-Install the Heroku gem:
-
-    $ gem install heroku
-
-Installing your public key:
-
-    $ heroku keys:add
-
-    Enter your Heroku credentials.
-    Email: joe@example.com
-    Password: 
-    Uploading ssh public key /Users/joe/.ssh/id_rsa.pub
-
-Create an app on Heroku.
-
-    $ heroku create myblog
-    Created http://myblog.heroku.com/ | git@heroku.com:mybblog.git
-    Git remote heroku added
-
-Now on your local machine, you create a new remote repository and push
-your blog to Heroku:
-
-    $ cd ~/myblog
-    $ git init
-    $ git add .
-    $ git commit -m 'initial commit'
-    $ git push heroku
-
-That's it. Your blog is deployed.
-
-
 ### Deployment on GitHub Pages
 
 Shinmun can generate a static site that you can host on GitHub Pages for free.
@@ -214,12 +181,9 @@ Download or fork the package at my [github repository][1]
 
 
 [1]: http://github.com/georgi/shinmun
-[2]: http://www.matthias-georgi.de/2008/9/quick-guide-for-passenger-on-ubuntu-hardy.html
-[3]: http://github.com/georgi/kontrol
 [4]: http://coderay.rubychan.de/
 [5]: http://www.modrails.com/
 [6]: http://github.com/rack/rack
-[7]: http://github.com/georgi/git_store
 [8]: http://daringfireball.net/projects/markdown/
 [9]: http://textile.thresholdstate.com/
 [10]: http://en.wikipedia.org/wiki/Html
