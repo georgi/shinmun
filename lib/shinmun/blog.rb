@@ -7,8 +7,13 @@ module Shinmun
     attr_accessor :config
     attr_reader :posts, :pages, :posts_by_date, :posts_by_category, :posts_by_tag
 
-    %w[ base_path title description language author categories ].each do |name|
+    %w[ title description language author categories ].each do |name|
       define_method(name) { @config[name.to_sym] }
+    end
+
+    # Returns the base path for the blog (defaults to empty string for root deployment)
+    def base_path
+      @config[:base_path] || ''
     end
 
     # Initialize the blog

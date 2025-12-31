@@ -10,11 +10,11 @@
 
   <p>
     <% if @post.category %>
-      Posted in category <%= link_to @post.category, "/categories/#{urlify @post.category}" %>.
+      Posted in category <%= link_to @post.category, "#{@blog.base_path}/categories/#{urlify @post.category}" %>.
     <% end %>
 
     <% unless @post.tag_list.empty? %>
-      Tagged with <%= @post.tag_list.map {|tag| link_to tag, "/tags/#{tag}" }.join(', ') %>.
+      Tagged with <%= @post.tag_list.map {|tag| link_to tag, "#{@blog.base_path}/tags/#{tag}" }.join(', ') %>.
     <% end %>
   </p>
   
