@@ -11,7 +11,7 @@ Shinmun is a minimalist blogging platform that keeps things simple:
 - **Markdown**: Write your content in Markdown format
 - **Fast**: No database, just files
 - **Git-friendly**: Track your blog with version control
-- **Syntax highlighting**: Code blocks are beautifully highlighted with CodeRay
+- **Syntax highlighting**: Code blocks are beautifully highlighted with Rouge
 
 ## Features
 

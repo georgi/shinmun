@@ -3,12 +3,12 @@ require 'yaml'
 require 'date'
 require 'kramdown'
 require 'rubypants'
-require 'coderay'
+require 'rouge'
 require 'kontrol'
 
 begin; require 'redcloth'; rescue LoadError; end
 
-require_relative 'shinmun/kramdown_coderay'
+require_relative 'shinmun/kramdown_rouge'
 require_relative 'shinmun/helpers'
 require_relative 'shinmun/blog'
 require_relative 'shinmun/routes'
