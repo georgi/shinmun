@@ -43,32 +43,6 @@ function Hello({ name }: HelloProps) {
 }
 ```
 
----
-
-## Interactive Counter
-
-A counter component using React's `useState` hook. This demonstrates:
-
-- State management with `useState`
-- Event handlers with TypeScript types
-- Conditional styling based on state
-
-    @@typescript-file[counter-react](public/apps/counter-react.tsx)
-
-**Key Concepts:**
-
-```tsx
-// useState with type inference
-const [count, setCount] = useState(0);
-
-// Update state with callback
-setCount(c => c + 1);
-
-// Conditional styling
-color: count >= 0 ? '#2d7d46' : '#d93025'
-```
-
----
 
 ## Theme Switcher
 
@@ -120,101 +94,6 @@ const barStyle: React.CSSProperties = {
   transition: 'height 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
   transform: isAnimating ? 'scaleY(0.1)' : 'scaleY(1)',
   transformOrigin: 'bottom'
-};
-```
-
----
-
-## Form with Validation
-
-Comprehensive form demonstrating TypeScript's type safety with forms:
-
-- Generic validator functions
-- Controlled inputs with TypeScript event types
-- `useCallback` for memoized handlers
-- Real-time validation feedback
-
-    @@typescript-file[form-validation](public/apps/form-validation.tsx)
-
-**Validation Pattern with Generics:**
-
-```tsx
-// Generic validator type
-type Validator<T> = (value: T, formData?: FormData) => string | undefined;
-
-// Validators for each field
-const validators: Record<keyof FormData, Validator<string>> = {
-  email: (value) => {
-    if (!value) return 'Email is required';
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) 
-      return 'Invalid email format';
-    return undefined;
-  },
-  // ... more validators
-};
-```
-
----
-
-## Real-Time Search Filter
-
-Search and filter component showcasing `useMemo` for performance optimization:
-
-- Complex filtering logic
-- Sorting options
-- Category filters
-- Optimized re-renders with `useMemo`
-
-    @@typescript-file[search-filter](public/apps/search-filter.tsx)
-
-**useMemo for Optimized Filtering:**
-
-```tsx
-const filteredTechnologies = useMemo(() => {
-  return technologies
-    .filter(tech => {
-      const matchesSearch = tech.name.toLowerCase()
-        .includes(searchTerm.toLowerCase());
-      const matchesCategory = selectedCategory === 'all' || 
-        tech.category === selectedCategory;
-      return matchesSearch && matchesCategory;
-    })
-    .sort((a, b) => {
-      if (sortBy === 'name') return a.name.localeCompare(b.name);
-      return b.stars - a.stars;
-    });
-}, [searchTerm, selectedCategory, sortBy]); // Dependencies
-```
-
----
-
-## Todo List Application
-
-A full-featured todo list with CRUD operations:
-
-- Add new todos
-- Toggle completion status
-- Delete todos
-- Remaining count
-
-    @@typescript-file[todo-react](public/apps/todo-react.tsx)
-
-**State Management Pattern:**
-
-```tsx
-interface Todo {
-  id: number;
-  text: string;
-  completed: boolean;
-}
-
-const [todos, setTodos] = useState<Todo[]>([...]);
-
-// Toggle todo
-const toggleTodo = (id: number) => {
-  setTodos(todos.map(todo =>
-    todo.id === id ? { ...todo, completed: !todo.completed } : todo
-  ));
 };
 ```
 
