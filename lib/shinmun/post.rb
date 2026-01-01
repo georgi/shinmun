@@ -122,16 +122,9 @@ module Shinmun
         RubyPants.new(src).to_html
       when 'tt'
         RubyPants.new(RedCloth.new(src).to_html).to_html
-      when 'md', 'mdx'
-        # MDX files are processed as Markdown with CodeRay highlighting
-        processed_src = Shinmun::BlueClothCodeRay.process(src, options)
-        bluecloth = BlueCloth.new(processed_src)
-        RubyPants.new(bluecloth.to_html).to_html
       else
-        # Pre-process source with CodeRay highlighting if needed
-        processed_src = Shinmun::BlueClothCodeRay.process(src, options)
-        bluecloth = BlueCloth.new(processed_src)
-        RubyPants.new(bluecloth.to_html).to_html
+        # md, mdx, and any other types are processed as Markdown with CodeRay highlighting
+        transform_markdown(src, options)
       end
     end
 
@@ -141,6 +134,15 @@ module Shinmun
 
     def ==(obj)
       Post === obj and file == obj.file
+    end
+
+    private
+
+    # Transform Markdown source with CodeRay syntax highlighting
+    def transform_markdown(src, options)
+      processed_src = Shinmun::BlueClothCodeRay.process(src, options)
+      bluecloth = BlueCloth.new(processed_src)
+      RubyPants.new(bluecloth.to_html).to_html
     end
 
   end
