@@ -19,6 +19,7 @@ Shinmun automatically loads React from a CDN via import maps, so you can start b
 ## Hello World Component
 
 Let's start with a simple React component that renders a greeting. This demonstrates:
+
 - Basic function components
 - TypeScript interfaces for props
 - Inline styling with `React.CSSProperties`
@@ -47,6 +48,7 @@ function Hello({ name }: HelloProps) {
 ## Interactive Counter
 
 A counter component using React's `useState` hook. This demonstrates:
+
 - State management with `useState`
 - Event handlers with TypeScript types
 - Conditional styling based on state
@@ -71,6 +73,7 @@ color: count >= 0 ? '#2d7d46' : '#d93025'
 ## Theme Switcher
 
 A more advanced component demonstrating multiple hooks and CSS-in-JS patterns:
+
 - `useState` for current theme
 - `useEffect` for transition animations
 - TypeScript union types for theme options
@@ -100,6 +103,7 @@ useEffect(() => {
 ## Animated Data Chart
 
 Interactive bar chart showcasing data visualization with React:
+
 - Dynamic data generation
 - Auto-update with `useEffect` intervals
 - CSS transitions for smooth animations
@@ -124,6 +128,7 @@ const barStyle: React.CSSProperties = {
 ## Form with Validation
 
 Comprehensive form demonstrating TypeScript's type safety with forms:
+
 - Generic validator functions
 - Controlled inputs with TypeScript event types
 - `useCallback` for memoized handlers
@@ -154,6 +159,7 @@ const validators: Record<keyof FormData, Validator<string>> = {
 ## Real-Time Search Filter
 
 Search and filter component showcasing `useMemo` for performance optimization:
+
 - Complex filtering logic
 - Sorting options
 - Category filters
@@ -185,6 +191,7 @@ const filteredTechnologies = useMemo(() => {
 ## Todo List Application
 
 A full-featured todo list with CRUD operations:
+
 - Add new todos
 - Toggle completion status
 - Delete todos
@@ -256,6 +263,7 @@ if (container) {
 ### Step 3: That's It!
 
 Shinmun handles:
+
 - ✅ Compiling TypeScript/TSX
 - ✅ Bundling dependencies
 - ✅ Loading React from CDN
