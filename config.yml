@@ -10,5 +10,5 @@ base_path: /shinmun
 # Custom variables available in templates via @blog.variables
 # These are injected as window.* variables using <%= variables_script_tag %>
 variables:
-  HF_OAUTH_CLIENT_ID: ""
-  HF_INFERENCE_MODEL: "google/gemma-2-2b-it"
+  HF_OAUTH_CLIENT_ID: "800f3681-69fb-4a93-8dba-eaef08015404"
+  HF_INFERENCE_MODEL: "MiniMaxAI/MiniMax-M2.1"
