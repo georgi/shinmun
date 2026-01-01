@@ -6,18 +6,16 @@ module Shinmun
     CODE_BLOCK_PATTERN = /^(?:[ ]{4}|\t)@@(\w+)\n\n(.*?)\n\n/m
 
     class << self
-      attr_accessor :formatter
-
       # Pre-process markdown source to convert @@language code blocks
       # to highlighted HTML before Kramdown processing
-      def preprocess(src)
+      def preprocess(src, formatter = nil)
+        fmt = formatter || Rouge::Formatters::HTML.new
         src.gsub(CODE_BLOCK_PATTERN) do |_|
           language = $1
           code = $2
           # Strip leading indentation from the code
           code = code.gsub(/^    /, '')
           lexer = Rouge::Lexer.find(language) || Rouge::Lexers::PlainText.new
-          fmt = formatter || Rouge::Formatters::HTML.new
           highlighted = fmt.format(lexer.lex(code))
           "\n\n<div class=\"highlight\"><pre>#{highlighted}</pre></div>\n\n"
         end
@@ -26,9 +24,8 @@ module Shinmun
       # Process markdown with optional Rouge highlighting
       # If the source contains @@language patterns, pre-process them
       def process(src, options = {})
-        self.formatter = options[:formatter]
         if src =~ CODE_BLOCK_PATTERN
-          preprocess(src)
+          preprocess(src, options[:formatter])
         else
           src
         end
