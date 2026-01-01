@@ -5,6 +5,7 @@ require 'shinmun'
 RSpec.describe Shinmun::AIAssistant do
   describe '#initialize' do
     it 'detects Anthropic provider when ANTHROPIC_API_KEY is set' do
+      allow(ENV).to receive(:[]).and_call_original
       allow(ENV).to receive(:[]).with('ANTHROPIC_API_KEY').and_return('test-key')
       allow(ENV).to receive(:[]).with('OPENAI_API_KEY').and_return(nil)
       
@@ -14,6 +15,7 @@ RSpec.describe Shinmun::AIAssistant do
     end
 
     it 'detects OpenAI provider when OPENAI_API_KEY is set' do
+      allow(ENV).to receive(:[]).and_call_original
       allow(ENV).to receive(:[]).with('ANTHROPIC_API_KEY').and_return(nil)
       allow(ENV).to receive(:[]).with('OPENAI_API_KEY').and_return('test-key')
       
@@ -23,6 +25,7 @@ RSpec.describe Shinmun::AIAssistant do
     end
 
     it 'prefers Anthropic when both keys are set' do
+      allow(ENV).to receive(:[]).and_call_original
       allow(ENV).to receive(:[]).with('ANTHROPIC_API_KEY').and_return('anthropic-key')
       allow(ENV).to receive(:[]).with('OPENAI_API_KEY').and_return('openai-key')
       
@@ -31,6 +34,7 @@ RSpec.describe Shinmun::AIAssistant do
     end
 
     it 'is not available when no API keys are set' do
+      allow(ENV).to receive(:[]).and_call_original
       allow(ENV).to receive(:[]).with('ANTHROPIC_API_KEY').and_return(nil)
       allow(ENV).to receive(:[]).with('OPENAI_API_KEY').and_return(nil)
       
@@ -40,6 +44,7 @@ RSpec.describe Shinmun::AIAssistant do
     end
 
     it 'treats empty string API key as not set' do
+      allow(ENV).to receive(:[]).and_call_original
       allow(ENV).to receive(:[]).with('ANTHROPIC_API_KEY').and_return('')
       allow(ENV).to receive(:[]).with('OPENAI_API_KEY').and_return('')
       
@@ -52,6 +57,7 @@ RSpec.describe Shinmun::AIAssistant do
     let(:ai) { Shinmun::AIAssistant.new }
 
     before do
+      allow(ENV).to receive(:[]).and_call_original
       allow(ENV).to receive(:[]).with('ANTHROPIC_API_KEY').and_return(nil)
       allow(ENV).to receive(:[]).with('OPENAI_API_KEY').and_return(nil)
     end
@@ -66,6 +72,7 @@ RSpec.describe Shinmun::AIAssistant do
     let(:ai) { Shinmun::AIAssistant.new }
 
     before do
+      allow(ENV).to receive(:[]).and_call_original
       allow(ENV).to receive(:[]).with('ANTHROPIC_API_KEY').and_return(nil)
       allow(ENV).to receive(:[]).with('OPENAI_API_KEY').and_return(nil)
     end
@@ -80,6 +87,7 @@ RSpec.describe Shinmun::AIAssistant do
     let(:ai) { Shinmun::AIAssistant.new }
 
     before do
+      allow(ENV).to receive(:[]).and_call_original
       allow(ENV).to receive(:[]).with('ANTHROPIC_API_KEY').and_return(nil)
       allow(ENV).to receive(:[]).with('OPENAI_API_KEY').and_return(nil)
     end
@@ -94,6 +102,7 @@ RSpec.describe Shinmun::AIAssistant do
     let(:ai) { Shinmun::AIAssistant.new }
 
     before do
+      allow(ENV).to receive(:[]).and_call_original
       allow(ENV).to receive(:[]).with('ANTHROPIC_API_KEY').and_return(nil)
       allow(ENV).to receive(:[]).with('OPENAI_API_KEY').and_return(nil)
     end
@@ -108,6 +117,7 @@ RSpec.describe Shinmun::AIAssistant do
     let(:ai) { Shinmun::AIAssistant.new }
 
     before do
+      allow(ENV).to receive(:[]).and_call_original
       allow(ENV).to receive(:[]).with('ANTHROPIC_API_KEY').and_return('test-key')
       allow(ENV).to receive(:[]).with('OPENAI_API_KEY').and_return(nil)
     end

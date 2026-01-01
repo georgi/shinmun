@@ -15,6 +15,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'rack', '>= 1.0'
   s.add_dependency 'rouge', '~> 4.0'
   s.add_dependency 'kontrol', '>= 0.3.1'
+  s.add_dependency 'ruby_llm', '~> 1.9'
   s.extra_rdoc_files = ['README.md']  
   s.files = %w{
 README.md

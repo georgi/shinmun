@@ -68,13 +68,13 @@ Updated 'posts/2024/12/my-post.md'
 
 ## How It Works
 
-The AI assistant uses your configured LLM to:
+The AI assistant uses the [ruby_llm](https://rubyllm.com) gem as a unified interface to multiple LLM providers:
 
 1. **Understand context**: It reads your post title (for drafts) or body content (for enhancement)
 2. **Match your blog**: It references your `config.yml` categories to suggest appropriate classifications
 3. **Generate metadata**: It creates tags and descriptions optimized for search engines
 
-All processing happens through direct API calls—no intermediate services or data storage.
+The ruby_llm gem handles API communication, retries, and provider-specific differences automatically.
 
 ## Post Format with AI Fields
 

@@ -1,23 +1,23 @@
-require 'net/http'
-require 'json'
-require 'uri'
+require 'ruby_llm'
 
 module Shinmun
   # AI Assistant for generating blog content, auto-tagging, and SEO optimization.
   #
-  # Supports OpenAI (GPT-4) and Anthropic (Claude) APIs through environment variables:
+  # Uses the ruby_llm gem to support multiple LLM providers through a unified interface.
+  # Configure API keys via environment variables:
   #   - OPENAI_API_KEY for OpenAI
   #   - ANTHROPIC_API_KEY for Anthropic (Claude)
   #
   # The assistant will automatically use whichever API key is available,
   # preferring Anthropic if both are set.
   class AIAssistant
-    OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions'
-    ANTHROPIC_API_URL = 'https://api.anthropic.com/v1/messages'
-
     class Error < StandardError; end
     class ConfigurationError < Error; end
     class APIError < Error; end
+
+    # Default models for each provider
+    ANTHROPIC_MODEL = 'claude-sonnet-4-20250514'
+    OPENAI_MODEL = 'gpt-4o'
 
     attr_reader :provider
 
@@ -27,11 +27,16 @@ module Shinmun
 
       if @anthropic_key && !@anthropic_key.empty?
         @provider = :anthropic
+        @model = ANTHROPIC_MODEL
       elsif @openai_key && !@openai_key.empty?
         @provider = :openai
+        @model = OPENAI_MODEL
       else
         @provider = nil
+        @model = nil
       end
+
+      configure_ruby_llm if available?
     end
 
     # Check if AI features are available
@@ -82,7 +87,7 @@ module Shinmun
         Return only valid JSON, no additional text.
       PROMPT
 
-      response = call_api(prompt)
+      response = call_llm(prompt)
       parse_json_response(response)
     end
 
@@ -125,7 +130,7 @@ module Shinmun
         Return only valid JSON, no additional text.
       PROMPT
 
-      response = call_api(prompt)
+      response = call_llm(prompt)
       parse_json_response(response)
     end
 
@@ -152,7 +157,7 @@ module Shinmun
         Return only the description text, nothing else.
       PROMPT
 
-      call_api(prompt).strip
+      call_llm(prompt).strip
     end
 
     # Suggest tags based on content
@@ -176,10 +181,17 @@ module Shinmun
         Example: ruby, web development, performance
       PROMPT
 
-      call_api(prompt).strip.downcase
+      call_llm(prompt).strip.downcase
     end
 
     private
+
+    def configure_ruby_llm
+      RubyLLM.configure do |config|
+        config.openai_api_key = @openai_key if @openai_key
+        config.anthropic_api_key = @anthropic_key if @anthropic_key
+      end
+    end
 
     def ensure_available!
       unless available?
@@ -191,71 +203,12 @@ module Shinmun
       end
     end
 
-    def call_api(prompt)
-      case @provider
-      when :anthropic
-        call_anthropic(prompt)
-      when :openai
-        call_openai(prompt)
-      end
-    end
-
-    def call_anthropic(prompt)
-      uri = URI(ANTHROPIC_API_URL)
-      http = Net::HTTP.new(uri.host, uri.port)
-      http.use_ssl = true
-      http.read_timeout = 60
-
-      request = Net::HTTP::Post.new(uri)
-      request['Content-Type'] = 'application/json'
-      request['x-api-key'] = @anthropic_key
-      request['anthropic-version'] = '2023-06-01'
-
-      request.body = {
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 2048,
-        messages: [
-          { role: 'user', content: prompt }
-        ]
-      }.to_json
-
-      response = http.request(request)
-
-      unless response.is_a?(Net::HTTPSuccess)
-        raise APIError, "Anthropic API error: #{response.code} - #{response.body}"
-      end
-
-      data = JSON.parse(response.body)
-      data.dig('content', 0, 'text') || ''
-    end
-
-    def call_openai(prompt)
-      uri = URI(OPENAI_API_URL)
-      http = Net::HTTP.new(uri.host, uri.port)
-      http.use_ssl = true
-      http.read_timeout = 60
-
-      request = Net::HTTP::Post.new(uri)
-      request['Content-Type'] = 'application/json'
-      request['Authorization'] = "Bearer #{@openai_key}"
-
-      request.body = {
-        model: 'gpt-4o',
-        messages: [
-          { role: 'user', content: prompt }
-        ],
-        max_tokens: 2048,
-        temperature: 0.7
-      }.to_json
-
-      response = http.request(request)
-
-      unless response.is_a?(Net::HTTPSuccess)
-        raise APIError, "OpenAI API error: #{response.code} - #{response.body}"
-      end
-
-      data = JSON.parse(response.body)
-      data.dig('choices', 0, 'message', 'content') || ''
+    def call_llm(prompt)
+      chat = RubyLLM.chat(model: @model)
+      response = chat.ask(prompt)
+      response.content
+    rescue => e
+      raise APIError, "LLM API error: #{e.message}"
     end
 
     def parse_json_response(response)
