@@ -11,6 +11,30 @@ RSpec.describe Shinmun::TypeScriptEmbed do
       expect(Shinmun::TypeScriptEmbed.process(src)).to eq(src)
     end
 
+    it 'should not process typescript blocks inside fenced code blocks' do
+      src = <<~MARKDOWN
+        # Hello
+
+        ```markdown
+            @@typescript[demo]
+
+            const x: number = 1;
+
+        ```
+
+        More content
+      MARKDOWN
+
+      # Fenced code blocks should be preserved as-is
+      result = Shinmun::TypeScriptEmbed.process(src)
+      
+      # Should NOT contain compiled script
+      expect(result).not_to include('<script type="module">')
+      # Should still contain the original fenced block with @@typescript
+      expect(result).to include('@@typescript[demo]')
+      expect(result).to include('```markdown')
+    end
+
     it 'should detect typescript block pattern' do
       src = <<~MARKDOWN
         # Hello
@@ -299,6 +323,39 @@ RSpec.describe Shinmun::TypeScriptEmbed do
         
         expect(result).to include('typescript-error')
         expect(result).to include('not found')
+      end
+
+      it 'should raise error in strict mode for missing files' do
+        src = <<~MARKDOWN
+          # Test
+
+              @@typescript-file[app](nonexistent.tsx)
+
+          End
+        MARKDOWN
+
+        expect {
+          Shinmun::TypeScriptEmbed.process(src, base_path: Dir.tmpdir, strict: true)
+        }.to raise_error(Shinmun::TypeScriptEmbed::CompilationError, /not found/)
+      end
+
+      it 'should raise error when SHINMUN_STRICT_TYPESCRIPT env var is set' do
+        src = <<~MARKDOWN
+          # Test
+
+              @@typescript-file[app](nonexistent.tsx)
+
+          End
+        MARKDOWN
+
+        ENV['SHINMUN_STRICT_TYPESCRIPT'] = '1'
+        begin
+          expect {
+            Shinmun::TypeScriptEmbed.process(src, base_path: Dir.tmpdir)
+          }.to raise_error(Shinmun::TypeScriptEmbed::CompilationError, /not found/)
+        ensure
+          ENV.delete('SHINMUN_STRICT_TYPESCRIPT')
+        end
       end
     end
   end

@@ -146,9 +146,20 @@ module Shinmun
       # @param src [String] Markdown source
       # @param options [Hash] Processing options
       # @option options [String] :base_path Base path for resolving file references
+      # @option options [Boolean] :strict Raise errors instead of generating error HTML (default: false)
+      #                                   Also enabled when SHINMUN_STRICT_TYPESCRIPT env var is set
       def process(src, options = {})
         self.base_path = options[:base_path]
-        result = src
+        strict_mode = options.fetch(:strict, false) || ENV['SHINMUN_STRICT_TYPESCRIPT'] == '1'
+        
+        # Temporarily replace fenced code blocks to prevent processing their contents
+        # This preserves markdown code blocks that contain typescript syntax examples
+        # Regex matches: start of line + ``` + optional language + newline + content + start of line + ```
+        fenced_blocks = []
+        result = src.gsub(/^```[^\n]*\n.*?\n```$/m) do |block|
+          fenced_blocks << block
+          "<<<FENCED_BLOCK_#{fenced_blocks.length - 1}>>>"
+        end
 
         # Process file references first
         if result =~ TYPESCRIPT_FILE_PATTERN
@@ -161,6 +172,9 @@ module Shinmun
               js_code = compile_typescript_file(file_path)
               generate_html(js_code, container_id, jsx: file_path.end_with?('.tsx', '.jsx'))
             rescue StandardError => e
+              if strict_mode
+                raise CompilationError, "TypeScript file error for '#{file_path}': #{e.message}"
+              end
               error_html(file_path, e.message)
             end
           end
@@ -179,9 +193,17 @@ module Shinmun
               js_code = compile_typescript(code)
               generate_html(js_code, container_id)
             rescue StandardError => e
+              if strict_mode
+                raise CompilationError, "TypeScript compilation error: #{e.message}"
+              end
               error_html(code, e.message)
             end
           end
+        end
+
+        # Restore fenced code blocks
+        fenced_blocks.each_with_index do |block, idx|
+          result = result.gsub("<<<FENCED_BLOCK_#{idx}>>>", block)
         end
 
         result

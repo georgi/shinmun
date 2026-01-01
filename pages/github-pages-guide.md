@@ -179,11 +179,13 @@ The simplest way to add interactivity is with inline TypeScript blocks. Use the 
 
 ### Basic Syntax
 
+```markdown
     @@typescript[container-id]
 
     // Your TypeScript code here
     const element = document.getElementById('container-id')!;
     element.innerHTML = '<p>Hello from TypeScript!</p>';
+```
 
 The `[container-id]` creates a `<div>` with that ID where your app can render.
 
