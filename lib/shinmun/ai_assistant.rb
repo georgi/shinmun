@@ -264,6 +264,7 @@ module Shinmun
 
       begin
         result = JSON.parse(json_str)
+        # Only include fields that were returned by the API (remove nil values)
         {
           body: result['body'],
           category: result['category'],
