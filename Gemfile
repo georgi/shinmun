@@ -1,6 +1,7 @@
 source 'https://rubygems.org'
 
 gem 'kramdown', '~> 2.5'
+gem 'kramdown-parser-gfm', '~> 1.1'
 gem 'rubypants'
 gem 'rack', '>= 1.0'
 gem 'rackup'

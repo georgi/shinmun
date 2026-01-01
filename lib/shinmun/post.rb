@@ -136,7 +136,7 @@ module Shinmun
         end
         ts_options = { base_path: base_path }
         processed_src = Shinmun::TypeScriptEmbed.process(processed_src, ts_options)
-        html = Kramdown::Document.new(processed_src).to_html
+        html = Kramdown::Document.new(processed_src, input: 'GFM', syntax_highlighter: :rouge).to_html
         RubyPants.new(html).to_html
       end
     end
