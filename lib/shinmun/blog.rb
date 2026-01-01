@@ -66,14 +66,14 @@ module Shinmun
     def load_pages
       @pages = {}
 
-      Dir["#{ path }/pages/*.md"].each do |file|
+      Dir["#{ path }/pages/*.{md,mdx}"].each do |file|
         page = Post.new(:file => file)
         @pages[page.name] = page
       end
     end
 
     def load_posts
-      @posts = Dir["#{ path }/posts/**/*.md"].map do |file|
+      @posts = Dir["#{ path }/posts/**/*.{md,mdx}"].map do |file|
         Post.new(:file => file)
       end
     end

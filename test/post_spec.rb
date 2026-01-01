@@ -92,4 +92,27 @@ END
     expect(post.body_html).not_to eq('<p><strong>bold</strong></p>')
   end
 
+  it "should transform mdx files as markdown" do
+    post = Shinmun::Post.new(:title => 'test', :type => 'mdx', :body => '**bold**')
+    expect(post.body_html).to eq('<p><strong>bold</strong></p>')
+  end
+
+  it "should set type to mdx when loading an mdx file" do
+    allow(File).to receive(:mtime).and_return(Time.local(2010, 1, 1))
+    allow(File).to receive(:read).and_return(POST)
+    
+    post = Shinmun::Post.new(:file => 'posts/2010/01/a-post.mdx')
+    post.load
+    expect(post.type).to eq('mdx')
+    expect(post.name).to eq('a-post')
+  end
+
+  it "should infer path with mdx extension for mdx posts" do
+    post = Shinmun::Post.new
+    post.name = 'post'
+    post.type = 'mdx'
+    post.date = Date.new(2010,1,1)
+    expect(post.path).to eq('posts/2010/1/post.mdx')
+  end
+
 end

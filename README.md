@@ -6,7 +6,7 @@ editor, track them with git and deploy to Heroku. Small, fast and simple.
 
 ### Features
 
-* Posts are text files formatted with [Markdown][8], [Textile][9] or [HTML][10]
+* Posts are text files formatted with [Markdown][8], [MDX][12], [Textile][9] or [HTML][10]
 * Deploy via [git-push][11]
 * Easy and fast deploying on Heroku
 * Index, category and archive listings
@@ -188,3 +188,4 @@ Download or fork the package at my [github repository][1]
 [9]: http://textile.thresholdstate.com/
 [10]: http://en.wikipedia.org/wiki/Html
 [11]: http://www.kernel.org/pub/software/scm/git/docs/git-push.html
+[12]: https://mdxjs.com/
