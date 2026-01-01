@@ -13,6 +13,14 @@ editor, track them with git and deploy to Heroku. Small, fast and simple.
 * Syntax highlighting provided by [Rouge][4]
 * **TypeScript mini apps** - embed interactive TypeScript code in your pages
 * **AI-powered CLI** - generate drafts, auto-tag posts, and create SEO descriptions
+* **Reading time** - automatic reading time estimates for posts
+* **Related posts** - find similar posts by tags and categories
+* **Table of contents** - auto-generated TOC from headings
+* **SEO meta tags** - Open Graph and Twitter Cards support
+* **Sitemap** - automatic sitemap.xml generation
+* **Search** - JSON search index for client-side search
+* **Draft posts** - keep drafts unpublished until ready
+* **Pagination** - helpers for paginating post listings
 
 
 ### Quickstart
@@ -79,6 +87,7 @@ The YAML header has following attributes:
 * `category`: a post belongs to one category
 * `tags`: a comma separated list of tags
 * `description`: SEO meta description (optional, can be AI-generated)
+* `draft`: set to `true` to keep the post unpublished
 
 Example post:
 
@@ -88,6 +97,7 @@ Example post:
     tags: kramdown, markdown
     title: Kramdown, a Markdown library
     description: A practical guide to using Kramdown for Markdown processing in Ruby applications.
+    draft: false
     ---
     This is the summary, which is by definition the first paragraph of the
     article. The summary shows up in category listings or the index listing.
@@ -231,6 +241,7 @@ Alternatively, use `config.yml` for configuration:
       - Javascript
     description: Blog description
     base_path: /myblog
+    site_url: https://yoursite.com  # Used for sitemap and SEO meta tags
     
     # Custom variables for templates (injected as window.* in JavaScript)
     variables:
@@ -275,6 +286,29 @@ The attributes of a post are accessible via the @post variable:
 
     </div>
 
+#### Template Helpers
+
+Shinmun provides several helpers for use in your templates:
+
+**Reading time:**
+    <%= reading_time_tag @post %>  <!-- outputs "5 min read" -->
+
+**Table of contents:**
+    <%= @post.toc_html %>  <!-- generates a nested list of headings -->
+
+**Related posts:**
+    <%= related_posts_html @post, limit: 3 %>  <!-- shows similar posts -->
+
+**SEO meta tags** (add to layout `<head>`):
+    <%= seo_meta_tags(post: @post) %>  <!-- generates Open Graph, Twitter Cards, canonical URL -->
+
+**Pagination:**
+    <% pagination = paginate(@blog.published_posts, per_page: 10, current_page: params[:page] || 1) %>
+    <% for post in pagination[:items] %>
+      <%= post_link post %>
+    <% end %>
+    <%= pagination_html(pagination, base_url: '/') %>
+
 
 ### Deployment on GitHub Pages
 
@@ -283,6 +317,12 @@ Shinmun can generate a static site that you can host on GitHub Pages for free.
 Export your blog to static files:
 
     $ shinmun export docs
+
+This generates:
+- HTML files for all posts, pages, categories, and archives
+- `sitemap.xml` for search engines
+- `search-index.json` for client-side search
+- RSS feed at `index.rss`
 
 Commit the `docs` folder and push to GitHub. Then enable GitHub Pages in your
 repository settings, selecting the `docs` folder as the source.

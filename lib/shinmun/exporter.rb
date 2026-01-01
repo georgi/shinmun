@@ -21,6 +21,8 @@ module Shinmun
       export_archives
       export_tags
       export_feed
+      export_sitemap
+      export_search_index
       export_404
 
       puts "Site exported to #{output_dir}/"
@@ -45,7 +47,7 @@ module Shinmun
     end
 
     def export_posts
-      blog.posts.each do |post|
+      blog.published_posts.each do |post|
         path = "#{post.year}/#{post.month}/#{post.name}"
         dir = File.dirname("#{output_dir}/#{path}")
         FileUtils.mkdir_p(dir)
@@ -84,6 +86,97 @@ module Shinmun
 
     def export_404
       write_file("404.html", render_with_mock_request("/not-found-page-xyz"))
+    end
+
+    def export_sitemap
+      base_url = blog.config[:site_url] || "http://localhost"
+      base_path = blog.base_path
+      
+      urls = []
+      
+      # Index page
+      urls << { loc: "#{base_url}#{base_path}/", priority: "1.0", changefreq: "daily" }
+      
+      # Posts (high priority)
+      blog.published_posts.each do |post|
+        urls << {
+          loc: "#{base_url}#{base_path}/#{post.year}/#{post.month}/#{post.name}",
+          lastmod: post.date.strftime("%Y-%m-%d"),
+          priority: "0.8",
+          changefreq: "monthly"
+        }
+      end
+      
+      # Pages (medium priority)
+      blog.pages.each do |name, page|
+        urls << {
+          loc: "#{base_url}#{base_path}/#{name}",
+          priority: "0.6",
+          changefreq: "monthly"
+        }
+      end
+      
+      # Category pages
+      blog.categories.each do |category|
+        slug = blog.send(:urlify, category)
+        urls << {
+          loc: "#{base_url}#{base_path}/categories/#{slug}",
+          priority: "0.5",
+          changefreq: "weekly"
+        }
+      end
+      
+      # Archive pages
+      blog.archives.each do |year, month|
+        urls << {
+          loc: "#{base_url}#{base_path}/#{year}/#{month}",
+          priority: "0.4",
+          changefreq: "monthly"
+        }
+      end
+      
+      # Generate XML
+      xml = <<~XML
+        <?xml version="1.0" encoding="UTF-8"?>
+        <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+      XML
+      
+      urls.each do |url|
+        xml += "  <url>\n"
+        xml += "    <loc>#{url[:loc]}</loc>\n"
+        xml += "    <lastmod>#{url[:lastmod]}</lastmod>\n" if url[:lastmod]
+        xml += "    <changefreq>#{url[:changefreq]}</changefreq>\n" if url[:changefreq]
+        xml += "    <priority>#{url[:priority]}</priority>\n" if url[:priority]
+        xml += "  </url>\n"
+      end
+      
+      xml += "</urlset>\n"
+      
+      write_file('sitemap.xml', xml)
+    end
+
+    def export_search_index
+      require 'json'
+      
+      # Create a JSON search index for client-side search
+      index = blog.published_posts.map do |post|
+        {
+          title: post.title,
+          url: "#{blog.base_path}/#{post.year}/#{post.month}/#{post.name}",
+          date: post.date.strftime("%Y-%m-%d"),
+          category: post.category,
+          tags: post.tag_list,
+          summary: strip_html(post.summary).slice(0, 200),
+          content: strip_html(post.body_html).slice(0, 500)
+        }
+      end
+      
+      write_file('search-index.json', JSON.pretty_generate(index))
+    end
+
+    def strip_html(html)
+      return '' if html.nil?
+      html.gsub(/<[^>]+>/, ' ').gsub(/\s+/, ' ').strip
     end
 
     def write_file(path, content)

@@ -132,7 +132,59 @@ module Shinmun
 
     # Return all archives as tuples of [year, month, posts].
     def archives
-      posts.map { |p| [p.year, p.month] }.uniq.sort
+      published_posts.map { |p| [p.year, p.month] }.uniq.sort
+    end
+
+    # Return all published (non-draft) posts
+    def published_posts
+      @posts.reject(&:draft?)
+    end
+
+    # Return related posts based on shared tags and category
+    # Excludes the given post and returns up to `limit` related posts
+    def related_posts(post, limit: 5)
+      return [] unless post
+      
+      scores = {}
+      
+      # Score based on shared tags (2 points per shared tag)
+      post.tag_list.each do |tag|
+        posts_by_tag[tag].each do |related|
+          # Use object_id comparison for posts without files, otherwise use ==
+          is_same = post.file ? (related == post) : (related.object_id == post.object_id)
+          next if is_same || related.draft?
+          scores[related] ||= 0
+          scores[related] += 2
+        end
+      end
+      
+      # Score based on same category (3 points)
+      if post.category
+        posts_by_category[post.category].each do |related|
+          is_same = post.file ? (related == post) : (related.object_id == post.object_id)
+          next if is_same || related.draft?
+          scores[related] ||= 0
+          scores[related] += 3
+        end
+      end
+      
+      # Sort by score (descending) then by date (descending)
+      scores.sort_by { |p, score| [-score, -(p.date.to_s.gsub('-', '').to_i)] }
+            .first(limit)
+            .map(&:first)
+    end
+
+    # Return recent posts (for sidebar widgets)
+    def recent_posts(limit: 5)
+      published_posts.first(limit)
+    end
+
+    # Return all tags with their post counts
+    def tags_with_counts
+      published_posts.flat_map(&:tag_list)
+                    .group_by(&:itself)
+                    .transform_values(&:count)
+                    .sort_by { |tag, count| [-count, tag] }
     end
 
   end

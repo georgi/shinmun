@@ -70,6 +70,64 @@ module Shinmun
       @summary ||= body_html.split("\n\n")[0]
     end
 
+    # Returns true if the post is a draft (not ready for publication)
+    def draft?
+      head['draft'] == true
+    end
+
+    # Estimated reading time in minutes (assumes ~200 words per minute)
+    def reading_time
+      @reading_time ||= begin
+        # Strip markdown/HTML and count words
+        plain_text = body.gsub(/```[\s\S]*?```/, ' ')  # Remove code blocks
+                        .gsub(/`[^`]+`/, ' ')          # Remove inline code
+                        .gsub(/\[([^\]]+)\]\([^)]+\)/, '\1')  # Extract link text
+                        .gsub(/[#*_~`]/, '')           # Remove markdown formatting
+                        .gsub(/<[^>]+>/, '')           # Remove HTML tags
+        word_count = plain_text.split(/\s+/).reject(&:empty?).length
+        [(word_count / 200.0).ceil, 1].max
+      end
+    end
+
+    # Returns the word count of the post body
+    def word_count
+      @word_count ||= begin
+        plain_text = body.gsub(/```[\s\S]*?```/, ' ')
+                        .gsub(/`[^`]+`/, ' ')
+                        .gsub(/\[([^\]]+)\]\([^)]+\)/, '\1')
+                        .gsub(/[#*_~`]/, '')
+                        .gsub(/<[^>]+>/, '')
+        plain_text.split(/\s+/).reject(&:empty?).length
+      end
+    end
+
+    # Generate table of contents from headings in the body
+    # Returns array of hashes with :level, :text, :id
+    def table_of_contents
+      @table_of_contents ||= begin
+        toc = []
+        # Match markdown headings (## Heading)
+        body.scan(/^(\#{2,6})\s+(.+)$/) do |level, text|
+          clean_text = text.strip.gsub(/[#*_~`\[\]]/, '')
+          id = clean_text.downcase.gsub(/\s+/, '-').gsub(/[^a-z0-9-]/, '')
+          toc << { level: level.length, text: clean_text, id: id }
+        end
+        toc
+      end
+    end
+
+    # Returns HTML for table of contents
+    def toc_html
+      return '' if table_of_contents.empty?
+      
+      items = table_of_contents.map do |entry|
+        indent = '  ' * (entry[:level] - 2)
+        %{#{indent}<li><a href="##{entry[:id]}">#{entry[:text]}</a></li>}
+      end.join("\n")
+      
+      %{<nav class="table-of-contents">\n<ul>\n#{items}\n</ul>\n</nav>}
+    end
+
     def path
       folder = date ? "posts/#{year}/#{month}" : 'pages'
       "#{folder}/#{name}.#{type}"
@@ -108,6 +166,9 @@ module Shinmun
       @body_html = nil
       @tag_list = nil
       @summary = nil
+      @reading_time = nil
+      @word_count = nil
+      @table_of_contents = nil
     end
 
     # Convert to string representation
