@@ -125,6 +125,8 @@ module Shinmun
       else
         # Pre-process source with Rouge highlighting if needed
         processed_src = Shinmun::KramdownRouge.process(src, options)
+        # Process TypeScript embeds
+        processed_src = Shinmun::TypeScriptEmbed.process(processed_src)
         html = Kramdown::Document.new(processed_src).to_html
         RubyPants.new(html).to_html
       end

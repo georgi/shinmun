@@ -1,4 +1,5 @@
-require 'shinmun'
+require_relative 'lib/shinmun'
+require 'rack/session'
 
 use Rack::Session::Cookie
 use Rack::Reloader

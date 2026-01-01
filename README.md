@@ -12,6 +12,7 @@ editor, track them with git and deploy to Heroku. Small, fast and simple.
 * Index, category and archive listings
 * RSS feeds
 * Syntax highlighting provided by [Rouge][4]
+* **TypeScript mini apps** - embed interactive TypeScript code in your pages
 
 
 ### Quickstart
@@ -89,6 +90,46 @@ in lower case:
     end             
 
 **Note that the declaration MUST be followed by a blank line!**
+
+
+### TypeScript Mini Apps
+
+Shinmun supports embedding TypeScript mini apps directly in your pages.
+TypeScript code is compiled to JavaScript using [esbuild][12] and embedded
+as a `<script type="module">` block.
+
+**Prerequisites:** You need to have Node.js and npm installed, then run
+`npm install esbuild` in your blog directory.
+
+To embed TypeScript, use `@@typescript` followed by a blank line and
+indented code:
+
+    @@typescript
+
+    const greeting: string = "Hello, World!";
+    document.body.innerHTML = `<h1>${greeting}</h1>`;
+
+For mini apps that need a container element, specify a container ID:
+
+    @@typescript[my-app]
+
+    const container = document.getElementById('my-app')!;
+    container.innerHTML = '<p>Interactive content here!</p>';
+
+This creates a `<div id="my-app"></div>` before the script.
+
+**Example with interactivity:**
+
+    @@typescript[counter]
+
+    let count: number = 0;
+    const el = document.getElementById('counter')!;
+    function render() { el.innerHTML = `<button onclick="window.inc()">Count: ${count}</button>`; }
+    (window as any).inc = () => { count++; render(); };
+    render();
+
+**Note:** Each TypeScript block must end with a blank line before the
+next content paragraph.
 
 
 ### Directory layout
@@ -187,3 +228,4 @@ Download or fork the package at my [github repository][1]
 [9]: http://textile.thresholdstate.com/
 [10]: http://en.wikipedia.org/wiki/Html
 [11]: http://www.kernel.org/pub/software/scm/git/docs/git-push.html
+[12]: https://esbuild.github.io/
