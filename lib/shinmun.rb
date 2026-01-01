@@ -9,6 +9,7 @@ require 'kontrol'
 begin; require 'redcloth'; rescue LoadError; end
 
 require_relative 'shinmun/kramdown_rouge'
+require_relative 'shinmun/typescript_embed'
 require_relative 'shinmun/helpers'
 require_relative 'shinmun/blog'
 require_relative 'shinmun/routes'
