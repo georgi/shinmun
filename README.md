@@ -101,6 +101,8 @@ as a `<script type="module">` block.
 **Prerequisites:** You need to have Node.js and npm installed, then run
 `npm install esbuild` in your blog directory.
 
+#### Inline TypeScript
+
 To embed TypeScript, use `@@typescript` followed by a blank line and
 indented code:
 
@@ -118,15 +120,37 @@ For mini apps that need a container element, specify a container ID:
 
 This creates a `<div id="my-app"></div>` before the script.
 
-**Example with interactivity:**
+#### External TypeScript Files
 
-    @@typescript[counter]
+For larger components (like React), reference external TypeScript/TSX files:
 
-    let count: number = 0;
-    const el = document.getElementById('counter')!;
-    function render() { el.innerHTML = `<button onclick="window.inc()">Count: ${count}</button>`; }
-    (window as any).inc = () => { count++; render(); };
-    render();
+    @@typescript-file[my-component](public/apps/my-component.tsx)
+
+This reads the file, compiles it with bundling enabled, and embeds the result.
+React is automatically loaded from a CDN via import maps.
+
+**Example React component** (save as `public/apps/counter.tsx`):
+
+```tsx
+import React, { useState } from 'react';
+import { createRoot } from 'react-dom/client';
+
+function Counter() {
+  const [count, setCount] = useState(0);
+  return (
+    <button onClick={() => setCount(c => c + 1)}>
+      Count: {count}
+    </button>
+  );
+}
+
+const root = createRoot(document.getElementById('my-component')!);
+root.render(<Counter />);
+```
+
+Then in your markdown:
+
+    @@typescript-file[my-component](public/apps/counter.tsx)
 
 **Note:** Each TypeScript block must end with a blank line before the
 next content paragraph.
@@ -144,6 +168,9 @@ next content paragraph.
           + my-article.md
     + public
       + styles.css
+      + apps              # TypeScript/React components
+        + counter.tsx
+        + todo.tsx
     + templates
       + 404.rhtml
       + archive.rhtml

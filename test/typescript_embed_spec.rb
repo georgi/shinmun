@@ -1,6 +1,7 @@
 $:.unshift '../lib'
 
 require 'shinmun'
+require 'tmpdir'
 
 RSpec.describe Shinmun::TypeScriptEmbed do
 
@@ -207,6 +208,97 @@ RSpec.describe Shinmun::TypeScriptEmbed do
         js_code = Shinmun::TypeScriptEmbed.compile_typescript(ts_code)
         
         expect(js_code).to include('const add = (a, b) => a + b')
+      end
+    end
+  end
+
+  describe 'file references' do
+    it 'should detect typescript file reference pattern' do
+      src = <<~MARKDOWN
+        # Hello
+
+            @@typescript-file[my-app](public/apps/test.tsx)
+
+        More content
+      MARKDOWN
+
+      expect(src).to match(Shinmun::TypeScriptEmbed::TYPESCRIPT_FILE_PATTERN)
+      
+      match = src.match(Shinmun::TypeScriptEmbed::TYPESCRIPT_FILE_PATTERN)
+      expect(match[1]).to eq('my-app')
+      expect(match[2]).to eq('public/apps/test.tsx')
+    end
+
+    it 'should handle file paths with various characters' do
+      src = <<~MARKDOWN
+        Test
+
+            @@typescript-file[app](public/apps/my-component.tsx)
+
+        End
+      MARKDOWN
+
+      match = src.match(Shinmun::TypeScriptEmbed::TYPESCRIPT_FILE_PATTERN)
+      expect(match[2]).to eq('public/apps/my-component.tsx')
+    end
+
+    context 'with esbuild available', :integration do
+      before(:each) do
+        skip 'esbuild not available' unless system('npx esbuild --version > /dev/null 2>&1')
+      end
+
+      it 'should compile a TypeScript file' do
+        # Create a temporary test file
+        test_dir = File.join(Dir.tmpdir, 'shinmun-test')
+        FileUtils.mkdir_p(test_dir)
+        File.write("#{test_dir}/test.ts", 'const x: number = 42; console.log(x);')
+
+        Shinmun::TypeScriptEmbed.base_path = test_dir
+        js_code = Shinmun::TypeScriptEmbed.compile_typescript_file('test.ts')
+        
+        # esbuild may convert const to var when bundling
+        expect(js_code).to match(/(?:const|var) x = 42/)
+        expect(js_code).to include('console.log(x)')
+      ensure
+        FileUtils.rm_rf(test_dir)
+      end
+
+      it 'should process file references in markdown' do
+        test_dir = File.join(Dir.tmpdir, 'shinmun-test')
+        FileUtils.mkdir_p(test_dir)
+        File.write("#{test_dir}/app.ts", 'const msg: string = "Hello"; console.log(msg);')
+
+        src = <<~MARKDOWN
+          # Test
+
+              @@typescript-file[app](app.ts)
+
+          End
+        MARKDOWN
+
+        result = Shinmun::TypeScriptEmbed.process(src, base_path: test_dir)
+        
+        expect(result).to include('<div id="app"></div>')
+        expect(result).to include('<script type="module">')
+        # esbuild may convert const to var when bundling
+        expect(result).to match(/(?:const|var) msg = "Hello"/)
+      ensure
+        FileUtils.rm_rf(test_dir)
+      end
+
+      it 'should show error for missing files' do
+        src = <<~MARKDOWN
+          # Test
+
+              @@typescript-file[app](nonexistent.tsx)
+
+          End
+        MARKDOWN
+
+        result = Shinmun::TypeScriptEmbed.process(src, base_path: Dir.tmpdir)
+        
+        expect(result).to include('typescript-error')
+        expect(result).to include('not found')
       end
     end
   end
