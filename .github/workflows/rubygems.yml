@@ -1,11 +1,12 @@
 name: Push to RubyGems
 
 on:
-  release:
-    types: [published]
+  push:
+    tags:
+      - 'v*'
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   push:
@@ -25,3 +26,8 @@ jobs:
         gem push shinmun-$(ruby -e "puts Gem::Specification.load('shinmun.gemspec').version").gem
       env:
         GEM_HOST_API_KEY: ${{ secrets.RUBYGEMS_API_KEY }}
+
+    - name: Create GitHub Release
+      run: gh release create ${{ github.ref_name }} --generate-notes || true
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
