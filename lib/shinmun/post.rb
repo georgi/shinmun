@@ -70,6 +70,80 @@ module Shinmun
       @summary ||= body_html.split("\n\n")[0]
     end
 
+    # Returns true if the post is a draft (not ready for publication)
+    def draft?
+      head['draft'] == true
+    end
+
+    # Estimated reading time in minutes (assumes ~200 words per minute)
+    def reading_time
+      @reading_time ||= begin
+        # Strip markdown/HTML and count words using simple patterns to avoid ReDoS
+        plain_text = body.dup
+        # Remove fenced code blocks (simple approach)
+        plain_text.gsub!(/```[^`]*```/m, ' ')
+        # Remove inline code
+        plain_text.gsub!(/`[^`]*`/, ' ')
+        # Remove markdown links - extract text only
+        plain_text.gsub!(/\[([^\[\]]*)\]\([^()]*\)/, '\1')
+        # Remove markdown formatting characters
+        plain_text.gsub!(/[#*_~`]/, '')
+        # Remove HTML tags - simple non-nested pattern
+        plain_text.gsub!(/<[^<>]*>/, ' ')
+        # Remove any remaining angle brackets
+        plain_text.gsub!(/[<>]/, ' ')
+        word_count = plain_text.split(/\s+/).reject(&:empty?).length
+        [(word_count / 200.0).ceil, 1].max
+      end
+    end
+
+    # Returns the word count of the post body
+    def word_count
+      @word_count ||= begin
+        plain_text = body.dup
+        plain_text.gsub!(/```[^`]*```/m, ' ')
+        plain_text.gsub!(/`[^`]*`/, ' ')
+        plain_text.gsub!(/\[([^\[\]]*)\]\([^()]*\)/, '\1')
+        plain_text.gsub!(/[#*_~`]/, '')
+        plain_text.gsub!(/<[^<>]*>/, ' ')
+        plain_text.gsub!(/[<>]/, ' ')
+        plain_text.split(/\s+/).reject(&:empty?).length
+      end
+    end
+
+    # Generate table of contents from headings in the body
+    # Returns array of hashes with :level, :text, :id
+    def table_of_contents
+      @table_of_contents ||= begin
+        toc = []
+        # Match markdown headings (## Heading) - process line by line to avoid ReDoS
+        body.each_line do |line|
+          # Match ## followed by space and heading text (standard markdown)
+          if match = line.match(/^(\#{2,6}) (.*)$/)
+            level = match[1]
+            text = match[2]
+            next if text.nil? || text.strip.empty?
+            clean_text = text.strip.gsub(/[#*_~`\[\]]/, '')
+            id = clean_text.downcase.split.join('-').gsub(/[^a-z0-9-]/, '')
+            toc << { level: level.length, text: clean_text, id: id }
+          end
+        end
+        toc
+      end
+    end
+
+    # Returns HTML for table of contents
+    def toc_html
+      return '' if table_of_contents.empty?
+      
+      items = table_of_contents.map do |entry|
+        indent = '  ' * (entry[:level] - 2)
+        %{#{indent}<li><a href="##{entry[:id]}">#{entry[:text]}</a></li>}
+      end.join("\n")
+      
+      %{<nav class="table-of-contents">\n<ul>\n#{items}\n</ul>\n</nav>}
+    end
+
     def path
       folder = date ? "posts/#{year}/#{month}" : 'pages'
       "#{folder}/#{name}.#{type}"
@@ -108,6 +182,9 @@ module Shinmun
       @body_html = nil
       @tag_list = nil
       @summary = nil
+      @reading_time = nil
+      @word_count = nil
+      @table_of_contents = nil
     end
 
     # Convert to string representation
