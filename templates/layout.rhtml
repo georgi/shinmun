@@ -6,6 +6,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <link rel="alternate" type="application/rss+xml" title="RSS" href="<%= @blog.base_path %>/index.rss" />
     <link rel="stylesheet" media="screen" type="text/css" href="<%= @blog.base_path %>/styles.css" />
+    <%= variables_script_tag %>
   </head>
   <body>
     <div class="container">
@@ -17,6 +18,7 @@
         <%= link_to 'GitHub Pages Guide', "#{@blog.base_path}/github-pages-guide" %> -
         <%= link_to 'React Demo', "#{@blog.base_path}/react-demo" %> -
         <%= link_to 'TypeScript Demo', "#{@blog.base_path}/typescript-demo" %> -
+        <%= link_to 'HF OAuth Demo', "#{@blog.base_path}/hf-oauth-demo" %> -
         <%= link_to 'Subscribe RSS', "#{@blog.base_path}/index.rss" %>
       </div>
 

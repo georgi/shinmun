@@ -6,3 +6,9 @@ categories:
   - Javascript
 description: A lightweight file-based blog engine
 base_path: /shinmun
+
+# Custom variables available in templates via @blog.variables
+# These are injected as window.* variables using <%= variables_script_tag %>
+variables:
+  HF_OAUTH_CLIENT_ID: ""
+  HF_INFERENCE_MODEL: "google/gemma-2-2b-it"
