@@ -123,8 +123,8 @@ module Shinmun
       when 'tt'
         RubyPants.new(RedCloth.new(src).to_html).to_html
       else
-        # Pre-process source with CodeRay highlighting if needed
-        processed_src = Shinmun::KramdownCodeRay.process(src, options)
+        # Pre-process source with Rouge highlighting if needed
+        processed_src = Shinmun::KramdownRouge.process(src, options)
         html = Kramdown::Document.new(processed_src).to_html
         RubyPants.new(html).to_html
       end

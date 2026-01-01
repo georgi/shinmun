@@ -11,7 +11,7 @@ editor, track them with git and deploy to Heroku. Small, fast and simple.
 * Easy and fast deploying on Heroku
 * Index, category and archive listings
 * RSS feeds
-* Syntax highlighting provided by [CodeRay][4]
+* Syntax highlighting provided by [Rouge][4]
 
 
 ### Quickstart
@@ -74,13 +74,12 @@ Example post:
 
 ### Syntax highlighting
 
-Thanks to the fantastic highlighting library [CodeRay][4], highlighted
-code blocks can be embedded easily in Markdown. For Textile support
-you have to require `coderay/for_redcloth`. These languages are
-supported: C, Diff, Javascript, Scheme, CSS, HTML, XML, Java, JSON,
-RHTML, YAML, Delphi
+Thanks to the fantastic highlighting library [Rouge][4], highlighted
+code blocks can be embedded easily in Markdown. Rouge supports a wide
+variety of languages including Ruby, Python, JavaScript, C, Java,
+HTML, CSS, JSON, YAML, and many more.
 
-To activate CodeRay for a code block, you have to declare the language
+To activate Rouge for a code block, you have to declare the language
 in lower case:
 
     @@ruby
@@ -181,7 +180,7 @@ Download or fork the package at my [github repository][1]
 
 
 [1]: http://github.com/georgi/shinmun
-[4]: http://coderay.rubychan.de/
+[4]: https://github.com/rouge-ruby/rouge
 [5]: http://www.modrails.com/
 [6]: http://github.com/rack/rack
 [8]: http://daringfireball.net/projects/markdown/

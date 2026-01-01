@@ -2,11 +2,11 @@
 date: 2024-12-15
 category: Ruby
 tags: ruby, code, syntax-highlighting
-title: Beautiful Code Highlighting with CodeRay
+title: Beautiful Code Highlighting with Rouge
 ---
-One of the great features of Shinmun is its built-in syntax highlighting powered by CodeRay.
+One of the great features of Shinmun is its built-in syntax highlighting powered by Rouge.
 
-When writing technical blog posts, having beautiful code examples is essential. Shinmun makes this easy with its CodeRay integration.
+When writing technical blog posts, having beautiful code examples is essential. Shinmun makes this easy with its Rouge integration.
 
 ## How to Use Code Blocks
 
@@ -25,7 +25,7 @@ To add syntax-highlighted code, simply prefix your code block with `@@` followed
 
 ## Supported Languages
 
-CodeRay supports many popular programming languages including:
+Rouge supports many popular programming languages including:
 
 - Ruby
 - JavaScript
@@ -51,4 +51,4 @@ Here's how JavaScript code looks:
 
 ## Conclusion
 
-With Shinmun's CodeRay integration, your code examples will always look professional and readable!
+With Shinmun's Rouge integration, your code examples will always look professional and readable!
