@@ -10,18 +10,18 @@
     box-sizing: border-box;
 }
 
-/* Custom Properties */
+/* Custom Properties - Dark Mode */
 :root {
-    --ink: #1a1a1a;
-    --ink-light: #4a4a4a;
-    --ink-muted: #8a8a8a;
-    --paper: #fafafa;
-    --paper-warm: #f5f3f0;
-    --accent: #c41e3a;
-    --accent-dark: #a01830;
-    --border: #e0e0e0;
-    --border-dark: #d0d0d0;
-    --code-bg: #2d2d2d;
+    --ink: #e8e8e8;
+    --ink-light: #b0b0b0;
+    --ink-muted: #888888;
+    --paper: #0d0d0d;
+    --paper-warm: #1a1a1a;
+    --accent: #74c0fc;
+    --accent-dark: #4dabf7;
+    --border: #2a2a2a;
+    --border-dark: #3a3a3a;
+    --code-bg: #1a1a1a;
     --max-width: 720px;
     --font-serif: "Georgia", "Times New Roman", "Hiragino Mincho ProN", serif;
     --font-sans: "Helvetica Neue", "Arial", "Hiragino Kaku Gothic ProN", sans-serif;
@@ -111,6 +111,7 @@ code {
     font-family: var(--font-mono);
     font-size: 0.85em;
     background-color: var(--paper-warm);
+    color: var(--accent);
     padding: 0.15em 0.4em;
     border-radius: 3px;
     border: 1px solid var(--border);
@@ -121,7 +122,7 @@ pre {
     font-size: 0.85rem;
     line-height: 1.6;
     background-color: var(--code-bg);
-    color: #e8e8e8;
+    color: var(--ink);
     padding: 1.5rem;
     border-radius: 4px;
     overflow-x: auto;
@@ -171,7 +172,7 @@ hr {
     letter-spacing: 0.05em;
     margin-bottom: 0.5rem;
     padding-bottom: 1rem;
-    border-bottom: 2px solid var(--ink);
+    border-bottom: 2px solid var(--border-dark);
 }
 
 .container > h3:first-child a {
@@ -315,7 +316,7 @@ hr {
     background: transparent;
     color: var(--ink-muted);
     padding: 0.25rem 0.75rem;
-    border: 1px solid var(--border);
+    border: 1px solid var(--border-dark);
     border-radius: 2px;
     font-size: 0.75rem;
     text-transform: uppercase;
@@ -326,9 +327,9 @@ hr {
 }
 
 .tags a:hover {
-    background: var(--ink);
+    background: var(--accent);
     color: var(--paper);
-    border-color: var(--ink);
+    border-color: var(--accent);
 }
 
 /* Footer */
@@ -435,6 +436,11 @@ footer {
     }
     
     a {
+        color: black;
         border-bottom: none;
+    }
+    
+    h1, h2, h3, h4, h5, h6 {
+        color: black;
     }
 }
