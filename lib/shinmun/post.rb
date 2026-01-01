@@ -7,7 +7,7 @@ module Shinmun
   #     --- 
   #     category: Ruby
   #     date: 2008-09-05
-  #     title: BlueCloth, a Markdown library
+  #     title: Kramdown, a Markdown library
   #     ---
   #     This is the summary, which is by definition the first paragraph of the
   #     article. The summary shows up in list views and rss feeds.  
@@ -124,9 +124,9 @@ module Shinmun
         RubyPants.new(RedCloth.new(src).to_html).to_html
       else
         # Pre-process source with CodeRay highlighting if needed
-        processed_src = Shinmun::BlueClothCodeRay.process(src, options)
-        bluecloth = BlueCloth.new(processed_src)
-        RubyPants.new(bluecloth.to_html).to_html
+        processed_src = Shinmun::KramdownCodeRay.process(src, options)
+        html = Kramdown::Document.new(processed_src).to_html
+        RubyPants.new(html).to_html
       end
     end
 

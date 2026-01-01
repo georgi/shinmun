@@ -84,7 +84,7 @@ END
 
   it "should transform the body" do
     post = Shinmun::Post.new(:title => 'test', :body => '**bold**')
-    expect(post.body_html).to eq('<p><strong>bold</strong></p>')
+    expect(post.body_html.strip).to eq('<p><strong>bold</strong></p>')
   end
 
   it "should transform according to type" do

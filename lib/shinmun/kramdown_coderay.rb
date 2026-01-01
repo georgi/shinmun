@@ -1,16 +1,15 @@
-# CodeRay extension for BlueCloth
-# Since BlueCloth 2.x is a C extension, we can't override transform_code_blocks
-# Instead, we provide a wrapper module to process code blocks with syntax highlighting
+# CodeRay extension for Kramdown
+# Provides a wrapper module to process code blocks with syntax highlighting
 
 module Shinmun
-  module BlueClothCodeRay
+  module KramdownCodeRay
     CODE_BLOCK_PATTERN = /^(?:[ ]{4}|\t)@@(\w+)\n\n(.*?)\n\n/m
 
     class << self
       attr_accessor :code_css
 
       # Pre-process markdown source to convert @@language code blocks
-      # to highlighted HTML before BlueCloth processing
+      # to highlighted HTML before Kramdown processing
       def preprocess(src)
         code_css_setting = code_css || :class
         src.gsub(CODE_BLOCK_PATTERN) do |_|

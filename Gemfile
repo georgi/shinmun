@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'bluecloth', '~> 2.2'
+gem 'kramdown', '~> 2.5'
 gem 'rubypants'
 gem 'rack', '>= 1.0'
 gem 'coderay', '>= 0.9.1'
