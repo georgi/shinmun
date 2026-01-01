@@ -75,17 +75,18 @@ Once authenticated, users can call the HuggingFace Inference API directly from t
    - **Scopes**: `openid profile inference-api`
 4. Save and copy the **Client ID**
 
-### Step 2: Configure Your Page
+### Step 2: Configure Your Blog
 
-Add the OAuth Client ID to your page before loading the component. You can do this in your layout template or directly in the page:
+Add the OAuth Client ID to your `config.yml` under the `variables` section:
 
-```html
-<script>
-  window.HF_OAUTH_CLIENT_ID = 'your-client-id-here';
-  // Optional: customize the inference model (defaults to 'google/gemma-2-2b-it')
-  window.HF_INFERENCE_MODEL = 'your-preferred-model';
-</script>
+```yaml
+# config.yml
+variables:
+  HF_OAUTH_CLIENT_ID: "your-client-id-here"
+  HF_INFERENCE_MODEL: "google/gemma-2-2b-it"  # optional, customize the model
 ```
+
+These variables are automatically injected as `window.*` JavaScript variables via the `<%= variables_script_tag %>` helper in your layout template.
 
 ### Step 3: Add the Demo Component
 
@@ -101,12 +102,12 @@ Reference the component in your markdown page:
 
 ### Change the Model
 
-You can easily change the model without editing the component by setting `window.HF_INFERENCE_MODEL` before the component loads:
+You can easily change the model by setting `HF_INFERENCE_MODEL` in your `config.yml`:
 
-```html
-<script>
-  window.HF_INFERENCE_MODEL = 'meta-llama/Llama-3.2-1B-Instruct';
-</script>
+```yaml
+variables:
+  HF_OAUTH_CLIENT_ID: "your-client-id"
+  HF_INFERENCE_MODEL: "meta-llama/Llama-3.2-1B-Instruct"
 ```
 
 Alternatively, edit `hf-oauth-demo.tsx` and update the `DEFAULT_MODEL` constant.

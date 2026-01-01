@@ -58,5 +58,29 @@ module Shinmun
       end
     end
 
+    # Render a script tag that sets window variables from config
+    # Usage in templates: <%= variables_script_tag %>
+    def variables_script_tag
+      vars = @blog.variables
+      return '' if vars.nil? || vars.empty?
+
+      require 'json'
+
+      js_vars = vars.map do |key, value|
+        # Validate key contains only safe characters (alphanumeric and underscore)
+        safe_key = key.to_s
+        unless safe_key.match?(/\A[A-Za-z_][A-Za-z0-9_]*\z/)
+          next nil # Skip invalid keys
+        end
+
+        # Use JSON encoding for safe value escaping
+        encoded_value = value.to_s.to_json
+        "window.#{safe_key} = #{encoded_value};"
+      end.compact.join("\n  ")
+
+      return '' if js_vars.empty?
+      "<script>\n  #{js_vars}\n</script>"
+    end
+
   end
 end

@@ -11,6 +11,11 @@ module Shinmun
       define_method(name) { @config[name.to_sym] }
     end
 
+    # Returns custom variables from config (for use in templates)
+    def variables
+      @config[:variables] || {}
+    end
+
     # Returns the base path for the blog (defaults to empty string for root deployment)
     def base_path
       @config[:base_path] || ''

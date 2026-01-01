@@ -221,6 +221,22 @@ In `config.ru` you can set the properties of your blog:
       :description => "Blog description"
     }
 
+Alternatively, use `config.yml` for configuration:
+
+    language: en
+    title: Blog Title
+    author: The Author
+    categories:
+      - Ruby
+      - Javascript
+    description: Blog description
+    base_path: /myblog
+    
+    # Custom variables for templates (injected as window.* in JavaScript)
+    variables:
+      MY_API_KEY: "your-api-key"
+      FEATURE_FLAG: "enabled"
+
 
 ### Templates
 
@@ -232,11 +248,16 @@ Layout and templates are rendered by *ERB*.  The layout is defined in
       <head>
         <title><%= @blog.title %></title>
         <%= stylesheet_link_tag 'style' %>
+        <%= variables_script_tag %>
       </head>
       <body>
          <%= @content %>
       </body>
      </html>
+
+The `<%= variables_script_tag %>` helper injects any variables defined in
+`config.yml` as JavaScript `window.*` variables, making them available to
+TypeScript mini apps.
 
 The attributes of a post are accessible via the @post variable:
 
