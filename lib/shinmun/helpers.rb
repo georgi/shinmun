@@ -66,6 +66,7 @@ module Shinmun
     # Render a script tag that sets window variables from config
     # Usage in templates: <%= variables_script_tag %>
     def variables_script_tag
+      return '' unless @blog
       vars = @blog.variables
       return '' if vars.nil? || vars.empty?
 
@@ -97,6 +98,7 @@ module Shinmun
     # Generate SEO meta tags for Open Graph and Twitter Cards
     # Usage in templates: <%= seo_meta_tags(post: @post) %> or <%= seo_meta_tags %>
     def seo_meta_tags(options = {})
+      return '' unless @blog
       post = options[:post]
       page = options[:page]
       
@@ -155,11 +157,13 @@ module Shinmun
 
     # Helper to get full URL for a post
     def post_url(post)
+      return '' unless @blog
       "#{@blog.url}#{post_path(post)}"
     end
 
     # Helper to get full URL for a page
     def page_url(page)
+      return '' unless @blog
       "#{@blog.url}#{base_path}/#{page.name}"
     end
 
@@ -184,6 +188,7 @@ module Shinmun
     # Render related posts for a given post
     # Usage: <%= related_posts_html @post, limit: 3 %>
     def related_posts_html(post, limit: 5)
+      return '' unless @blog
       related = @blog.related_posts(post, limit: limit)
       return '' if related.empty?
       
