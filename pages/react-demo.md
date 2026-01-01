@@ -249,7 +249,9 @@ if (container) {
 
 ### Step 2: Reference in Markdown
 
+```markdown
     @@typescript-file[my-widget](public/apps/my-widget.tsx)
+```
 
 ### Step 3: That's It!
 

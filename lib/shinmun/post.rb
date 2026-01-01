@@ -126,8 +126,14 @@ module Shinmun
         # Pre-process source with Rouge highlighting if needed
         processed_src = Shinmun::KramdownRouge.process(src, options)
         # Process TypeScript embeds (pass base_path for file references)
-        # Navigate from post file (posts/YYYY/MM/post.md) up to project root
-        base_path = file ? File.expand_path('../../..', File.dirname(file)) : Dir.pwd
+        # For posts (posts/YYYY/MM/post.md), go up 3 levels to project root
+        # For pages (pages/page.md), go up 1 level to project root
+        if file
+          levels_up = date ? '../../..' : '..'
+          base_path = File.expand_path(levels_up, File.dirname(file))
+        else
+          base_path = Dir.pwd
+        end
         ts_options = { base_path: base_path }
         processed_src = Shinmun::TypeScriptEmbed.process(processed_src, ts_options)
         html = Kramdown::Document.new(processed_src).to_html

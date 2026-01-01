@@ -337,7 +337,9 @@ React is automatically loaded from a CDN via import maps. No additional setup is
 
 ### File Reference Syntax
 
+```markdown
     @@typescript-file[container-id](public/apps/component-name.tsx)
+```
 
 This compiles the TSX file with bundling enabled and embeds the result.
 
@@ -501,7 +503,9 @@ if (container) {
 
 In your page or post:
 
+```markdown
     @@typescript-file[my-component](public/apps/my-component.tsx)
+```
 
 ### Step 3: Preview and Deploy
 
