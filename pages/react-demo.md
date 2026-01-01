@@ -99,6 +99,63 @@ const barStyle: React.CSSProperties = {
 
 ---
 
+## Photo Gallery
+
+A photo gallery component perfect for blogs with image content:
+
+- Filterable photo categories
+- Modal lightbox for viewing photos
+- Smooth hover animations
+- Responsive grid layout
+
+    @@typescript-file[photo-gallery](public/apps/photo-gallery.tsx)
+
+**Key Patterns:**
+
+```tsx
+// Category filtering with useState
+const [category, setCategory] = useState<Category>('all');
+
+const filteredPhotos = category === 'all' 
+  ? photos 
+  : photos.filter(p => p.category === category);
+
+// Modal state management
+const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
+```
+
+---
+
+## Reading Progress Indicator
+
+A reading progress component commonly used in blog posts:
+
+- Progress bar tracking scroll position
+- Section navigation with smooth scrolling
+- Estimated reading time display
+- Active section highlighting
+
+    @@typescript-file[reading-progress](public/apps/reading-progress.tsx)
+
+**Scroll Tracking Pattern:**
+
+```tsx
+// useCallback for optimized scroll handler
+const handleScroll = useCallback(() => {
+  const { scrollTop, scrollHeight, clientHeight } = contentRef.current;
+  const scrollProgress = (scrollTop / (scrollHeight - clientHeight)) * 100;
+  setProgress(Math.min(100, Math.max(0, scrollProgress)));
+}, []);
+
+// useEffect for scroll event listener
+useEffect(() => {
+  content.addEventListener('scroll', handleScroll);
+  return () => content.removeEventListener('scroll', handleScroll);
+}, [handleScroll]);
+```
+
+---
+
 ## How to Create Your Own Components
 
 ### Step 1: Create a TSX File
@@ -208,6 +265,8 @@ public/
     todo-react.tsx       # Full CRUD todo list
     theme-switcher.tsx   # Theme switching demo
     animated-chart.tsx   # Data visualization
+    photo-gallery.tsx    # Photo gallery with lightbox
+    reading-progress.tsx # Blog reading progress indicator
     form-validation.tsx  # TypeScript form validation
     search-filter.tsx    # Real-time search
 ```
