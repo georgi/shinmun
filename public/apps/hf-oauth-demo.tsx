@@ -24,9 +24,18 @@ interface UserInfo {
 const HF_OAUTH_CLIENT_ID = (window as any).HF_OAUTH_CLIENT_ID || '';
 const HF_OAUTH_SCOPES = 'openid profile inference-api';
 
-// Helper function to generate random string for PKCE
-function generateRandomString(): string {
-  return crypto.randomUUID() + crypto.randomUUID();
+// Default model for inference (can be customized)
+const DEFAULT_MODEL = (window as any).HF_INFERENCE_MODEL || 'google/gemma-2-2b-it';
+
+// Helper function to generate random string for PKCE (RFC 7636 recommends 43-128 chars)
+function generateCodeVerifier(): string {
+  const array = new Uint8Array(32);
+  crypto.getRandomValues(array);
+  // Convert to base64url string (43 chars for 32 bytes)
+  return btoa(String.fromCharCode(...array))
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=/g, '');
 }
 
 // Helper function for base64url encoding
@@ -48,7 +57,7 @@ async function generateOAuthLoginUrl(): Promise<string> {
   const openidConfig = await openidConfigRes.json();
 
   const nonce = crypto.randomUUID();
-  const codeVerifier = generateRandomString();
+  const codeVerifier = generateCodeVerifier();
 
   // Store in localStorage for the callback
   localStorage.setItem('hf_oauth_nonce', nonce);
@@ -97,7 +106,12 @@ async function handleOAuthRedirect(): Promise<OAuthResult | null> {
   }
 
   // Parse state and verify nonce
-  const state = JSON.parse(stateParam);
+  let state: { nonce: string; redirectUri: string };
+  try {
+    state = JSON.parse(stateParam);
+  } catch {
+    throw new Error('Invalid OAuth state parameter');
+  }
   if (state.nonce !== storedNonce) {
     throw new Error('OAuth nonce mismatch');
   }
@@ -163,16 +177,22 @@ function loadSavedOAuthResult(): OAuthResult | null {
   const saved = sessionStorage.getItem('hf_oauth_result');
   if (!saved) return null;
 
-  const result = JSON.parse(saved);
-  result.accessTokenExpiresAt = new Date(result.accessTokenExpiresAt);
+  try {
+    const result = JSON.parse(saved);
+    result.accessTokenExpiresAt = new Date(result.accessTokenExpiresAt);
 
-  // Check if token is expired
-  if (result.accessTokenExpiresAt < new Date()) {
+    // Check if token is expired
+    if (result.accessTokenExpiresAt < new Date()) {
+      sessionStorage.removeItem('hf_oauth_result');
+      return null;
+    }
+
+    return result;
+  } catch {
+    // Handle corrupted data
     sessionStorage.removeItem('hf_oauth_result');
     return null;
   }
-
-  return result;
 }
 
 // Main Demo Component
@@ -243,14 +263,14 @@ function HFOAuthDemo() {
 
     try {
       // Use HF Inference API with the OAuth token
-      const res = await fetch('https://api-inference.huggingface.co/models/google/gemma-2-2b-it/v1/chat/completions', {
+      const res = await fetch(`https://api-inference.huggingface.co/models/${DEFAULT_MODEL}/v1/chat/completions`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${oauthResult.accessToken}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: 'google/gemma-2-2b-it',
+          model: DEFAULT_MODEL,
           messages: [{ role: 'user', content: prompt }],
           max_tokens: 500,
         }),
@@ -437,7 +457,7 @@ function HFOAuthDemo() {
           <div style={cardStyle}>
             <h3 style={{ margin: '0 0 1rem' }}>🚀 Run Inference</h3>
             <p style={{ color: '#6B7280', margin: '0 0 1rem', fontSize: '0.875rem' }}>
-              Using model: <code style={{ background: '#F3F4F6', padding: '0.125rem 0.375rem', borderRadius: '4px' }}>google/gemma-2-2b-it</code>
+              Using model: <code style={{ background: '#F3F4F6', padding: '0.125rem 0.375rem', borderRadius: '4px' }}>{DEFAULT_MODEL}</code>
             </p>
             <textarea
               value={prompt}

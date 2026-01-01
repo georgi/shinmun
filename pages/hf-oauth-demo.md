@@ -82,6 +82,8 @@ Add the OAuth Client ID to your page before loading the component. You can do th
 ```html
 <script>
   window.HF_OAUTH_CLIENT_ID = 'your-client-id-here';
+  // Optional: customize the inference model (defaults to 'google/gemma-2-2b-it')
+  window.HF_INFERENCE_MODEL = 'your-preferred-model';
 </script>
 ```
 
@@ -99,18 +101,15 @@ Reference the component in your markdown page:
 
 ### Change the Model
 
-Edit `hf-oauth-demo.tsx` and update the model endpoint:
+You can easily change the model without editing the component by setting `window.HF_INFERENCE_MODEL` before the component loads:
 
-```typescript
-// For different models, change the URL and model name
-const res = await fetch('https://api-inference.huggingface.co/models/YOUR_MODEL/v1/chat/completions', {
-  // ...
-  body: JSON.stringify({
-    model: 'YOUR_MODEL',
-    // ...
-  }),
-});
+```html
+<script>
+  window.HF_INFERENCE_MODEL = 'meta-llama/Llama-3.2-1B-Instruct';
+</script>
 ```
+
+Alternatively, edit `hf-oauth-demo.tsx` and update the `DEFAULT_MODEL` constant.
 
 ### Change OAuth Scopes
 
