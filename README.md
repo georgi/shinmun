@@ -65,8 +65,8 @@ Example post:
     --- 
     date: 2008-09-05
     category: Ruby
-    tags: bluecloth, markdown
-    title: BlueCloth, a Markdown library
+    tags: kramdown, markdown
+    title: Kramdown, a Markdown library
     ---
     This is the summary, which is by definition the first paragraph of the
     article. The summary shows up in category listings or the index listing.

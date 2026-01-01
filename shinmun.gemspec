@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.executables << 'shinmun'
   s.require_path = 'lib'
   s.required_ruby_version = '>= 3.2.0'
-  s.add_dependency 'bluecloth', '~> 2.2'
+  s.add_dependency 'kramdown', '~> 2.5'
   s.add_dependency 'rubypants'
   s.add_dependency 'rack', '>= 1.0'
   s.add_dependency 'coderay', '>= 0.9.1'
@@ -26,7 +26,7 @@ bin/shinmun
 config.ru
 lib/shinmun.rb
 lib/shinmun/blog.rb
-lib/shinmun/bluecloth_coderay.rb
+lib/shinmun/kramdown_coderay.rb
 lib/shinmun/comment.rb
 lib/shinmun/helpers.rb
 lib/shinmun/post.rb
