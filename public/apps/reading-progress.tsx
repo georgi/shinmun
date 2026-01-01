@@ -37,17 +37,18 @@ function ReadingProgress() {
   const contentRef = React.useRef<HTMLDivElement>(null);
 
   const handleScroll = useCallback(() => {
-    if (!contentRef.current) return;
+    const content = contentRef.current;
+    if (!content) return;
     
-    const { scrollTop, scrollHeight, clientHeight } = contentRef.current;
+    const { scrollTop, scrollHeight, clientHeight } = content;
     const scrollProgress = (scrollTop / (scrollHeight - clientHeight)) * 100;
     setProgress(Math.min(100, Math.max(0, scrollProgress)));
 
     // Determine active section
-    const sectionElements = contentRef.current.querySelectorAll('[data-section]');
+    const sectionElements = content.querySelectorAll('[data-section]');
     sectionElements.forEach((el) => {
       const rect = el.getBoundingClientRect();
-      const containerRect = contentRef.current!.getBoundingClientRect();
+      const containerRect = content.getBoundingClientRect();
       if (rect.top <= containerRect.top + 100) {
         setActiveSection(el.getAttribute('data-section') || sections[0].id);
       }
