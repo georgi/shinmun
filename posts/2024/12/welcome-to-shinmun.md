@@ -2,31 +2,54 @@
 date: 2024-12-01
 category: Ruby
 tags: introduction, getting-started
-title: Welcome to Shinmun
+title: Shinmun Blog Engine
 ---
-Welcome to Shinmun, a simple and elegant file-based blog engine!
+Shinmun is a file-based blog engine built on Ruby and Rack. Posts are Markdown files with YAML frontmatter, tracked in Git, served dynamically or exported as static HTML.
 
-Shinmun makes blogging effortless. Just write your posts in Markdown, commit them to Git, and deploy. No databases, no complex configuration—just pure simplicity.
+## Installation
 
-## Why Shinmun?
+    @@bash
 
-There are many blogging platforms out there, but Shinmun stands out for its minimalist approach:
+    gem install shinmun
+    shinmun init myblog
+    cd myblog && rackup
 
-1. **Simple**: Your blog is just a collection of text files
-2. **Fast**: No database queries, just file reads
-3. **Portable**: Move your blog anywhere with a simple `git push`
-4. **Developer-friendly**: Built with Ruby and Rack
+Visit `http://localhost:9292` to see your blog.
 
-## Getting Started
+## Creating Posts
 
-To create a new post, simply run:
+    @@bash
+
+    shinmun post 'Post Title'
+
+Creates `posts/YYYY/M/post-title.md` with this structure:
+
+    @@yaml
+
+    ---
+    date: 2024-12-01
+    category: Ruby
+    tags: tag1, tag2
+    title: Post Title
+    ---
+    Your markdown content here.
+
+## Directory Layout
+
+    posts/          # Blog posts organized by year/month
+    pages/          # Static pages (about, etc.)
+    templates/      # ERB templates for rendering
+    public/         # CSS, images, static assets
+    config.ru       # Rack configuration
+
+## Code Highlighting
+
+Use `@@language` followed by a blank line and indented code:
 
     @@ruby
 
-    shinmun post 'My New Post Title'
+    def greet(name)
+      "Hello, #{name}!"
+    end
 
-This will create a new markdown file in the `posts` directory with the current date.
-
-## What's Next?
-
-Stay tuned for more posts about Ruby development, web technologies, and the Shinmun blog engine itself!
+Rouge handles syntax highlighting for Ruby, JavaScript, Python, and 100+ languages.
