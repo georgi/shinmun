@@ -15,7 +15,7 @@ module Shinmun
           code = $2
           # Strip leading indentation from the code
           code = code.gsub(/^    /, '')
-          lexer = Rouge::Lexer.find(language) || Rouge::Lexers::PlainText.new
+          lexer = Rouge::Lexer.find(language) || Rouge::Lexers::PlainText
           highlighted = fmt.format(lexer.lex(code))
           "\n\n<div class=\"highlight\"><pre>#{highlighted}</pre></div>\n\n"
         end
