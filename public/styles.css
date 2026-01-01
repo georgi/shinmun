@@ -189,7 +189,8 @@ hr {
 /* Navigation */
 .menu {
     display: flex;
-    gap: 2rem;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.5rem;
     margin-bottom: 3rem;
     padding: 1rem 0;
     font-family: var(--font-sans);
