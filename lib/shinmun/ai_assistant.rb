@@ -1,0 +1,278 @@
+require 'net/http'
+require 'json'
+require 'uri'
+
+module Shinmun
+  # AI Assistant for generating blog content, auto-tagging, and SEO optimization.
+  #
+  # Supports OpenAI (GPT-4) and Anthropic (Claude) APIs through environment variables:
+  #   - OPENAI_API_KEY for OpenAI
+  #   - ANTHROPIC_API_KEY for Anthropic (Claude)
+  #
+  # The assistant will automatically use whichever API key is available,
+  # preferring Anthropic if both are set.
+  class AIAssistant
+    OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions'
+    ANTHROPIC_API_URL = 'https://api.anthropic.com/v1/messages'
+
+    class Error < StandardError; end
+    class ConfigurationError < Error; end
+    class APIError < Error; end
+
+    attr_reader :provider
+
+    def initialize
+      @openai_key = ENV['OPENAI_API_KEY']
+      @anthropic_key = ENV['ANTHROPIC_API_KEY']
+
+      if @anthropic_key && !@anthropic_key.empty?
+        @provider = :anthropic
+      elsif @openai_key && !@openai_key.empty?
+        @provider = :openai
+      else
+        @provider = nil
+      end
+    end
+
+    # Check if AI features are available
+    def available?
+      !@provider.nil?
+    end
+
+    # Generate a draft blog post with structured content
+    #
+    # @param title [String] The title of the post
+    # @param options [Hash] Additional options
+    # @option options [String] :category Suggested category
+    # @option options [Array<String>] :categories Available categories to choose from
+    # @return [Hash] Generated content with :body, :category, :tags, :description
+    def generate_draft(title, options = {})
+      ensure_available!
+
+      categories_hint = if options[:categories]&.any?
+        "Available categories: #{options[:categories].join(', ')}. Choose the most appropriate one."
+      else
+        "Suggest an appropriate category."
+      end
+
+      prompt = <<~PROMPT
+        Write a blog post draft for the title: "#{title}"
+
+        Requirements:
+        - Write 3-4 well-structured paragraphs
+        - The first paragraph should be a compelling summary/introduction
+        - Use clear, engaging prose without marketing buzzwords
+        - Include practical insights or actionable information
+        - Use Markdown formatting (headers, lists, code blocks if relevant)
+
+        #{categories_hint}
+
+        Also provide:
+        - 3-5 relevant tags (comma-separated)
+        - A concise SEO description (150-160 characters) for search engines
+
+        Format your response as JSON with these keys:
+        {
+          "body": "The markdown body of the post",
+          "category": "Single category name",
+          "tags": "tag1, tag2, tag3",
+          "description": "SEO meta description"
+        }
+
+        Return only valid JSON, no additional text.
+      PROMPT
+
+      response = call_api(prompt)
+      parse_json_response(response)
+    end
+
+    # Analyze existing post content and suggest metadata
+    #
+    # @param body [String] The post body content
+    # @param options [Hash] Additional options
+    # @option options [Array<String>] :categories Available categories
+    # @return [Hash] Suggested metadata with :category, :tags, :description
+    def analyze_content(body, options = {})
+      ensure_available!
+
+      categories_hint = if options[:categories]&.any?
+        "Available categories: #{options[:categories].join(', ')}. Choose the most appropriate one."
+      else
+        "Suggest an appropriate category."
+      end
+
+      prompt = <<~PROMPT
+        Analyze this blog post content and suggest metadata:
+
+        ---
+        #{body[0, 4000]}
+        ---
+
+        #{categories_hint}
+
+        Provide:
+        - The single most appropriate category
+        - 3-5 relevant tags (comma-separated, lowercase)
+        - A concise SEO description (150-160 characters) summarizing the content
+
+        Format your response as JSON:
+        {
+          "category": "Single category name",
+          "tags": "tag1, tag2, tag3",
+          "description": "SEO meta description"
+        }
+
+        Return only valid JSON, no additional text.
+      PROMPT
+
+      response = call_api(prompt)
+      parse_json_response(response)
+    end
+
+    # Generate only an SEO description for existing content
+    #
+    # @param title [String] Post title
+    # @param body [String] Post body
+    # @return [String] SEO description
+    def generate_description(title, body)
+      ensure_available!
+
+      prompt = <<~PROMPT
+        Generate an SEO meta description for this blog post.
+
+        Title: #{title}
+        Content preview: #{body[0, 2000]}
+
+        Requirements:
+        - 150-160 characters maximum
+        - Summarize the main value/topic
+        - Include relevant keywords naturally
+        - Be compelling for search result clicks
+
+        Return only the description text, nothing else.
+      PROMPT
+
+      call_api(prompt).strip
+    end
+
+    # Suggest tags based on content
+    #
+    # @param body [String] Post body
+    # @return [String] Comma-separated tags
+    def suggest_tags(body)
+      ensure_available!
+
+      prompt = <<~PROMPT
+        Analyze this blog post and suggest 3-5 relevant tags.
+
+        Content: #{body[0, 3000]}
+
+        Requirements:
+        - Tags should be lowercase
+        - Use common, searchable terms
+        - Be specific to the content
+
+        Return only comma-separated tags, nothing else.
+        Example: ruby, web development, performance
+      PROMPT
+
+      call_api(prompt).strip.downcase
+    end
+
+    private
+
+    def ensure_available!
+      unless available?
+        raise ConfigurationError, <<~MSG
+          No AI API key configured. Set one of these environment variables:
+            - ANTHROPIC_API_KEY for Claude
+            - OPENAI_API_KEY for GPT-4
+        MSG
+      end
+    end
+
+    def call_api(prompt)
+      case @provider
+      when :anthropic
+        call_anthropic(prompt)
+      when :openai
+        call_openai(prompt)
+      end
+    end
+
+    def call_anthropic(prompt)
+      uri = URI(ANTHROPIC_API_URL)
+      http = Net::HTTP.new(uri.host, uri.port)
+      http.use_ssl = true
+      http.read_timeout = 60
+
+      request = Net::HTTP::Post.new(uri)
+      request['Content-Type'] = 'application/json'
+      request['x-api-key'] = @anthropic_key
+      request['anthropic-version'] = '2023-06-01'
+
+      request.body = {
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 2048,
+        messages: [
+          { role: 'user', content: prompt }
+        ]
+      }.to_json
+
+      response = http.request(request)
+
+      unless response.is_a?(Net::HTTPSuccess)
+        raise APIError, "Anthropic API error: #{response.code} - #{response.body}"
+      end
+
+      data = JSON.parse(response.body)
+      data.dig('content', 0, 'text') || ''
+    end
+
+    def call_openai(prompt)
+      uri = URI(OPENAI_API_URL)
+      http = Net::HTTP.new(uri.host, uri.port)
+      http.use_ssl = true
+      http.read_timeout = 60
+
+      request = Net::HTTP::Post.new(uri)
+      request['Content-Type'] = 'application/json'
+      request['Authorization'] = "Bearer #{@openai_key}"
+
+      request.body = {
+        model: 'gpt-4o',
+        messages: [
+          { role: 'user', content: prompt }
+        ],
+        max_tokens: 2048,
+        temperature: 0.7
+      }.to_json
+
+      response = http.request(request)
+
+      unless response.is_a?(Net::HTTPSuccess)
+        raise APIError, "OpenAI API error: #{response.code} - #{response.body}"
+      end
+
+      data = JSON.parse(response.body)
+      data.dig('choices', 0, 'message', 'content') || ''
+    end
+
+    def parse_json_response(response)
+      # Extract JSON from response (handle markdown code blocks)
+      json_str = response.gsub(/```json\n?/, '').gsub(/```\n?/, '').strip
+
+      begin
+        result = JSON.parse(json_str)
+        {
+          body: result['body'],
+          category: result['category'],
+          tags: result['tags'],
+          description: result['description']
+        }.compact
+      rescue JSON::ParserError => e
+        raise APIError, "Failed to parse AI response as JSON: #{e.message}\nResponse: #{response[0, 500]}"
+      end
+    end
+  end
+end
