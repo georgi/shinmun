@@ -1,0 +1,27 @@
+name: Push to RubyGems
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.2'
+        bundler-cache: true
+
+    - name: Build and push gem
+      run: |
+        gem build shinmun.gemspec
+        gem push shinmun-$(ruby -e "puts Gem::Specification.load('shinmun.gemspec').version").gem
+      env:
+        GEM_HOST_API_KEY: ${{ secrets.RUBYGEMS_API_KEY }}
