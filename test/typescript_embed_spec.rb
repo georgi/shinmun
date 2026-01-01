@@ -38,10 +38,9 @@ RSpec.describe Shinmun::TypeScriptEmbed do
 
       expect(src).to match(Shinmun::TypeScriptEmbed::TYPESCRIPT_PATTERN)
       
-      # Extract the container id
-      src.match(Shinmun::TypeScriptEmbed::TYPESCRIPT_PATTERN) do |match|
-        expect($1).to eq('my-app')
-      end
+      # Extract the container id using match object
+      match = src.match(Shinmun::TypeScriptEmbed::TYPESCRIPT_PATTERN)
+      expect(match[1]).to eq('my-app')
     end
 
     it 'should capture multiline indented code blocks' do
@@ -61,9 +60,9 @@ RSpec.describe Shinmun::TypeScriptEmbed do
 
       expect(src).to match(Shinmun::TypeScriptEmbed::TYPESCRIPT_PATTERN)
       
-      # Extract the code
-      src.match(Shinmun::TypeScriptEmbed::TYPESCRIPT_PATTERN)
-      code = $2.gsub(/^(?:    |\t)/, '').rstrip
+      # Extract the code using match object
+      match = src.match(Shinmun::TypeScriptEmbed::TYPESCRIPT_PATTERN)
+      code = match[2].gsub(/^(?:    |\t)/, '').rstrip
       expect(code).to include('interface User')
       expect(code).to include('const user')
     end

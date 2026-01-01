@@ -25,8 +25,17 @@ require 'json'
 module Shinmun
   module TypeScriptEmbed
     # Pattern for TypeScript blocks with optional container ID
-    # @@typescript or @@typescript[container-id]
-    # This uses the same pattern style as KramdownRouge
+    # Format: @@typescript or @@typescript[container-id]
+    #
+    # Pattern breakdown:
+    # ^(?:[ ]{4}|\t)  - Line starts with 4 spaces or tab (indented code block)
+    # @@typescript    - Literal marker for TypeScript blocks
+    # (?:\[([a-zA-Z][\w-]*)\])?  - Optional container ID in brackets (captured in group 1)
+    # \n\n            - Followed by blank line
+    # (.*?)           - Non-greedy capture of code content (captured in group 2)
+    # \n\n            - Ends with blank line
+    #
+    # Uses same pattern style as KramdownRouge for consistency
     TYPESCRIPT_PATTERN = /^(?:[ ]{4}|\t)@@typescript(?:\[([a-zA-Z][\w-]*)\])?\n\n(.*?)\n\n/m
 
     class << self
@@ -67,9 +76,11 @@ module Shinmun
       def process(src)
         return src unless src =~ TYPESCRIPT_PATTERN
 
-        src.gsub(TYPESCRIPT_PATTERN) do |_|
-          container_id = $1
-          code = $2
+        src.gsub(TYPESCRIPT_PATTERN) do
+          # Use Regexp.last_match to avoid global variable warnings
+          match_data = Regexp.last_match
+          container_id = match_data[1]
+          code = match_data[2]
           # Strip leading indentation from the code (4 spaces or tab)
           code = code.gsub(/^(?:    |\t)/, '')
 
