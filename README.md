@@ -12,6 +12,7 @@ editor, track them with git and deploy to Heroku. Small, fast and simple.
 * RSS feeds
 * Syntax highlighting provided by [Rouge][4]
 * **TypeScript mini apps** - embed interactive TypeScript code in your pages
+* **AI-powered CLI** - generate drafts, auto-tag posts, and create SEO descriptions
 
 
 ### Quickstart
@@ -47,6 +48,24 @@ folder:
 Shinmun will then create a post file in the right place, for example
 in `posts/2008/9/the-title-of-the-post.md`.
 
+#### AI-Generated Drafts
+
+Add the `--ai` flag to generate a complete draft with content, tags, and metadata:
+
+    shinmun post 'The future of Ruby' --ai
+
+This requires an API key from Anthropic or OpenAI:
+
+    export ANTHROPIC_API_KEY="your-key"  # or OPENAI_API_KEY
+
+The AI assistant will:
+- Write 3-4 structured paragraphs based on your title
+- Select a category from your `config.yml`
+- Suggest relevant tags
+- Generate an SEO description
+
+See the [AI Assistant Guide](pages/ai-assistant-guide.md) for details.
+
 
 ### Post Format
 
@@ -59,6 +78,7 @@ The YAML header has following attributes:
 * `date`: posts need one, pages not
 * `category`: a post belongs to one category
 * `tags`: a comma separated list of tags
+* `description`: SEO meta description (optional, can be AI-generated)
 
 Example post:
 
@@ -67,9 +87,18 @@ Example post:
     category: Ruby
     tags: kramdown, markdown
     title: Kramdown, a Markdown library
+    description: A practical guide to using Kramdown for Markdown processing in Ruby applications.
     ---
     This is the summary, which is by definition the first paragraph of the
     article. The summary shows up in category listings or the index listing.
+
+#### Enhancing Existing Posts
+
+Use `ai-enhance` to add metadata to posts you've already written:
+
+    shinmun ai-enhance posts/2024/12/my-post.md
+
+This analyzes your content and fills in empty category, tags, and description fields.
 
 
 ### Syntax highlighting

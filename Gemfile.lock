@@ -5,9 +5,26 @@ GEM
     date (3.5.1)
     diff-lcs (1.6.2)
     erb (6.0.1)
+    event_stream_parser (1.0.0)
+    faraday (2.14.0)
+      faraday-net_http (>= 2.0, < 3.5)
+      json
+      logger
+    faraday-multipart (1.2.0)
+      multipart-post (~> 2.0)
+    faraday-net_http (3.4.2)
+      net-http (~> 0.5)
+    faraday-retry (2.4.0)
+      faraday (~> 2.0)
+    json (2.18.0)
     kontrol (0.4)
     kramdown (2.5.1)
       rexml (>= 3.3.9)
+    logger (1.7.0)
+    marcel (1.1.0)
+    multipart-post (2.4.1)
+    net-http (0.9.1)
+      uri (>= 0.11.1)
     psych (5.3.1)
       date
       stringio
@@ -39,10 +56,23 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
     rspec-support (3.13.6)
+    ruby_llm (1.9.1)
+      base64
+      event_stream_parser (~> 1)
+      faraday (>= 1.10.0)
+      faraday-multipart (>= 1)
+      faraday-net_http (>= 1)
+      faraday-retry (>= 1)
+      marcel (~> 1.0)
+      ruby_llm-schema (~> 0.2.1)
+      zeitwerk (~> 2)
+    ruby_llm-schema (0.2.5)
     rubypants (0.7.1)
     stringio (3.2.0)
     tsort (0.2.0)
+    uri (1.1.1)
     webrick (1.9.2)
+    zeitwerk (2.7.4)
 
 PLATFORMS
   ruby
@@ -60,6 +90,7 @@ DEPENDENCIES
   rexml
   rouge (~> 4.0)
   rspec (~> 3.0)
+  ruby_llm (~> 1.9)
   rubypants
   webrick
 
@@ -68,8 +99,18 @@ CHECKSUMS
   date (3.5.1) sha256=750d06384d7b9c15d562c76291407d89e368dda4d4fff957eb94962d325a0dc0
   diff-lcs (1.6.2) sha256=9ae0d2cba7d4df3075fe8cd8602a8604993efc0dfa934cff568969efb1909962
   erb (6.0.1) sha256=28ecdd99c5472aebd5674d6061e3c6b0a45c049578b071e5a52c2a7f13c197e5
+  event_stream_parser (1.0.0) sha256=a2683bab70126286f8184dc88f7968ffc4028f813161fb073ec90d171f7de3c8
+  faraday (2.14.0) sha256=8699cfe5d97e55268f2596f9a9d5a43736808a943714e3d9a53e6110593941cd
+  faraday-multipart (1.2.0) sha256=7d89a949693714176f612323ca13746a2ded204031a6ba528adee788694ef757
+  faraday-net_http (3.4.2) sha256=f147758260d3526939bf57ecf911682f94926a3666502e24c69992765875906c
+  faraday-retry (2.4.0) sha256=7b79c48fb7e56526faf247b12d94a680071ff40c9fda7cf1ec1549439ad11ebe
+  json (2.18.0) sha256=b10506aee4183f5cf49e0efc48073d7b75843ce3782c68dbeb763351c08fd505
   kontrol (0.4) sha256=f9dd96c8853414ffdd389360d87aaa55bf556e9b4c42f99d73bcd539bada710a
   kramdown (2.5.1) sha256=87bbb6abd9d3cebe4fc1f33e367c392b4500e6f8fa19dd61c0972cf4afe7368c
+  logger (1.7.0) sha256=196edec7cc44b66cfb40f9755ce11b392f21f7967696af15d274dde7edff0203
+  marcel (1.1.0) sha256=fdcfcfa33cc52e93c4308d40e4090a5d4ea279e160a7f6af988260fa970e0bee
+  multipart-post (2.4.1) sha256=9872d03a8e552020ca096adadbf5e3cb1cd1cdd6acd3c161136b8a5737cdb4a8
+  net-http (0.9.1) sha256=25ba0b67c63e89df626ed8fac771d0ad24ad151a858af2cc8e6a716ca4336996
   psych (5.3.1) sha256=eb7a57cef10c9d70173ff74e739d843ac3b2c019a003de48447b2963d81b1974
   rack (3.2.4) sha256=5d74b6f75082a643f43c1e76b419c40f0e5527fcfee1e669ac1e6b73c0ccb6f6
   rack-session (2.1.1) sha256=0b6dc07dea7e4b583f58a48e8b806d4c9f1c6c9214ebc202ec94562cbea2e4e9
@@ -84,10 +125,14 @@ CHECKSUMS
   rspec-expectations (3.13.5) sha256=33a4d3a1d95060aea4c94e9f237030a8f9eae5615e9bd85718fe3a09e4b58836
   rspec-mocks (3.13.7) sha256=0979034e64b1d7a838aaaddf12bf065ea4dc40ef3d4c39f01f93ae2c66c62b1c
   rspec-support (3.13.6) sha256=2e8de3702427eab064c9352fe74488cc12a1bfae887ad8b91cba480ec9f8afb2
+  ruby_llm (1.9.1) sha256=f7d3c72489c70041ee73d7bfe4250a989f801fbba1fad2200904091e433ba511
+  ruby_llm-schema (0.2.5) sha256=b08cd42e8de7100325e2e868672a56f1915eb23692bb808f51f214e41392104f
   rubypants (0.7.1) sha256=30eb674add457dd05232c6357f7ee674536606f79d9f55e0f84db442bce2624f
   stringio (3.2.0) sha256=c37cb2e58b4ffbd33fe5cd948c05934af997b36e0b6ca6fdf43afa234cf222e1
   tsort (0.2.0) sha256=9650a793f6859a43b6641671278f79cfead60ac714148aabe4e3f0060480089f
+  uri (1.1.1) sha256=379fa58d27ffb1387eaada68c749d1426738bd0f654d812fcc07e7568f5c57c6
   webrick (1.9.2) sha256=beb4a15fc474defed24a3bda4ffd88a490d517c9e4e6118c3edce59e45864131
+  zeitwerk (2.7.4) sha256=2bef90f356bdafe9a6c2bd32bcd804f83a4f9b8bc27f3600fff051eb3edcec8b
 
 BUNDLED WITH
   4.0.3

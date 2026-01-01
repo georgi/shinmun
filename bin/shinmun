@@ -5,21 +5,158 @@ require 'shinmun'
 
 ENV['RACK_ENV'] = 'production'
 
+# Load config from config.yml if it exists
+def load_config
+  config_file = File.join(Dir.pwd, 'config.yml')
+  if File.exist?(config_file)
+    config = YAML.safe_load(File.read(config_file), permitted_classes: [Symbol])
+    config.transform_keys(&:to_sym)
+  else
+    {}
+  end
+end
+
+# Parse command line options
+def parse_options(args)
+  options = { ai: false }
+  remaining = []
+  
+  args.each do |arg|
+    case arg
+    when '--ai'
+      options[:ai] = true
+    else
+      remaining << arg
+    end
+  end
+  
+  [options, remaining]
+end
+
 case ARGV[0]
 when 'init'
   Shinmun::Blog.init ARGV[1]
 
 when 'post'
-  post = Shinmun::Post.new(:title => ARGV[1], :date => Date.today)
-  post.save
-
-  puts "Created post '#{post.path}'"
+  options, args = parse_options(ARGV[1..-1])
+  title = args[0]
+  
+  unless title
+    puts "Error: Post title is required"
+    puts "Usage: shinmun post 'Title of the post' [--ai]"
+    exit 1
+  end
+  
+  post = Shinmun::Post.new(:title => title, :date => Date.today)
+  
+  if options[:ai]
+    ai = Shinmun::AIAssistant.new
+    
+    unless ai.available?
+      puts "Error: No AI API key configured."
+      puts "Set ANTHROPIC_API_KEY or OPENAI_API_KEY environment variable."
+      exit 1
+    end
+    
+    config = load_config
+    categories = config[:categories] || []
+    
+    puts "Generating draft with AI (#{ai.provider})..."
+    
+    begin
+      result = ai.generate_draft(title, categories: categories)
+      
+      post.body = "\n#{result[:body]}" if result[:body]
+      post.category = result[:category] if result[:category]
+      post.tags = result[:tags] if result[:tags]
+      post.head['description'] = result[:description] if result[:description]
+      
+      post.save
+      puts "Created AI-generated post '#{post.path}'"
+      puts "  Category: #{post.category}" if post.category
+      puts "  Tags: #{post.tags}" if post.tags
+      puts "  Description: #{post.head['description']}" if post.head['description']
+    rescue Shinmun::AIAssistant::Error => e
+      puts "AI generation failed: #{e.message}"
+      puts "Creating empty post instead..."
+      post.save
+      puts "Created post '#{post.path}'"
+    end
+  else
+    post.save
+    puts "Created post '#{post.path}'"
+  end
 
 when 'page'
   post = Shinmun::Post.new(:title => ARGV[1])
   post.save
 
   puts "Created page '#{post.path}'"
+
+when 'ai-enhance'
+  # Enhance an existing post with AI-generated metadata
+  file_path = ARGV[1]
+  
+  unless file_path
+    puts "Error: Post file path is required"
+    puts "Usage: shinmun ai-enhance path/to/post.md"
+    exit 1
+  end
+  
+  unless File.exist?(file_path)
+    puts "Error: File not found: #{file_path}"
+    exit 1
+  end
+  
+  ai = Shinmun::AIAssistant.new
+  
+  unless ai.available?
+    puts "Error: No AI API key configured."
+    puts "Set ANTHROPIC_API_KEY or OPENAI_API_KEY environment variable."
+    exit 1
+  end
+  
+  post = Shinmun::Post.new(:file => file_path)
+  config = load_config
+  categories = config[:categories] || []
+  
+  puts "Analyzing post with AI (#{ai.provider})..."
+  
+  begin
+    result = ai.analyze_content(post.body, categories: categories)
+    
+    updated = false
+    
+    # Only update empty fields
+    if result[:category] && (post.category.nil? || post.category.empty?)
+      post.category = result[:category]
+      puts "  Suggested category: #{post.category}"
+      updated = true
+    end
+    
+    if result[:tags] && (post.tags.nil? || post.tags.empty?)
+      post.tags = result[:tags]
+      puts "  Suggested tags: #{post.tags}"
+      updated = true
+    end
+    
+    if result[:description] && !post.head['description']
+      post.head['description'] = result[:description]
+      puts "  Generated description: #{post.head['description']}"
+      updated = true
+    end
+    
+    if updated
+      post.file = file_path
+      File.open(file_path, 'w') { |f| f << post.dump }
+      puts "Updated '#{file_path}'"
+    else
+      puts "No updates needed - all metadata fields are already populated."
+    end
+  rescue Shinmun::AIAssistant::Error => e
+    puts "AI enhancement failed: #{e.message}"
+    exit 1
+  end
 
 when 'export'
   output_dir = ARGV[1] || '_site'
@@ -28,21 +165,22 @@ when 'export'
   blog = Shinmun::Blog.new(Dir.pwd)
   
   # Load config from config.yml if it exists
-  config_file = File.join(Dir.pwd, 'config.yml')
-  if File.exist?(config_file)
-    config = YAML.safe_load(File.read(config_file), permitted_classes: [Symbol])
-    blog.config = config.transform_keys(&:to_sym)
-  end
+  blog.config = load_config
   
   exporter = Shinmun::Exporter.new(blog, output_dir)
   exporter.export
 
 else
   puts "Usage:"
-  puts "  shinmun init dir - creates a new blog"
-  puts "  shinmun post 'Title of the post' - create a new post"
-  puts "  shinmun page 'Title of the page' - create a new page"
-  puts "  shinmun export [output_dir] - export static site to output_dir (default: _site)"
+  puts "  shinmun init <directory>           - create a new blog"
+  puts "  shinmun post 'Title' [--ai]        - create a new post"
+  puts "  shinmun page 'Title'               - create a new page"
+  puts "  shinmun ai-enhance <path/to/post>  - add AI-generated metadata to existing post"
+  puts "  shinmun export [output_dir]        - export static site (default: _site)"
+  puts ""
+  puts "AI Features (require ANTHROPIC_API_KEY or OPENAI_API_KEY):"
+  puts "  --ai flag generates a draft with content, category, tags, and SEO description"
+  puts "  ai-enhance analyzes existing content and suggests missing metadata"
   exit
 end
 
