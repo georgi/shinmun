@@ -29,8 +29,19 @@ jobs:
         ruby-version: '3.2'
         bundler-cache: true
 
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+
+    - name: Install esbuild
+      run: npm install esbuild
+
     - name: Build static site
       run: bundle exec ruby bin/shinmun export _site
+      env:
+        SHINMUN_STRICT_TYPESCRIPT: '1'
 
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v3

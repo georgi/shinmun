@@ -265,20 +265,26 @@ The TypeScript is compiled to JavaScript using esbuild and embedded as a `<scrip
 
 **Simple inline TypeScript (no container):**
 
+```markdown
     @@typescript
 
     console.log('Hello, TypeScript!');
+```
 
 **TypeScript with container element:**
 
+```markdown
     @@typescript[my-container]
 
     const el = document.getElementById('my-container')!;
     el.innerHTML = '<p>Interactive content</p>';
+```
 
 **External TypeScript file:**
 
+```markdown
     @@typescript-file[container-id](path/to/file.tsx)
+```
 
 ### TypeScript Features Available
 
