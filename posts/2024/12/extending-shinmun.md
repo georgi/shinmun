@@ -42,18 +42,19 @@ Use in templates: `<%= reading_time(@post) %>`
 
 ## Custom Routes
 
-Routes are defined in `lib/shinmun/routes.rb`. Add new endpoints:
+Routes are defined in `lib/shinmun/routes.rb` using regex patterns:
 
     @@ruby
 
     Shinmun::Blog.map do
-      get '/projects' do
+      # Custom page route
+      page '/projects' do
         render 'projects.rhtml'
       end
 
-      get '/api/posts.json' do
-        content_type :json
-        posts.map { |p| { title: p.title, date: p.date } }.to_json
+      # Route with parameter capture
+      archive '/archive/(.*)' do |year|
+        render 'archive.rhtml', :year => year.to_i
       end
     end
 
@@ -72,19 +73,25 @@ Routes are defined in `lib/shinmun/routes.rb`. Add new endpoints:
 
 Access in templates via `@blog.title`, `@blog.author`, etc.
 
-## Static Export Hooks
+## Extending the Exporter
 
-Override `Exporter` methods for custom export behavior:
+Create custom export behavior by modifying the Exporter class:
 
     @@ruby
 
-    class Shinmun::Exporter
-      def export
-        super
-        generate_sitemap
-      end
+    module Shinmun
+      class Exporter
+        alias_method :original_export, :export
 
-      def generate_sitemap
-        # Custom sitemap generation
+        def export
+          original_export
+          generate_sitemap
+        end
+
+        def generate_sitemap
+          # Add custom sitemap.xml generation
+          sitemap = blog.posts.map { |p| post_url(p) }
+          write_file('sitemap.xml', sitemap.join("\n"))
+        end
       end
     end
