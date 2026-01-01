@@ -169,7 +169,7 @@ module Shinmun
       end
       
       # Sort by score (descending) then by date (descending)
-      scores.sort_by { |p, score| [-score, -(p.date.to_s.gsub('-', '').to_i)] }
+      scores.sort_by { |p, score| [-score, -p.date.strftime('%Y%m%d').to_i] }
             .first(limit)
             .map(&:first)
     end

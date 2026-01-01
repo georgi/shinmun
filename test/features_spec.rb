@@ -1,6 +1,7 @@
 $:.unshift "#{File.dirname __FILE__}/../lib"
 
 require 'shinmun'
+require 'json'
 
 RSpec.describe 'Blog Features' do
   describe Shinmun::Post do

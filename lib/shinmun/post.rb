@@ -78,12 +78,20 @@ module Shinmun
     # Estimated reading time in minutes (assumes ~200 words per minute)
     def reading_time
       @reading_time ||= begin
-        # Strip markdown/HTML and count words
-        plain_text = body.gsub(/```[\s\S]*?```/, ' ')  # Remove code blocks
-                        .gsub(/`[^`]+`/, ' ')          # Remove inline code
-                        .gsub(/\[([^\]]+)\]\([^)]+\)/, '\1')  # Extract link text
-                        .gsub(/[#*_~`]/, '')           # Remove markdown formatting
-                        .gsub(/<[^>]+>/, '')           # Remove HTML tags
+        # Strip markdown/HTML and count words using simple patterns to avoid ReDoS
+        plain_text = body.dup
+        # Remove fenced code blocks (simple approach)
+        plain_text.gsub!(/```[^`]*```/m, ' ')
+        # Remove inline code
+        plain_text.gsub!(/`[^`]*`/, ' ')
+        # Remove markdown links - extract text only
+        plain_text.gsub!(/\[([^\[\]]*)\]\([^()]*\)/, '\1')
+        # Remove markdown formatting characters
+        plain_text.gsub!(/[#*_~`]/, '')
+        # Remove HTML tags - simple non-nested pattern
+        plain_text.gsub!(/<[^<>]*>/, ' ')
+        # Remove any remaining angle brackets
+        plain_text.gsub!(/[<>]/, ' ')
         word_count = plain_text.split(/\s+/).reject(&:empty?).length
         [(word_count / 200.0).ceil, 1].max
       end
@@ -92,11 +100,13 @@ module Shinmun
     # Returns the word count of the post body
     def word_count
       @word_count ||= begin
-        plain_text = body.gsub(/```[\s\S]*?```/, ' ')
-                        .gsub(/`[^`]+`/, ' ')
-                        .gsub(/\[([^\]]+)\]\([^)]+\)/, '\1')
-                        .gsub(/[#*_~`]/, '')
-                        .gsub(/<[^>]+>/, '')
+        plain_text = body.dup
+        plain_text.gsub!(/```[^`]*```/m, ' ')
+        plain_text.gsub!(/`[^`]*`/, ' ')
+        plain_text.gsub!(/\[([^\[\]]*)\]\([^()]*\)/, '\1')
+        plain_text.gsub!(/[#*_~`]/, '')
+        plain_text.gsub!(/<[^<>]*>/, ' ')
+        plain_text.gsub!(/[<>]/, ' ')
         plain_text.split(/\s+/).reject(&:empty?).length
       end
     end
@@ -106,11 +116,17 @@ module Shinmun
     def table_of_contents
       @table_of_contents ||= begin
         toc = []
-        # Match markdown headings (## Heading)
-        body.scan(/^(\#{2,6})\s+(.+)$/) do |level, text|
-          clean_text = text.strip.gsub(/[#*_~`\[\]]/, '')
-          id = clean_text.downcase.gsub(/\s+/, '-').gsub(/[^a-z0-9-]/, '')
-          toc << { level: level.length, text: clean_text, id: id }
+        # Match markdown headings (## Heading) - process line by line to avoid ReDoS
+        body.each_line do |line|
+          # Match ## followed by space and heading text (standard markdown)
+          if match = line.match(/^(\#{2,6}) (.*)$/)
+            level = match[1]
+            text = match[2]
+            next if text.nil? || text.strip.empty?
+            clean_text = text.strip.gsub(/[#*_~`\[\]]/, '')
+            id = clean_text.downcase.split.join('-').gsub(/[^a-z0-9-]/, '')
+            toc << { level: level.length, text: clean_text, id: id }
+          end
         end
         toc
       end

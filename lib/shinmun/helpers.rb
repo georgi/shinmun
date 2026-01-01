@@ -105,13 +105,13 @@ module Shinmun
       # Basic meta
       if post
         title = post.title
-        description = post.head['description'] || post.summary&.gsub(/<[^>]+>/, '')&.strip&.slice(0, 160)
+        description = post.head['description'] || strip_html_for_meta(post.summary)&.slice(0, 160)
         url = post_url(post)
         date = post.date
         og_type = 'article'
       elsif page
         title = page.title
-        description = page.head['description'] || page.summary&.gsub(/<[^>]+>/, '')&.strip&.slice(0, 160)
+        description = page.head['description'] || strip_html_for_meta(page.summary)&.slice(0, 160)
         url = page_url(page)
         date = nil
         og_type = 'website'
@@ -167,6 +167,18 @@ module Shinmun
     def html_escape_attr(s)
       return '' if s.nil?
       s.to_s.gsub('&', '&amp;').gsub('"', '&quot;').gsub('<', '&lt;').gsub('>', '&gt;')
+    end
+
+    # Safely strip HTML tags from text for use in meta descriptions
+    # More thorough than simple regex to avoid incomplete tag issues
+    def strip_html_for_meta(html)
+      return '' if html.nil?
+      # Remove HTML tags using a simple non-backtracking approach
+      text = html.gsub(/<[^<>]*>/, ' ')
+      # Remove any leftover angle brackets
+      text = text.gsub(/[<>]/, ' ')
+      # Clean up whitespace (limit replacement to avoid pathological cases)
+      text.split.join(' ')
     end
 
     # Render related posts for a given post
