@@ -7,8 +7,7 @@ editor, track them with git and deploy to Heroku. Small, fast and simple.
 ### Features
 
 * Posts are text files formatted with [Markdown][8], [Textile][9] or [HTML][10]
-* Deploy via [git-push][11]
-* Easy and fast deploying on Heroku
+* Deploy via Github Pages
 * Index, category and archive listings
 * RSS feeds
 * Syntax highlighting provided by [Rouge][4]
